@@ -9,6 +9,7 @@ export abstract class AccountApiType extends BaseAccountAPI {
 
 export interface AccountApiParamsType extends BaseApiParams {
   context?: any;
+  deserializeState?: any;
 }
 
 export type AccountImplementationType = new (
