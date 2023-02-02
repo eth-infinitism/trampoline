@@ -23,5 +23,4 @@
 # secrets
 secrets.*.js
 
-yarn.lock
 yarn-error.log
