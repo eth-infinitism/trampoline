@@ -108,7 +108,6 @@ export const createNewAccount = createBackgroundAsyncThunk(
       KeyringService.name
     ) as KeyringService;
     const address = await keyringService.addAccount(implementation, context);
-    console.log(address, '--');
     dispatch(
       addNewAccount({
         name,

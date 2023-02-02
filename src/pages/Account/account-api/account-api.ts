@@ -9,7 +9,7 @@ import { arrayify, hexConcat } from 'ethers/lib/utils';
 
 import { AccountApiParamsType, AccountApiType } from './types';
 
-const FACTORY_ADDRESS = '0x2C1adA574f72562d9dc3fF50f374f092e24fC3b4';
+const FACTORY_ADDRESS = '0xe528cf42479a62b4b877dd26805972fe08ff453a';
 
 /**
  * An implementation of the BaseAccountAPI using the SimpleAccount contract.
@@ -35,8 +35,8 @@ class SimpleAccountAPI extends AccountApiType {
   constructor(params: AccountApiParamsType) {
     super(params);
     this.factoryAddress = FACTORY_ADDRESS;
-    this.owner = params.context.privateKey
-      ? new ethers.Wallet(params.context.privateKey)
+    this.owner = params.deserializeState?.privateKey
+      ? new ethers.Wallet(params.deserializeState?.privateKey)
       : ethers.Wallet.createRandom();
     this.index = 0;
     this.name = 'SimpleAccountAPI';
