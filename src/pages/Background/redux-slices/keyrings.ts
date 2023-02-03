@@ -107,14 +107,18 @@ export const createNewAccount = createBackgroundAsyncThunk(
     const keyringService = mainServiceManager.getService(
       KeyringService.name
     ) as KeyringService;
-    const address = await keyringService.addAccount(implementation, context);
-    dispatch(
-      addNewAccount({
-        name,
-        makeActive: true,
-        chainIds: chainIds,
-        address: address,
-      })
-    );
+    try {
+      const address = await keyringService.addAccount(implementation, context);
+      dispatch(
+        addNewAccount({
+          name,
+          makeActive: true,
+          chainIds: chainIds,
+          address: address,
+        })
+      );
+    } catch (e) {
+      console.log(e);
+    }
   }
 );
