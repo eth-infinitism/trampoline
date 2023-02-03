@@ -211,7 +211,6 @@ export default class KeyringService extends BaseService<Events> {
       context,
       paymasterAPI: this.paymasterAPI,
     });
-    console.log(account, await account.getAccountAddress());
     this.keyrings.push(account);
     return account.getAccountAddress();
   };
