@@ -9,7 +9,7 @@ import { arrayify, hexConcat } from 'ethers/lib/utils';
 
 import { AccountApiParamsType, AccountApiType } from './types';
 
-const FACTORY_ADDRESS = '0xe528cf42479a62b4b877dd26805972fe08ff453a';
+const FACTORY_ADDRESS = '0x6C583EE7f3a80cB53dDc4789B0Af1aaFf90e55F3';
 
 /**
  * An implementation of the BaseAccountAPI using the SimpleAccount contract.

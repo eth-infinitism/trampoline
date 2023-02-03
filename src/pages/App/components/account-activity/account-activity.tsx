@@ -4,8 +4,6 @@ import React, { useState } from 'react';
 const AccountActivity = () => {
   const [activeTab, setActiveTab] = useState<'assets' | 'activity'>('assets');
 
-  console.log(activeTab);
-
   return (
     <Box>
       <Tabs
