@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import {
   ProtectedRouteHasAccounts,
@@ -8,10 +8,25 @@ import Home from './pages/home';
 import Onboarding from './pages/onboarding';
 import NewAccounts from './pages/new-accounts';
 import { InitializeKeyring } from './pages/keyring';
+import { WagmiConfig, createClient } from 'wagmi';
+import { ethers } from 'ethers';
+import { useBackgroundSelector } from './hooks';
+import { getActiveNetwork } from '../Background/redux-slices/selectors/networkSelectors';
 
 const App = () => {
+  const activeNetwork = useBackgroundSelector(getActiveNetwork);
+
+  const client = useMemo(
+    () =>
+      createClient({
+        autoConnect: true,
+        provider: new ethers.providers.JsonRpcProvider(activeNetwork.provider),
+      }),
+    [activeNetwork]
+  );
+
   return (
-    <>
+    <WagmiConfig client={client}>
       <Routes>
         <Route
           path="/"
@@ -34,7 +49,7 @@ const App = () => {
         <Route path="/keyring/initialize" element={<InitializeKeyring />} />
         <Route path="/onboarding/intro" element={<Onboarding />} />
       </Routes>
-    </>
+    </WagmiConfig>
   );
 };
 
