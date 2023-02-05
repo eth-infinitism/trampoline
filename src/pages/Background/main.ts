@@ -3,6 +3,7 @@ import KeyringService from './services/keyring';
 import MainServiceManager, {
   MainServiceManagerServicesMap,
 } from './services/main';
+import ProviderBridgeService from './services/provider-bridge';
 
 chrome.runtime.onInstalled.addListener((e) => {
   if (e.reason === chrome.runtime.OnInstalledReason.INSTALL) {
@@ -24,8 +25,14 @@ const serviceInitializer = async (
     provider: storeState.network.activeNetwork.provider || '',
     entryPointAddress: storeState.network.activeNetwork.entryPointAddress,
   });
+
+  const providerBridgeService = await ProviderBridgeService.create({
+    mainServiceManager,
+  });
+
   return {
     [KeyringService.name]: keyringService,
+    [ProviderBridgeService.name]: providerBridgeService,
   };
 };
 
