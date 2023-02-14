@@ -4,13 +4,20 @@ import MainServiceManager from './main';
 import { ServiceLifecycleEvents } from './types';
 import * as encryptor from '@metamask/browser-passworder';
 import { Provider } from '@ethersproject/providers';
-import { ethers } from 'ethers';
+import { BigNumber, ethers } from 'ethers';
 import { AccountApiType } from '../../Account/account-api/types';
 import {
   AccountImplementations,
   ActiveAccountImplementation,
 } from '../constants';
-import { PaymasterAPI } from '@account-abstraction/sdk';
+import { HttpRpcClient, PaymasterAPI } from '@account-abstraction/sdk';
+import { MessageSigningRequest } from '../redux-slices/signing';
+import { AccountData } from '../redux-slices/account';
+import { AccountBalance } from '../types/account';
+import { DomainName, URI } from '../types/common';
+import { EVMNetwork } from '../types/network';
+import { EthersTransactionRequest } from './provider-bridge';
+import { UserOperationStruct } from '@account-abstraction/contracts';
 
 interface Events extends ServiceLifecycleEvents {
   createPassword: string;
@@ -25,27 +32,39 @@ type KeyringSerialisedState = {
 export type KeyringServiceCreateProps = {
   initialState?: Vault;
   provider: string;
+  bundler: string;
   entryPointAddress: string;
 } & BaseServiceCreateProps;
 
 export default class KeyringService extends BaseService<Events> {
-  keyrings: Array<AccountApiType>;
+  keyrings: {
+    [address: string]: AccountApiType;
+  };
   vault?: string;
   password?: string;
   encryptionKey?: string;
   encryptionSalt?: string;
   provider: Provider;
+  bundler?: HttpRpcClient;
   paymasterAPI?: PaymasterAPI;
 
   constructor(
     readonly mainServiceManager: MainServiceManager,
     provider: string,
+    bundler: string,
     readonly entryPointAddress: string,
     vault?: string
   ) {
     super();
-    this.keyrings = [];
+    this.keyrings = {};
     this.provider = new ethers.providers.JsonRpcBatchProvider(provider);
+    this.provider
+      .getNetwork()
+      .then((net) => net.chainId)
+      .then((chainId) => {
+        this.bundler = new HttpRpcClient(bundler, entryPointAddress, chainId);
+      });
+
     this.vault = vault;
   }
 
@@ -53,7 +72,7 @@ export default class KeyringService extends BaseService<Events> {
     password?: string,
     encryptionKey?: string,
     encryptionSalt?: string
-  ): Promise<AccountApiType[]> {
+  ): Promise<{ [address: string]: AccountApiType }> {
     if (!this.vault) throw new Error('No vault to restore');
 
     let vault: any;
@@ -98,7 +117,7 @@ export default class KeyringService extends BaseService<Events> {
 
     const keyring = await this._newKeyring(address, type, data);
 
-    this.keyrings.push(keyring);
+    this.keyrings[address] = keyring;
 
     return keyring;
   };
@@ -137,7 +156,7 @@ export default class KeyringService extends BaseService<Events> {
   /* eslint-disable require-await */
   clearKeyrings = async (): Promise<void> => {
     // clear keyrings from memory
-    this.keyrings = [];
+    this.keyrings = {};
   };
 
   registerEventListeners = () => {};
@@ -164,7 +183,7 @@ export default class KeyringService extends BaseService<Events> {
     }
 
     const serializedKeyrings: KeyringSerialisedState[] = await Promise.all(
-      this.keyrings.map(async (keyring) => {
+      Object.values(this.keyrings).map(async (keyring) => {
         const [address, data] = await Promise.all([
           await keyring.getAccountAddress(),
           keyring.serialize(),
@@ -211,8 +230,171 @@ export default class KeyringService extends BaseService<Events> {
       context,
       paymasterAPI: this.paymasterAPI,
     });
-    this.keyrings.push(account);
+    const address = await account.getAccountAddress();
+    this.keyrings[address] = account;
     return account.getAccountAddress();
+  };
+
+  getAccountData = async (
+    address: string,
+    activeNetwork: EVMNetwork
+  ): Promise<{
+    accountDeployed: boolean;
+    minimumRequiredFunds: string;
+    balances?: {
+      [assetSymbol: string]: AccountBalance;
+    };
+    ens?: {
+      name?: DomainName;
+      avatarURL?: URI;
+    };
+  }> => {
+    const response: {
+      accountDeployed: boolean;
+      minimumRequiredFunds: string;
+      balances?: {
+        [assetSymbol: string]: AccountBalance;
+      };
+      ens?: {
+        name?: DomainName;
+        avatarURL?: URI;
+      };
+    } = {
+      accountDeployed: false,
+      minimumRequiredFunds: '0',
+      balances: undefined,
+      ens: undefined,
+    };
+    const code = await this.provider.getCode(address);
+    if (code !== '0x') response.accountDeployed = true;
+
+    const keyring = this.keyrings[address];
+
+    response.minimumRequiredFunds = ethers.utils.formatEther(
+      BigNumber.from(
+        await keyring.estimateCreationGas(await keyring.getInitCode())
+      )
+    );
+
+    const balance = await this.provider.getBalance(address);
+
+    response.balances = {
+      [activeNetwork.baseAsset.symbol]: {
+        address: '0x',
+        assetAmount: {
+          asset: {
+            symbol: activeNetwork.baseAsset.symbol,
+            name: activeNetwork.baseAsset.name,
+          },
+          amount: ethers.utils.formatEther(balance),
+        },
+        network: activeNetwork,
+        retrievedAt: Date.now(),
+        dataSource: 'custom',
+      },
+    };
+
+    return response;
+  };
+
+  personalSign = async (
+    address: string,
+    context: any,
+    request?: MessageSigningRequest
+  ): Promise<string> => {
+    const keyring = this.keyrings[address];
+
+    if (!keyring) throw new Error('No keyring for the address found');
+
+    return keyring.signMessage(context, request);
+  };
+
+  sendTransaction = async (
+    address: string,
+    transaction: EthersTransactionRequest
+  ) => {
+    const keyring = this.keyrings[address];
+    const userOperation = await keyring.createUnsignedUserOp({
+      target: transaction.to,
+      data: transaction.data
+        ? ethers.utils.hexConcat([transaction.data])
+        : '0x',
+      value: transaction.value,
+      gasLimit: transaction.gasLimit,
+      maxFeePerGas: transaction.maxFeePerGas,
+      maxPriorityFeePerGas: transaction.maxPriorityFeePerGas,
+    });
+  };
+
+  signUserOp = async (
+    address: string,
+    userOp: UserOperationStruct
+  ): Promise<UserOperationStruct> => {
+    const keyring = this.keyrings[address];
+
+    return keyring.signUserOp(userOp);
+  };
+
+  sendUserOp = async (
+    address: string,
+    userOp: UserOperationStruct
+  ): Promise<string | null> => {
+    if (this.bundler) {
+      const userOpHash = await this.bundler.sendUserOpToBundler(userOp);
+      const keyring = this.keyrings[address];
+      return await keyring.getUserOpReceipt(userOpHash);
+    }
+    return null;
+  };
+
+  createUnsignedUserOpForTransactions = async (
+    address: string,
+    transactions: EthersTransactionRequest[]
+  ): Promise<UserOperationStruct> => {
+    const keyring = this.keyrings[address];
+    return keyring.createUnsignedUserOpForTransactions(
+      transactions.map((transaction) => ({
+        target: transaction.to,
+        data: transaction.data
+          ? ethers.utils.hexConcat([transaction.data])
+          : '0x',
+        value: transaction.value,
+        gasLimit: transaction.gasLimit,
+        maxFeePerGas: transaction.maxFeePerGas,
+        maxPriorityFeePerGas: transaction.maxPriorityFeePerGas,
+      }))
+    );
+  };
+
+  createUnsignedUserOp = async (
+    address: string,
+    transaction: EthersTransactionRequest
+  ): Promise<UserOperationStruct> => {
+    const keyring = this.keyrings[address];
+    const userOp = await keyring.createUnsignedUserOp({
+      target: transaction.to,
+      data: transaction.data
+        ? ethers.utils.hexConcat([transaction.data])
+        : '0x',
+      value: transaction.value,
+      gasLimit: transaction.gasLimit,
+      maxFeePerGas: transaction.maxFeePerGas,
+      maxPriorityFeePerGas: transaction.maxPriorityFeePerGas,
+    });
+
+    userOp.sender = await userOp.sender;
+    userOp.nonce = await userOp.nonce;
+    userOp.initCode = await userOp.initCode;
+    userOp.callData = await userOp.callData;
+    userOp.callGasLimit = await userOp.callGasLimit;
+    userOp.verificationGasLimit = await userOp.verificationGasLimit;
+    userOp.preVerificationGas = await userOp.preVerificationGas;
+    userOp.maxFeePerGas = await userOp.maxFeePerGas;
+    userOp.maxPriorityFeePerGas = await userOp.maxPriorityFeePerGas;
+    userOp.paymasterAndData = await userOp.paymasterAndData;
+    userOp.signature = await userOp.signature;
+
+    return userOp;
   };
 
   validateKeyringViewInputValue = async () => {};
@@ -221,6 +403,7 @@ export default class KeyringService extends BaseService<Events> {
     mainServiceManager,
     initialState,
     provider,
+    bundler,
     entryPointAddress,
   }: KeyringServiceCreateProps): Promise<KeyringService> {
     if (!mainServiceManager)
@@ -229,6 +412,7 @@ export default class KeyringService extends BaseService<Events> {
     const keyringService = new KeyringService(
       mainServiceManager,
       provider,
+      bundler,
       entryPointAddress,
       initialState?.vault
     );

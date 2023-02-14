@@ -6,7 +6,9 @@ import { alias } from 'webext-redux';
 import account from './account';
 import keyrings from './keyrings';
 import network from './network';
+import transactions from './transactions';
 import dappPermissions from './permissions';
+import signing from './signing';
 import { allAliases } from './utils';
 import { persistReducer, createTransform } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
@@ -16,6 +18,8 @@ const rootReducer = combineReducers({
   keyrings,
   network,
   dappPermissions,
+  signing,
+  transactions,
 });
 
 export default rootReducer;

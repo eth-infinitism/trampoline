@@ -16,8 +16,10 @@ import {
 } from '../../../Background/redux-slices/selectors/networkSelectors';
 import { useBackgroundSelector } from '../../hooks';
 import SettingsIcon from '@mui/icons-material/Settings';
+import { useNavigate } from 'react-router-dom';
 
 const Header = () => {
+  const navigate = useNavigate();
   const activeNetwork = useBackgroundSelector(getActiveNetwork);
   const supportedNetworks = useBackgroundSelector(getSupportedNetworks);
 
@@ -41,6 +43,8 @@ const Header = () => {
         spacing={2}
         justifyContent="center"
         alignItems="center"
+        sx={{ cursor: 'pointer' }}
+        onClick={() => navigate('/')}
       >
         <img height={30} src={logo} className="App-logo" alt="logo" />
         <Typography variant="h6">EPF ACCOUNT</Typography>

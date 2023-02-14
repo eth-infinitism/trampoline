@@ -18,7 +18,7 @@ export type AccountBalance = {
   /**
    * The block height at while the balance measurement is valid.
    */
-  blockHeight?: bigint;
+  blockHeight?: string;
   /**
    * When the account balance was measured, using Unix epoch timestamps.
    */

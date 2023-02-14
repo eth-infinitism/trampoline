@@ -10,7 +10,13 @@ import {
 import { AA_EXTENSION_CONFIG, EXTERNAL_PORT_NAME } from '../constants';
 import { RootState } from '../redux-slices';
 import { isAAExtensionConfigPayload } from '../../Content/window-provider/runtime-type-checks';
-import showExtensionPopup, { toHexChainID } from '../utils';
+import showExtensionPopup, {
+  checkPermissionSign,
+  checkPermissionSign,
+  checkPermissionSignTransaction,
+  parseSigningData,
+  toHexChainID,
+} from '../utils';
 import {
   EIP1193Error,
   EIP1193_ERROR_CODES,
@@ -18,6 +24,47 @@ import {
 } from '../../Content/window-provider/eip-1193';
 import { AllowedQueryParamPage } from '../types/chrome-messages';
 import { requestPermission } from '../redux-slices/permissions';
+import { BigNumberish, ethers } from 'ethers';
+import {
+  AccessListish,
+  BytesLike,
+  hexlify,
+  toUtf8Bytes,
+} from 'ethers/lib/utils.js';
+import KeyringService from './keyring';
+import { signDataRequest } from '../redux-slices/signing';
+import { HexString } from '../types/common';
+import {
+  sendTransactionRequest,
+  sendTransactionsRequest,
+} from '../redux-slices/transactions';
+
+export type EthersTransactionRequest = {
+  to: string;
+  from?: string;
+  nonce?: BigNumberish;
+
+  gasLimit?: BigNumberish;
+  gasPrice?: BigNumberish;
+
+  data?: BytesLike;
+  value?: BigNumberish;
+  chainId?: number;
+
+  type?: number;
+  accessList?: AccessListish;
+
+  maxPriorityFeePerGas?: BigNumberish;
+  maxFeePerGas?: BigNumberish;
+
+  customData?: Record<string, any>;
+};
+
+type JsonRpcTransactionRequest = Omit<EthersTransactionRequest, 'gasLimit'> & {
+  gas?: string;
+  input?: string;
+  annotation?: string;
+};
 
 export type PermissionRequest = {
   key: string;
@@ -96,8 +143,11 @@ function parsedRPCErrorResponse(error: { body: string }):
 }
 
 export default class ProviderBridgeService extends BaseService<Events> {
-  #pendingPermissionsRequests: {
-    [origin: string]: (value: unknown) => void;
+  #pendingRequests: {
+    [origin: string]: {
+      resolve: (value: unknown) => void;
+      reject: (value: unknown) => void;
+    };
   } = {};
 
   openPorts: Array<browser.Runtime.Port> = [];
@@ -163,10 +213,7 @@ export default class ProviderBridgeService extends BaseService<Events> {
     };
     const network = (this.mainServiceManager.store.getState() as RootState)
       .network.activeNetwork;
-    // const originPermission = await this.checkPermission(
-    //   origin,
-    //   network.chainID
-    // );
+    const originPermission = await this.checkPermission(origin);
     if (isAAExtensionConfigPayload(event.request)) {
       // let's start with the internal communication
       response.id = 'aa-extension';
@@ -183,15 +230,15 @@ export default class ProviderBridgeService extends BaseService<Events> {
         event.request.params,
         origin
       );
-      // } else if (typeof originPermission !== 'undefined') {
+    } else if (typeof originPermission !== 'undefined') {
       //   // if it's not internal but dapp has permission to communicate we proxy the request
-      //   // TODO: here comes format validation
-      //   response.result = await this.routeContentScriptRPCRequest(
-      //     originPermission,
-      //     event.request.method,
-      //     event.request.params,
-      //     origin
-      //   );
+      // TODO: here comes format validation
+      response.result = await this.routeContentScriptRPCRequest(
+        originPermission,
+        event.request.method,
+        event.request.params,
+        origin
+      );
     } else if (
       event.request.method === 'wallet_addEthereumChain' ||
       event.request.method === 'wallet_switchEthereumChain'
@@ -255,17 +302,18 @@ export default class ProviderBridgeService extends BaseService<Events> {
             origin
           );
         } else {
+          console.log('here?');
           // if user does NOT agree, then reject
           response.result = new EIP1193Error(
             EIP1193_ERROR_CODES.userRejectedRequest
           ).toJSON();
         }
-        // } else {
-        //   // sorry dear dApp, there is no love for you here
-        //   response.result = new EIP1193Error(
-        //     EIP1193_ERROR_CODES.unauthorized
-        //   ).toJSON();
       }
+    } else {
+      // sorry dear dApp, there is no love for you here
+      response.result = new EIP1193Error(
+        EIP1193_ERROR_CODES.unauthorized
+      ).toJSON();
     }
     port.postMessage(response);
   }
@@ -285,9 +333,23 @@ export default class ProviderBridgeService extends BaseService<Events> {
     // FIXME proper error handling if this happens - should not tho
     if (permission.state !== 'allow' || !permission.accountAddress) return;
 
-    if (this.#pendingPermissionsRequests[permission.origin]) {
-      this.#pendingPermissionsRequests[permission.origin](permission);
-      delete this.#pendingPermissionsRequests[permission.origin];
+    if (this.#pendingRequests[permission.origin]) {
+      this.#pendingRequests[permission.origin].resolve(permission);
+      delete this.#pendingRequests[permission.origin];
+    }
+  }
+
+  async resolveRequest(origin: string, result: any): Promise<void> {
+    if (this.#pendingRequests[origin]) {
+      this.#pendingRequests[origin].resolve(result);
+      delete this.#pendingRequests[origin];
+    }
+  }
+
+  async rejectRequest(origin: string, result: any): Promise<void> {
+    if (this.#pendingRequests[origin]) {
+      this.#pendingRequests[origin].reject(result);
+      delete this.#pendingRequests[origin];
     }
   }
 
@@ -296,9 +358,9 @@ export default class ProviderBridgeService extends BaseService<Events> {
       return;
     }
 
-    if (this.#pendingPermissionsRequests[permission.origin]) {
-      this.#pendingPermissionsRequests[permission.origin]('Time to move on');
-      delete this.#pendingPermissionsRequests[permission.origin];
+    if (this.#pendingRequests[permission.origin]) {
+      this.#pendingRequests[permission.origin].reject('Time to move on');
+      delete this.#pendingRequests[permission.origin];
     }
 
     this.notifyContentScriptsAboutAddressChange();
@@ -341,8 +403,63 @@ export default class ProviderBridgeService extends BaseService<Events> {
     );
     await showExtensionPopup(AllowedQueryParamPage.dappPermission);
 
-    return new Promise((resolve) => {
-      this.#pendingPermissionsRequests[permissionRequest.origin] = resolve;
+    return new Promise((resolve, reject) => {
+      this.#pendingRequests[permissionRequest.origin] = {
+        resolve,
+        reject,
+      };
+    });
+  }
+
+  private async signData(
+    {
+      input,
+      account,
+    }: {
+      input: string;
+      account: string;
+    },
+    origin: string
+  ) {
+    const state: RootState =
+      this.mainServiceManager.store.getState() as RootState;
+
+    const hexInput = input.match(/^0x[0-9A-Fa-f]*$/)
+      ? input
+      : hexlify(toUtf8Bytes(input));
+    const typeAndData = parseSigningData(input);
+    const currentNetwork = state.network.activeNetwork;
+
+    this.mainServiceManager.store.dispatch(
+      signDataRequest({
+        origin: origin,
+        account: {
+          address: account,
+          network: currentNetwork,
+        },
+        rawSigningData: hexInput,
+        ...typeAndData,
+      })
+    );
+
+    return new Promise(async (resolve, reject) => {
+      this.#pendingRequests[origin] = { resolve, reject };
+    });
+  }
+
+  private async sendTransaction(
+    transactionRequest: JsonRpcTransactionRequest,
+    origin: string
+  ) {
+    this.mainServiceManager.store.dispatch(
+      sendTransactionRequest({
+        transactionRequest: transactionRequest,
+        origin: origin,
+      })
+    );
+
+    return new Promise(async (resolve, reject) => {
+      this.#pendingRequests[origin] = { resolve, reject };
     });
   }
 
@@ -354,84 +471,77 @@ export default class ProviderBridgeService extends BaseService<Events> {
     const state: RootState =
       this.mainServiceManager.store.getState() as RootState;
 
+    const provider = new ethers.providers.JsonRpcProvider(
+      state.network.activeNetwork.provider
+    );
+
     switch (method) {
       // supported alchemy methods: https://docs.alchemy.com/alchemy/apis/ethereum
       //   case 'eth_signTypedData':
       //   case 'eth_signTypedData_v1':
       //   case 'eth_signTypedData_v3':
       //   case 'eth_signTypedData_v4':
-      //     return this.signTypedData({
-      //       account: {
-      //         address: params[0] as string,
-      //         network: await this.getCurrentOrDefaultNetworkForOrigin(origin),
-      //       },
-      //       typedData: JSON.parse(params[1] as string),
-      //     });
+      // return this.signTypedData({
+      //   account: {
+      //     address: params[0] as string,
+      //     network: state.network.activeNetwork,
+      //   },
+      //   typedData: JSON.parse(params[1] as string),
+      // });
       case 'eth_chainId':
-        // TODO Decide on a better way to track whether a particular chain is
-        // allowed to have an RPC call made to it. Ideally this would be based
-        // on a user's idea of a dApp connection rather than a network-specific
-        // modality, requiring it to be constantly "switched"
         return toHexChainID(state.network.activeNetwork.chainID);
-      //   case 'eth_blockNumber':
-      //   case 'eth_call':
-      //   case 'eth_estimateGas':
-      //   case 'eth_feeHistory':
-      //   case 'eth_gasPrice':
-      //   case 'eth_getBalance':
-      //   case 'eth_getBlockByHash':
-      //   case 'eth_getBlockByNumber':
-      //   case 'eth_getBlockTransactionCountByHash':
-      //   case 'eth_getBlockTransactionCountByNumber':
-      //   case 'eth_getCode':
-      //   case 'eth_getFilterChanges':
-      //   case 'eth_getFilterLogs':
-      //   case 'eth_getLogs':
-      //   case 'eth_getProof':
-      //   case 'eth_getStorageAt':
-      //   case 'eth_getTransactionByBlockHashAndIndex':
-      //   case 'eth_getTransactionByBlockNumberAndIndex':
-      //   case 'eth_getTransactionByHash':
-      //   case 'eth_getTransactionCount':
-      //   case 'eth_getTransactionReceipt':
-      //   case 'eth_getUncleByBlockHashAndIndex':
-      //   case 'eth_getUncleByBlockNumberAndIndex':
-      //   case 'eth_getUncleCountByBlockHash':
-      //   case 'eth_getUncleCountByBlockNumber':
-      //   case 'eth_maxPriorityFeePerGas':
-      //   case 'eth_newBlockFilter':
-      //   case 'eth_newFilter':
-      //   case 'eth_newPendingTransactionFilter':
-      //   case 'eth_protocolVersion':
-      //   case 'eth_sendRawTransaction':
-      //   case 'eth_subscribe':
-      //   case 'eth_syncing':
-      //   case 'eth_uninstallFilter':
-      //   case 'eth_unsubscribe':
-      //   case 'net_listening':
-      //   case 'net_version':
-      //   case 'web3_clientVersion':
-      //   case 'web3_sha3':
-      //     return this.chainService.send(
-      //       method,
-      //       params,
-      //       await this.getCurrentOrDefaultNetworkForOrigin(origin)
-      //     );
-      //   case 'eth_accounts': {
-      //     // This is a special method, because Alchemy provider DO support it, but always return null (because they do not store keys.)
-      //     const { address } = await this.preferenceService.getSelectedAccount();
-      //     return [address];
-      //   }
-      //   case 'eth_sendTransaction':
-      //     return this.signTransaction(
-      //       {
-      //         ...(params[0] as JsonRpcTransactionRequest),
-      //       },
-      //       origin
-      //     ).then(async (signed) => {
-      //       await this.chainService.broadcastSignedTransaction(signed);
-      //       return signed.hash;
-      //     });
+      case 'eth_blockNumber':
+      case 'eth_call':
+      case 'eth_estimateGas':
+      case 'eth_feeHistory':
+      case 'eth_gasPrice':
+      case 'eth_getBalance':
+      case 'eth_getBlockByHash':
+      case 'eth_getBlockByNumber':
+      case 'eth_getBlockTransactionCountByHash':
+      case 'eth_getBlockTransactionCountByNumber':
+      case 'eth_getCode':
+      case 'eth_getFilterChanges':
+      case 'eth_getFilterLogs':
+      case 'eth_getLogs':
+      case 'eth_getProof':
+      case 'eth_getStorageAt':
+      case 'eth_getTransactionByBlockHashAndIndex':
+      case 'eth_getTransactionByBlockNumberAndIndex':
+      case 'eth_getTransactionByHash':
+      case 'eth_getTransactionCount':
+      case 'eth_getTransactionReceipt':
+      case 'eth_getUncleByBlockHashAndIndex':
+      case 'eth_getUncleByBlockNumberAndIndex':
+      case 'eth_getUncleCountByBlockHash':
+      case 'eth_getUncleCountByBlockNumber':
+      case 'eth_maxPriorityFeePerGas':
+      case 'eth_newBlockFilter':
+      case 'eth_newFilter':
+      case 'eth_newPendingTransactionFilter':
+      case 'eth_protocolVersion':
+      case 'eth_sendRawTransaction':
+      case 'eth_subscribe':
+      case 'eth_syncing':
+      case 'eth_uninstallFilter':
+      case 'eth_unsubscribe':
+      case 'net_listening':
+      case 'net_version':
+      case 'web3_clientVersion':
+      case 'web3_sha3':
+        return provider.send(method, params);
+      case 'eth_accounts': {
+        // This is a special method, because Alchemy provider DO support it, but always return null (because they do not store keys.)
+        const address = state.account.account;
+        return [address];
+      }
+      case 'eth_sendTransaction':
+        return this.sendTransaction(
+          {
+            ...(params[0] as JsonRpcTransactionRequest),
+          },
+          origin
+        )
       //   case 'eth_signTransaction':
       //     return this.signTransaction(
       //       params[0] as JsonRpcTransactionRequest,
@@ -454,16 +564,14 @@ export default class ProviderBridgeService extends BaseService<Events> {
       //       },
       //       origin
       //     );
-      //   case 'personal_sign':
-      //     return this.signData(
-      //       {
-      //         input: params[0] as string,
-      //         account: params[1] as string,
-      //       },
-      //       origin
-      //     );
-      //   // TODO - actually allow adding a new ethereum chain - for now wallet_addEthereumChain
-      //   // will just switch to a chain if we already support it - but not add a new one
+      case 'personal_sign':
+        return this.signData(
+          {
+            input: params[0] as string,
+            account: params[1] as string,
+          },
+          origin
+        );
       case 'wallet_addEthereumChain': {
         // const chainInfo = params[0] as AddEthereumChainParameter;
         // const { chainId } = chainInfo;
@@ -496,30 +604,50 @@ export default class ProviderBridgeService extends BaseService<Events> {
         //     }
         throw new EIP1193Error(EIP1193_ERROR_CODES.chainDisconnected);
       }
-      //   case 'metamask_getProviderState': // --- important MM only methods ---
-      //   case 'metamask_sendDomainMetadata':
-      //   case 'wallet_requestPermissions':
-      //   case 'wallet_watchAsset':
-      //   case 'estimateGas': // --- eip1193-bridge only method --
-      //   case 'eth_coinbase': // --- MM only methods ---
-      //   case 'eth_decrypt':
-      //   case 'eth_getEncryptionPublicKey':
-      //   case 'eth_getWork':
-      //   case 'eth_hashrate':
-      //   case 'eth_mining':
-      //   case 'eth_submitHashrate':
-      //   case 'eth_submitWork':
-      //   case 'metamask_accountsChanged':
-      //   case 'metamask_chainChanged':
-      //   case 'metamask_logWeb3ShimUsage':
-      //   case 'metamask_unlockStateChanged':
-      //   case 'metamask_watchAsset':
-      //   case 'net_peerCount':
-      //   case 'wallet_accountsChanged':
-      //   case 'wallet_registerOnboarding':
+      case 'metamask_getProviderState': // --- important MM only methods ---
+      case 'metamask_sendDomainMetadata':
+      case 'wallet_requestPermissions':
+      case 'wallet_watchAsset':
+      case 'estimateGas': // --- eip1193-bridge only method --
+      case 'eth_coinbase': // --- MM only methods ---
+      case 'eth_decrypt':
+      case 'eth_getEncryptionPublicKey':
+      case 'eth_getWork':
+      case 'eth_hashrate':
+      case 'eth_mining':
+      case 'eth_submitHashrate':
+      case 'eth_submitWork':
+      case 'metamask_accountsChanged':
+      case 'metamask_chainChanged':
+      case 'metamask_logWeb3ShimUsage':
+      case 'metamask_unlockStateChanged':
+      case 'metamask_watchAsset':
+      case 'net_peerCount':
+      case 'wallet_accountsChanged':
+      case 'wallet_registerOnboarding':
       default:
         throw new EIP1193Error(EIP1193_ERROR_CODES.unsupportedMethod);
     }
+  }
+
+  async routeSafeRequest(
+    method: string,
+    params: unknown[],
+    origin: string,
+    popupPromise: Promise<browser.Windows.Window>
+  ): Promise<unknown> {
+    const response = await this.routeSafeRPCRequest(
+      method,
+      params,
+      origin
+    ).finally(async () => {
+      // Close the popup once we're done submitting.
+      const popup = await popupPromise;
+      if (typeof popup.id !== 'undefined') {
+        browser.windows.remove(popup.id);
+      }
+    });
+    return response;
   }
 
   async routeContentScriptRPCRequest(
@@ -557,42 +685,38 @@ export default class ProviderBridgeService extends BaseService<Events> {
         //     origin,
         //     showExtensionPopup(AllowedQueryParamPage.personalSignData)
         //   );
-        // case 'personal_sign':
-        //   checkPermissionSign(params[1] as HexString, enablingPermission);
+        case 'personal_sign':
+          checkPermissionSign(params[1] as HexString, enablingPermission);
 
-        //   return await this.routeSafeRequest(
-        //     method,
-        //     params,
-        //     origin,
-        //     showExtensionPopup(AllowedQueryParamPage.personalSignData)
-        //   );
+          return await this.routeSafeRequest(
+            method,
+            params,
+            origin,
+            showExtensionPopup(AllowedQueryParamPage.personalSignData)
+          );
         // case 'eth_signTransaction':
-        // case 'eth_sendTransaction':
-        //   checkPermissionSignTransaction(
-        //     {
-        //       // A dApp can't know what should be the next nonce because it can't access
-        //       // the information about how many tx are in the signing process inside the
-        //       // wallet. Nonce should be assigned only by the wallet.
-        //       ...(params[0] as EthersTransactionRequest),
-        //       nonce: undefined,
-        //     },
-        //     enablingPermission
-        //   );
+        case 'eth_sendTransaction':
+          checkPermissionSignTransaction(
+            {
+              // A dApp can't know what should be the next nonce because it can't access
+              // the information about how many tx are in the signing process inside the
+              // wallet. Nonce should be assigned only by the wallet.
+              ...(params[0] as EthersTransactionRequest),
+              nonce: undefined,
+            },
+            enablingPermission
+          );
 
-        //   return await this.routeSafeRequest(
-        //     method,
-        //     params,
-        //     origin,
-        //     showExtensionPopup(AllowedQueryParamPage.signTransaction)
-        //   );
+          return await this.routeSafeRequest(
+            method,
+            params,
+            origin,
+            showExtensionPopup(AllowedQueryParamPage.signTransaction)
+          );
 
-        // default: {
-        //   return await this.internalEthereumProviderService.routeSafeRPCRequest(
-        //     method,
-        //     params,
-        //     origin
-        //   );
-        // }
+        default: {
+          return await this.routeSafeRPCRequest(method, params, origin);
+        }
       }
     } catch (error) {
       return this.handleRPCErrorResponse(error);

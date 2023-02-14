@@ -1,22 +1,34 @@
 import { Stack, Typography, Chip, Tooltip } from '@mui/material';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { getActiveNetwork } from '../../../Background/redux-slices/selectors/networkSelectors';
-import { useBackgroundSelector } from '../../hooks';
+import { useBackgroundDispatch, useBackgroundSelector } from '../../hooks';
 import CancelIcon from '@mui/icons-material/Cancel';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import { getProvider } from '@wagmi/core';
+import {
+  AccountData,
+  getAccountData,
+} from '../../../Background/redux-slices/account';
+import { getAccountEVMData } from '../../../Background/redux-slices/selectors/accountSelectors';
+import { useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const AccountBalanceInfo = ({ address }: { address: string }) => {
+  const navigate = useNavigate();
   const activeNetwork = useBackgroundSelector(getActiveNetwork);
-  const [walletDeployed, setWalletDeployed] = useState<boolean>(false);
+  const accountData: AccountData | 'loading' = useBackgroundSelector((state) =>
+    getAccountEVMData(state, { address, chainId: activeNetwork.chainID })
+  );
 
-  const provider = getProvider();
+  const walletDeployed: boolean = useMemo(
+    () => (accountData === 'loading' ? false : accountData.accountDeployed),
+    [accountData]
+  );
+
+  const backgroundDispatch = useBackgroundDispatch();
 
   useEffect(() => {
-    provider.getCode(address).then((code) => {
-      if (code !== '0x') setWalletDeployed(true);
-    });
-  }, [provider, address, setWalletDeployed]);
+    backgroundDispatch(getAccountData(address));
+  }, [backgroundDispatch, address]);
 
   return (
     <Stack spacing={1} justifyContent="center" alignItems="center">
@@ -27,7 +39,17 @@ const AccountBalanceInfo = ({ address }: { address: string }) => {
           alt={`${activeNetwork.baseAsset.name} asset logo`}
         />
       )}
-      <Typography variant="h3">0 ETH</Typography>
+      {accountData !== 'loading' &&
+        accountData.balances &&
+        accountData.balances[activeNetwork.baseAsset.symbol] && (
+          <Typography variant="h3">
+            {
+              accountData.balances[activeNetwork.baseAsset.symbol].assetAmount
+                .amount
+            }{' '}
+            {activeNetwork.baseAsset.symbol}
+          </Typography>
+        )}
       <Tooltip
         title={
           walletDeployed
@@ -36,11 +58,19 @@ const AccountBalanceInfo = ({ address }: { address: string }) => {
         }
       >
         <Chip
+          sx={{ cursor: 'pointer' }}
+          onClick={() => navigate('/deploy-account')}
           variant="outlined"
           color={walletDeployed ? 'success' : 'error'}
           size="small"
           icon={walletDeployed ? <CheckCircleIcon /> : <CancelIcon />}
-          label={walletDeployed ? 'Deployed' : 'Not deployed'}
+          label={
+            accountData === 'loading'
+              ? 'Loading deployment status...'
+              : walletDeployed
+              ? 'Deployed'
+              : 'Not deployed'
+          }
         />
       </Tooltip>
     </Stack>

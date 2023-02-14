@@ -5,7 +5,13 @@ import { useBackgroundSelector } from '../../hooks';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 
-const AccountInfo = ({ address }: { address: string }) => {
+const AccountInfo = ({
+  address,
+  showOptions = true,
+}: {
+  address: string;
+  showOptions: boolean;
+}) => {
   const [tooltipMessage, setTooltipMessage] = useState<string>('Copy address');
 
   const accountInfo = useBackgroundSelector((state) =>
@@ -72,7 +78,7 @@ const AccountInfo = ({ address }: { address: string }) => {
           </Box>
         </Tooltip>
       </Box>
-      <MoreVertIcon sx={{ position: 'absolute', right: 0 }} />
+      {showOptions && <MoreVertIcon sx={{ position: 'absolute', right: 0 }} />}
     </Box>
   );
 };

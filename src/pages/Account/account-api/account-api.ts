@@ -4,10 +4,13 @@ import {
   SimpleAccount__factory,
   SimpleAccountFactory,
   SimpleAccountFactory__factory,
+  UserOperationStruct,
 } from '@account-abstraction/contracts';
 import { arrayify, hexConcat } from 'ethers/lib/utils';
 
 import { AccountApiParamsType, AccountApiType } from './types';
+import { MessageSigningRequest } from '../../Background/redux-slices/signing';
+import { TransactionDetailsForUserOp } from '@account-abstraction/sdk/dist/src/TransactionDetailsForUserOp';
 
 const FACTORY_ADDRESS = '0x6C583EE7f3a80cB53dDc4789B0Af1aaFf90e55F3';
 
@@ -35,6 +38,7 @@ class SimpleAccountAPI extends AccountApiType {
   constructor(params: AccountApiParamsType) {
     super(params);
     this.factoryAddress = FACTORY_ADDRESS;
+
     this.owner = params.deserializeState?.privateKey
       ? new ethers.Wallet(params.deserializeState?.privateKey)
       : ethers.Wallet.createRandom();
@@ -111,6 +115,65 @@ class SimpleAccountAPI extends AccountApiType {
 
   async signUserOpHash(userOpHash: string): Promise<string> {
     return await this.owner.signMessage(arrayify(userOpHash));
+  }
+
+  signMessage = async (
+    context: any,
+    request?: MessageSigningRequest
+  ): Promise<string> => {
+    return this.owner.signMessage(request?.rawSigningData || '');
+  };
+
+  async createUnsignedUserOpForTransactions(
+    transactions: TransactionDetailsForUserOp[]
+  ): Promise<UserOperationStruct> {
+    const accountContract = await this._getAccountContract();
+    const callData = accountContract.interface.encodeFunctionData(
+      'executeBatch',
+      [
+        transactions.map((transaction) => transaction.target),
+        transactions.map((transaction) => transaction.data),
+      ]
+    );
+
+    const callGasLimit = await this.provider.estimateGas({
+      from: this.entryPointAddress,
+      to: this.getAccountAddress(),
+      data: callData,
+    });
+
+    const initCode = await this.getInitCode();
+
+    const initGas = await this.estimateCreationGas(initCode);
+    const verificationGasLimit = BigNumber.from(
+      await this.getVerificationGasLimit()
+    ).add(initGas);
+
+    let maxFeePerGas, maxPriorityFeePerGas;
+
+    const feeData = await this.provider.getFeeData();
+    maxFeePerGas = feeData.maxFeePerGas ?? 0;
+    maxPriorityFeePerGas = feeData.maxPriorityFeePerGas ?? 0;
+
+    const partialUserOp: UserOperationStruct = {
+      sender: await this.getAccountAddress(),
+      nonce: this.getNonce(),
+      initCode,
+      callData,
+      callGasLimit,
+      verificationGasLimit,
+      maxFeePerGas,
+      maxPriorityFeePerGas,
+      paymasterAndData: '',
+      preVerificationGas: 0,
+      signature: '',
+    };
+
+    return {
+      ...partialUserOp,
+      preVerificationGas: this.getPreVerificationGas(partialUserOp),
+      signature: '',
+    };
   }
 }
 

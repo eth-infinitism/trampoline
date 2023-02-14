@@ -25,6 +25,7 @@ import { EVMNetwork } from '../../../Background/types/network';
 import { useNavigate } from 'react-router-dom';
 import { getAccountAdded } from '../../../Background/redux-slices/selectors/accountSelectors';
 import { resetAccountAdded } from '../../../Background/redux-slices/account';
+import { FlashOffOutlined } from '@mui/icons-material';
 
 const TakeNameComponent = ({
   name,
@@ -116,6 +117,7 @@ const NewAccount = () => {
 
   const onOnboardingComplete = useCallback(
     async (context?: any) => {
+      setShowLoader(true);
       await backgroundDispatch(
         createNewAccount({
           name: name,
@@ -124,6 +126,7 @@ const NewAccount = () => {
           context,
         })
       );
+      setShowLoader(false);
     },
     [backgroundDispatch, supportedNetworks, name]
   );
@@ -155,6 +158,7 @@ const NewAccount = () => {
           alignItems="center"
           sx={{
             width: 600,
+            minHeight: 300,
             p: 2,
             border: '1px solid #d6d9dc',
             background: 'white',
@@ -162,7 +166,19 @@ const NewAccount = () => {
             borderRadius: 5,
           }}
         >
-          {stage === 'name' && (
+          {showLoader && (
+            <CircularProgress
+              size={24}
+              sx={{
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                marginTop: '-12px',
+                marginLeft: '-12px',
+              }}
+            />
+          )}
+          {!showLoader && stage === 'name' && (
             <TakeNameComponent
               name={name}
               setName={setName}
@@ -170,9 +186,11 @@ const NewAccount = () => {
               nextStage={nextStage}
             />
           )}
-          {stage === 'account-onboarding' && AccountOnboarding && (
-            <AccountOnboarding onOnboardingComplete={onOnboardingComplete} />
-          )}
+          {!showLoader &&
+            stage === 'account-onboarding' &&
+            AccountOnboarding && (
+              <AccountOnboarding onOnboardingComplete={onOnboardingComplete} />
+            )}
         </Box>
       </Stack>
     </Container>

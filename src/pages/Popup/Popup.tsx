@@ -9,6 +9,8 @@ import {
 import { getAddressCount } from '../Background/redux-slices/selectors/accountSelectors';
 import DappPermission from './pages/dapp-permission';
 import Home from './pages/home';
+import SignMessageRequest from './pages/sign-message';
+import SignTransactionRequest from './pages/sign-transaction-request';
 
 const Popup = () => {
   const hasAccounts = useBackgroundSelector(
@@ -45,6 +47,23 @@ const Popup = () => {
         element={
           <ProtectedRouteHasAccounts>
             <DappPermission />
+          </ProtectedRouteHasAccounts>
+        }
+      />
+      <Route
+        path="/personal-sign"
+        element={
+          <ProtectedRouteHasAccounts>
+            <SignMessageRequest />
+          </ProtectedRouteHasAccounts>
+        }
+      />
+
+      <Route
+        path="/sign-transaction"
+        element={
+          <ProtectedRouteHasAccounts>
+            <SignTransactionRequest />
           </ProtectedRouteHasAccounts>
         }
       />

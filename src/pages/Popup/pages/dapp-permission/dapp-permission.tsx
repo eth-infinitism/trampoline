@@ -1,10 +1,6 @@
 import {
-  BottomNavigation,
-  BottomNavigationAction,
   Box,
   Button,
-  Card,
-  CardContent,
   CardMedia,
   Container,
   Paper,
@@ -28,6 +24,8 @@ import {
   denyOrRevokePermission,
   grantPermission,
 } from '../../../Background/redux-slices/permissions';
+import AccountInfo from '../../components/account-info';
+import OriginInfo from '../../components/origin-info';
 
 const DappPermission = () => {
   const permission = useBackgroundSelector(selectCurrentPendingPermission);
@@ -45,6 +43,7 @@ const DappPermission = () => {
   }, [permission, navigate]);
 
   const deny = useCallback(async () => {
+    console.log('is this the problem?');
     // The denyOrRevokePermission will be dispatched in the onbeforeunload effect
     if (typeof permission !== 'undefined') {
       await backgroundDispatch(
@@ -54,7 +53,7 @@ const DappPermission = () => {
       );
     }
     window.close();
-  }, [backgroundDispatch, permission]);
+  }, [permission, backgroundDispatch]);
 
   const grant = useCallback(async () => {
     if (
@@ -75,48 +74,16 @@ const DappPermission = () => {
   return (
     <Container>
       <Box sx={{ p: 2 }}>
-        <span>
-          <Typography component="span" textAlign="center" variant="h6">
-            Connect to{' '}
-          </Typography>
-          <Typography component="span" variant="h6">
-            {accountInfo.name.toLocaleUpperCase()}{' '}
-          </Typography>
-          <Typography component="span" variant="subtitle1" color="GrayText">
-            ({activeAccount?.substring(0, 5)}...
-            {activeAccount?.substring(activeAccount.length - 5)})
-          </Typography>
-        </span>
+        <Typography textAlign="center" variant="h6">
+          Connection Request
+        </Typography>
       </Box>
-      <Stack spacing={2} sx={{ position: 'relative' }}>
-        <Paper elevation={1}>
-          <Box display="flex" padding={2}>
-            <Box
-              width={40}
-              display="flex"
-              justifyContent="center"
-              alignItems="center"
-            >
-              <CardMedia
-                component="img"
-                sx={{ width: 40 }}
-                image={permission?.faviconUrl || logo}
-                alt={permission?.title}
-              ></CardMedia>
-            </Box>
-            <Box
-              sx={{ pl: 2 }}
-              flexGrow={1}
-              display="flex"
-              flexDirection="column"
-            >
-              <Typography variant="subtitle1">{permission?.title}</Typography>
-              <Typography color="GrayText" variant="body2">
-                {permission?.origin}
-              </Typography>
-            </Box>
-          </Box>
-        </Paper>
+      <AccountInfo
+        accountInfo={accountInfo}
+        activeAccount={activeAccount || ''}
+      />
+      <Stack spacing={2} sx={{ position: 'relative', pt: 2, mb: 4 }}>
+        <OriginInfo permission={permission} />
         <Paper sx={{ p: 2 }}>
           <Typography variant="subtitle2" sx={{ mb: 2 }}>
             Requesting permissions
@@ -134,9 +101,10 @@ const DappPermission = () => {
           </Stack>
         </Paper>
       </Stack>
-      <Box
+      <Paper
+        elevation={3}
         sx={{
-          position: 'absolute',
+          position: 'sticky',
           bottom: 0,
           left: 0,
           width: '100%',
@@ -155,7 +123,7 @@ const DappPermission = () => {
             Connect
           </Button>
         </Box>
-      </Box>
+      </Paper>
     </Container>
   );
 };
