@@ -6,17 +6,11 @@ import {
   Typography,
 } from '@mui/material';
 import React from 'react';
-import { EthersTransactionRequest } from '../../../Background/services/provider-bridge';
 
-const Transaction = ({
-  transactions,
+const SignMessage = ({
   onComplete,
 }: {
-  transactions: EthersTransactionRequest[];
-  onComplete: (
-    modifiedTransactions: EthersTransactionRequest[],
-    context: any
-  ) => void;
+  onComplete: (context: any) => void;
 }) => {
   return (
     <>
@@ -29,18 +23,13 @@ const Transaction = ({
           need to call the function <b>onComplete</b> passed as a props to this
           component. <br />
           <br />
-          The function takes a modifiedTransactions & context as a parameter,
-          the context will be passed to your AccountApi when creating a new
-          account. While modifiedTransactions will be agreed upon by the user.
+          The function takes a context as a parameter, this context will be
+          passed to your AccountApi when creating a new account.
         </Typography>
       </CardContent>
       <CardActions sx={{ pl: 4, pr: 4, width: '100%' }}>
         <Stack spacing={2} sx={{ width: '100%' }}>
-          <Button
-            size="large"
-            variant="contained"
-            onClick={() => onComplete(transactions, undefined)}
-          >
+          <Button size="large" variant="contained" onClick={() => onComplete()}>
             Continue
           </Button>
         </Stack>
@@ -49,4 +38,4 @@ const Transaction = ({
   );
 };
 
-export default Transaction;
+export default SignMessage;

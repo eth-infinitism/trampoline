@@ -12,6 +12,7 @@ import { WagmiConfig, createClient } from 'wagmi';
 import { ethers } from 'ethers';
 import { useBackgroundSelector } from './hooks';
 import { getActiveNetwork } from '../Background/redux-slices/selectors/networkSelectors';
+import DeployAccount from './pages/deploy-account';
 
 const App = () => {
   const activeNetwork = useBackgroundSelector(getActiveNetwork);
@@ -34,6 +35,16 @@ const App = () => {
             <ProtectedRouteHasAccounts>
               <ProtectedRouteKeyringUnlocked>
                 <Home />
+              </ProtectedRouteKeyringUnlocked>
+            </ProtectedRouteHasAccounts>
+          }
+        />
+        <Route
+          path="/deploy-account"
+          element={
+            <ProtectedRouteHasAccounts>
+              <ProtectedRouteKeyringUnlocked>
+                <DeployAccount />
               </ProtectedRouteKeyringUnlocked>
             </ProtectedRouteHasAccounts>
           }

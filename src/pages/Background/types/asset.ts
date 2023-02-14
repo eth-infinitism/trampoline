@@ -29,5 +29,5 @@ export type AnyAsset = Asset;
  */
 export type AnyAssetAmount<T extends AnyAsset = AnyAsset> = {
   asset: T;
-  amount: bigint;
+  amount: string;
 };

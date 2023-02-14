@@ -3,10 +3,16 @@ import type { PayloadAction } from '@reduxjs/toolkit';
 import { DomainName, HexString, URI } from '../types/common';
 import { EVMNetwork } from '../types/network';
 import { AccountBalance } from '../types/account';
+import { createBackgroundAsyncThunk } from './utils';
+import KeyringService from '../services/keyring';
+import { RootState } from '.';
+import { BigNumber } from 'ethers';
 
-type AccountData = {
+export type AccountData = {
   address: HexString;
   network: EVMNetwork;
+  accountDeployed: boolean;
+  minimumRequiredFunds: string;
   balances?: {
     [assetSymbol: string]: AccountBalance;
   };
@@ -14,8 +20,6 @@ type AccountData = {
     name?: DomainName;
     avatarURL?: URI;
   };
-  defaultName: string;
-  defaultAvatar: string;
 };
 
 type AccountsByChainID = {
@@ -24,7 +28,7 @@ type AccountsByChainID = {
   };
 };
 
-interface AccountState {
+export interface AccountState {
   account?: HexString;
   accountAdded: HexString | null;
   hasAccountError?: boolean;
@@ -92,8 +96,51 @@ const accountSlice = createSlice({
         },
       },
     }),
+    setAccountData: (
+      state: AccountState,
+      {
+        payload,
+      }: {
+        payload: AccountData;
+      }
+    ): AccountState => ({
+      ...state,
+      accountsData: {
+        ...state.accountsData,
+        evm: {
+          ...state.accountsData.evm,
+          [payload.network.chainID]: {
+            [payload.address]: payload,
+          },
+        },
+      },
+    }),
   },
 });
 
-export const { addNewAccount, resetAccountAdded } = accountSlice.actions;
+export const { addNewAccount, resetAccountAdded, setAccountData } =
+  accountSlice.actions;
 export default accountSlice.reducer;
+
+export const getAccountData = createBackgroundAsyncThunk(
+  'account/getAccountData',
+  async (address: string, { dispatch, extra: { mainServiceManager } }) => {
+    const keyringService = mainServiceManager.getService(
+      KeyringService.name
+    ) as KeyringService;
+    const activeNetwork = (mainServiceManager.store.getState() as RootState)
+      .network.activeNetwork;
+    keyringService.getAccountData(address, activeNetwork).then((accountData) =>
+      dispatch(
+        setAccountData({
+          minimumRequiredFunds: accountData.minimumRequiredFunds,
+          address: address,
+          network: activeNetwork,
+          accountDeployed: accountData.accountDeployed,
+          balances: accountData.balances,
+          ens: accountData.ens,
+        })
+      )
+    );
+  }
+);
