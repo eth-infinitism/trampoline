@@ -101,7 +101,7 @@ export const { requestPermission } = dappPermissionSlice.actions;
 export default dappPermissionSlice.reducer;
 
 export const denyOrRevokePermission = createBackgroundAsyncThunk(
-  'dapp-permission/permissionDenyOrRevoke',
+  'dapp-permission/denyOrRevokePermission',
   async (
     permission: PermissionRequest,
     { dispatch, extra: { mainServiceManager } }

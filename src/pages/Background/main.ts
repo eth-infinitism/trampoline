@@ -23,6 +23,7 @@ const serviceInitializer = async (
     mainServiceManager: mainServiceManager,
     initialState: storeState.keyrings.vault,
     provider: storeState.network.activeNetwork.provider || '',
+    bundler: storeState.network.activeNetwork.bundler || '',
     entryPointAddress: storeState.network.activeNetwork.entryPointAddress,
   });
 

@@ -4,7 +4,7 @@ import { createBackgroundAsyncThunk } from './utils';
 import { NewAccountView } from '../types/chrome-messages';
 import { RootState } from '.';
 import KeyringService from '../services/keyring';
-import { addNewAccount } from './account';
+import { addNewAccount, getAccountData } from './account';
 import { EVMNetwork } from '../types/network';
 
 export type Vault = {

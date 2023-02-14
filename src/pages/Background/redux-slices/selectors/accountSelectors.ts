@@ -42,7 +42,13 @@ export const getActiveAccount = createSelector(
 );
 
 export const getAccountEVMData = createSelector(
-  [getAccountsEVMData, (state, { chainId, address }) => ({ chainId, address })],
+  [
+    getAccountsEVMData,
+    (state, { chainId, address }: { chainId: string; address: string }) => ({
+      chainId,
+      address,
+    }),
+  ],
   (evm, { chainId, address }) => evm[chainId][address]
 );
 

@@ -1,3 +1,5 @@
+import { HexString } from './common';
+
 export type NetworkFamily = 'EVM';
 
 /**
@@ -22,6 +24,7 @@ export type Network = {
   family: NetworkFamily;
   chainID?: string;
   provider: string;
+  bundler: string;
   entryPointAddress: string;
 };
 
@@ -31,4 +34,9 @@ export type Network = {
 export type EVMNetwork = Network & {
   chainID: string;
   family: 'EVM';
+};
+
+export type AddressOnNetwork = {
+  address: HexString;
+  network: EVMNetwork;
 };
