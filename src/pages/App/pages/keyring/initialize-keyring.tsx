@@ -23,6 +23,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { initializeKeyring } from '../../../Background/redux-slices/keyrings';
 import { selectKeyringStatus } from '../../../Background/redux-slices/selectors/keyringsSelectors';
 import { useBackgroundDispatch, useBackgroundSelector } from '../../hooks';
+import Config from '../../../../exconfig.json';
 
 const InitializeKeyring = () => {
   const keyringState = useBackgroundSelector(selectKeyringStatus);
@@ -37,6 +38,13 @@ const InitializeKeyring = () => {
   const [showLoader, setShowLoader] = useState<boolean>(false);
 
   const backgroundDispatch = useBackgroundDispatch();
+
+  useEffect(() => {
+    if (Config.enablePasswordEncryption === false) {
+      setShowLoader(true);
+      backgroundDispatch(initializeKeyring('12345'));
+    }
+  }, [backgroundDispatch, setShowLoader]);
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
   const handleMouseDownPassword = (

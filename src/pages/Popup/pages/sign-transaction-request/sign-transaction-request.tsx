@@ -39,6 +39,7 @@ import {
 import { EthersTransactionRequest } from '../../../Background/services/provider-bridge';
 import AccountInfo from '../../components/account-info';
 import OriginInfo from '../../components/origin-info';
+import Config from '../../../../exconfig.json';
 
 const SignTransactionComponent =
   AccountImplementations[ActiveAccountImplementation].Transaction;
@@ -234,21 +235,24 @@ const SignTransactionRequest = () => {
     })
   );
 
-  const onComplete = useCallback(
-    async (context: any) => {
-      if (activeAccount) {
-        backgroundDispatch(createUnsignedUserOp(activeAccount));
-        setStage('sign-transaction-confirmation');
-        setContext(context);
-      }
-    },
-    [setContext, setStage, activeAccount, backgroundDispatch]
-  );
-
   const onSend = useCallback(async () => {
     if (activeAccount) await backgroundDispatch(sendTransaction(activeAccount));
     window.close();
   }, [activeAccount, backgroundDispatch]);
+
+  const onComplete = useCallback(
+    async (context: any) => {
+      if (activeAccount) {
+        backgroundDispatch(createUnsignedUserOp(activeAccount));
+        setContext(context);
+        if (Config.showTransactionConfirmationScreen === false) {
+          onSend();
+        }
+        setStage('sign-transaction-confirmation');
+      }
+    },
+    [setContext, setStage, activeAccount, backgroundDispatch, onSend]
+  );
 
   const onReject = useCallback(async () => {
     if (activeAccount)
