@@ -1,5 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { EVMNetwork } from '../types/network';
+import Config from '../../../exconfig.json';
 
 export type Vault = {
   vault: string;
@@ -12,7 +13,7 @@ export type NetworkState = {
   supportedNetworks: Array<EVMNetwork>;
 };
 
-const GoerliNetwork: EVMNetwork = {
+const GoerliNetwork: EVMNetwork = Config.network || {
   chainID: '5',
   family: 'EVM',
   name: 'Goerli',
