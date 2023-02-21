@@ -220,4 +220,6 @@ You must return the paymaster information in the `userOp` constructed by the fun
 
 > **Warnming:** If `showTransactionConfirmationScreen` has been disabled then the user will not be aware of paymaster and you must inform the user about paymaster in your custom transaction confirmation screen.
 
+## Webpack auto-reload and HRM Errors
+
 This repository is based on the boilerplate code found at [lxieyang/chrome-extension-boilerplate-react](https://github.com/lxieyang/chrome-extension-boilerplate-react). To understand how hot-reloading and content scripts work, refer to its README.
