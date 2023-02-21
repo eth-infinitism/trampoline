@@ -39,11 +39,6 @@ class SimpleAccountAPI extends AccountApiType {
     super(params);
     this.factoryAddress = FACTORY_ADDRESS;
 
-    params.deserializeState = {
-      privateKey:
-        '64eda3b42c5f2c13e39106d47776b5cfa441a64f54eb731ecc849d13baabf296',
-    };
-
     this.owner = params.deserializeState?.privateKey
       ? new ethers.Wallet(params.deserializeState?.privateKey)
       : ethers.Wallet.createRandom();
