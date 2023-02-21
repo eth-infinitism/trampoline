@@ -8,7 +8,7 @@ export type DappPermissionState = {
   permissionRequests: { [origin: string]: PermissionRequest };
   allowed: {
     evm: {
-      [origin_address: string]: PermissionRequest;
+      [origin_address: string]: PermissionRequest | undefined;
     };
   };
 };
@@ -53,14 +53,11 @@ const dappPermissionSlice = createSlice<
       };
     },
     grantPermission: (state, { payload: permission }) => {
-      const permissionRequests = {
-        ...state.permissionRequests,
-      };
-      delete permissionRequests[origin];
       return {
         ...state,
         permissionRequests: {
-          ...permissionRequests,
+          ...state.permissionRequests,
+          [permission.origin]: undefined,
         },
         allowed: {
           evm: {
