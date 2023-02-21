@@ -2,9 +2,11 @@ import { UserOperationStruct } from '@account-abstraction/contracts';
 import {
   Box,
   Button,
+  CircularProgress,
   Container,
   Paper,
   Stack,
+  TextField,
   Typography,
 } from '@mui/material';
 import { BigNumber, ethers } from 'ethers';
@@ -60,6 +62,14 @@ const SignTransactionConfirmation = ({
   onReject: any;
   onSend: any;
 }) => {
+  const [showAddPaymasterUI, setShowAddPaymasterUI] = useState<boolean>(false);
+  const [addPaymasterLoader, setAddPaymasterLoader] = useState<boolean>(false);
+  const [paymasterUrl, setPaymasterUrl] = useState<string>('');
+
+  const addPaymaster = () => {
+    setAddPaymasterLoader(true);
+  };
+
   return (
     <Container>
       <Box sx={{ p: 2 }}>
@@ -75,11 +85,62 @@ const SignTransactionConfirmation = ({
         <Typography variant="h6" sx-={{ p: 2 }}>
           Paymaster Info
         </Typography>
-        <Paper sx={{ p: 2 }}>
-          {userOp.paymasterAndData === '0x'
-            ? 'No paymaster has been used'
-            : ';'}
-        </Paper>
+        {!showAddPaymasterUI && (
+          <Paper sx={{ p: 2 }}>
+            <Typography variant="body2">
+              {userOp.paymasterAndData === '0x'
+                ? 'No paymaster has been used'
+                : ';'}
+            </Typography>
+            <Button onClick={() => setShowAddPaymasterUI(true)} variant="text">
+              Add custom
+            </Button>
+          </Paper>
+        )}
+        {showAddPaymasterUI && (
+          <Paper sx={{ p: 2 }}>
+            <TextField
+              value={paymasterUrl}
+              onChange={(e) => setPaymasterUrl(e.target.value)}
+              sx={{ width: '100%' }}
+              label="Paymaster URL"
+              variant="standard"
+            />
+            <Box
+              justifyContent="space-around"
+              alignItems="center"
+              display="flex"
+              sx={{ p: '16px 0px' }}
+            >
+              <Button
+                sx={{ width: 150 }}
+                variant="outlined"
+                onClick={() => setShowAddPaymasterUI(false)}
+              >
+                Cancel
+              </Button>
+              <Button
+                sx={{ width: 150, position: 'relative' }}
+                variant="contained"
+                onClick={addPaymaster}
+              >
+                Add
+                {addPaymasterLoader && (
+                  <CircularProgress
+                    size={24}
+                    sx={{
+                      position: 'absolute',
+                      top: '50%',
+                      left: '50%',
+                      marginTop: '-12px',
+                      marginLeft: '-12px',
+                    }}
+                  />
+                )}
+              </Button>
+            </Box>
+          </Paper>
+        )}
         <Typography variant="h6" sx-={{ p: 2 }}>
           {transactions.length > 1 ? ' Transactions data' : 'Transaction data'}
         </Typography>
@@ -115,29 +176,31 @@ const SignTransactionConfirmation = ({
           ))}
         </Stack>
       </Stack>
-      <Paper
-        elevation={3}
-        sx={{
-          position: 'sticky',
-          bottom: 0,
-          left: 0,
-          width: '100%',
-        }}
-      >
-        <Box
-          justifyContent="space-around"
-          alignItems="center"
-          display="flex"
-          sx={{ p: 2 }}
+      {!showAddPaymasterUI && (
+        <Paper
+          elevation={3}
+          sx={{
+            position: 'sticky',
+            bottom: 0,
+            left: 0,
+            width: '100%',
+          }}
         >
-          <Button sx={{ width: 150 }} variant="outlined" onClick={onReject}>
-            Reject
-          </Button>
-          <Button sx={{ width: 150 }} variant="contained" onClick={onSend}>
-            Send
-          </Button>
-        </Box>
-      </Paper>
+          <Box
+            justifyContent="space-around"
+            alignItems="center"
+            display="flex"
+            sx={{ p: 2 }}
+          >
+            <Button sx={{ width: 150 }} variant="outlined" onClick={onReject}>
+              Reject
+            </Button>
+            <Button sx={{ width: 150 }} variant="contained" onClick={onSend}>
+              Send
+            </Button>
+          </Box>
+        </Paper>
+      )}
     </Container>
   );
 };

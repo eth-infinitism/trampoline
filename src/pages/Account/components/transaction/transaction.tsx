@@ -9,12 +9,12 @@ import React from 'react';
 import { EthersTransactionRequest } from '../../../Background/services/provider-bridge';
 
 const Transaction = ({
-  transactions,
+  transaction,
   onComplete,
 }: {
-  transactions: EthersTransactionRequest[];
+  transaction: EthersTransactionRequest;
   onComplete: (
-    modifiedTransactions: EthersTransactionRequest[],
+    modifiedTransaction: EthersTransactionRequest,
     context: any
   ) => void;
 }) => {

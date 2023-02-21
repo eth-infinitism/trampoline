@@ -10,7 +10,10 @@ export interface OnboardingComponent
 
 export interface TransactionComponentProps {
   transaction: EthersTransactionRequest;
-  onComplete: (context?: any) => Promise<void>;
+  onComplete: (
+    modifiedTransaction: EthersTransactionRequest,
+    context?: any
+  ) => Promise<void>;
 }
 
 export interface TransactionComponent

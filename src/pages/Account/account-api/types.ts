@@ -11,18 +11,13 @@ export abstract class AccountApiType extends BaseAccountAPI {
 
   /** sign a message for the use */
   abstract signMessage: (
-    context: any,
-    request?: MessageSigningRequest
+    request?: MessageSigningRequest,
+    context?: any
   ) => Promise<string>;
 
-  /**
-   * create a UserOperation, filling all details (except signature)
-   * - if account is not yet created, add initCode to deploy it.
-   * - if gas or nonce are missing, read them from the chain (note that we can't fill gaslimit before the account is created)
-   * @param info
-   */
-  abstract createUnsignedUserOpForTransactions(
-    info: TransactionDetailsForUserOp[]
+  abstract createUnsignedUserOp(
+    info: TransactionDetailsForUserOp,
+    context?: any
   ): Promise<UserOperationStruct>;
 }
 
