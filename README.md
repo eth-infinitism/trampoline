@@ -252,9 +252,14 @@ If you want to show a custom screen then you must present it to the user in
 
 ### How do I, as a wallet provider attach a custom paymaster?
 
-You must return the paymaster information in the `userOp` constructed by the function `createUnsignedUserOp`.
+You must return the paymaster information in the `userOp` constructed by the
+function `createUnsignedUserOp`.
 
-> **Warnming:** If `showTransactionConfirmationScreen` has been disabled then the user will not be aware of paymaster and you must inform the user about paymaster in your custom transaction confirmation screen.
+> **Warnming:** If `showTransactionConfirmationScreen` has been disabled then
+> the user will not be aware of paymaster and you must inform the user about
+> paymaster in your custom transaction confirmation screen.
+
+## Webpack auto-reload and HRM Errors
 
 This repository is based on the boilerplate code found at
 [lxieyang/chrome-extension-boilerplate-react](https://github.com/lxieyang/chrome-extension-boilerplate-react).
