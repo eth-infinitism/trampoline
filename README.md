@@ -250,7 +250,11 @@ No you can disable that by setting `enablePasswordEncryption` flag to `false` in
 If you want to show a custom screen then you must present it to the user in
 `TransactionComponent` and set `showTransactionConfirmationScreen` to `false`.
 
-### Where do I provide
+### How do I, as a wallet provider attach a custom paymaster?
+
+You must return the paymaster information in the `userOp` constructed by the function `createUnsignedUserOp`.
+
+> **Warnming:** If `showTransactionConfirmationScreen` has been disabled then the user will not be aware of paymaster and you must inform the user about paymaster in your custom transaction confirmation screen.
 
 This repository is based on the boilerplate code found at
 [lxieyang/chrome-extension-boilerplate-react](https://github.com/lxieyang/chrome-extension-boilerplate-react).
