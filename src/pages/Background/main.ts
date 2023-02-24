@@ -7,7 +7,7 @@ import ProviderBridgeService from './services/provider-bridge';
 
 chrome.runtime.onInstalled.addListener((e) => {
   if (e.reason === chrome.runtime.OnInstalledReason.INSTALL) {
-    const url = chrome.runtime.getURL('src/app/index.html#onboarding/intro');
+    const url = chrome.runtime.getURL('app.html');
     chrome.tabs.create({
       url,
     });

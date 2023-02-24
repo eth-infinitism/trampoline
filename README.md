@@ -23,7 +23,11 @@ Please note that our tool is not intended for production use. Instead, it is des
    4. Select the `build` folder.
 8. Happy hacking.
 
-## Structure
+## Extension Structure
+
+1. You can change the icons at `src/assets/img/icon-34.png` and `src/assets/img/icon-128.png` for the chrome extension.
+
+## Wallet Structure
 
 All your extension's account code must be placed in the `src/pages/Account` folder.
 
