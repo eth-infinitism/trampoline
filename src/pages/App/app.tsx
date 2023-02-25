@@ -8,23 +8,43 @@ import Home from './pages/home';
 import Onboarding from './pages/onboarding';
 import NewAccounts from './pages/new-accounts';
 import { InitializeKeyring } from './pages/keyring';
-import { WagmiConfig, createClient } from 'wagmi';
-import { ethers } from 'ethers';
+import { WagmiConfig, createClient, configureChains, goerli } from 'wagmi';
 import { useBackgroundSelector } from './hooks';
 import { getActiveNetwork } from '../Background/redux-slices/selectors/networkSelectors';
 import DeployAccount from './pages/deploy-account';
 
+import { jsonRpcProvider } from '@wagmi/core/providers/jsonRpc';
+
+import { WalletConnectConnector } from 'wagmi/connectors/walletConnect';
+
 const App = () => {
   const activeNetwork = useBackgroundSelector(getActiveNetwork);
 
-  const client = useMemo(
-    () =>
-      createClient({
-        autoConnect: true,
-        provider: new ethers.providers.JsonRpcProvider(activeNetwork.provider),
-      }),
-    [activeNetwork]
-  );
+  const client = useMemo(() => {
+    const { chains, provider, webSocketProvider } = configureChains(
+      [goerli],
+      [
+        jsonRpcProvider({
+          rpc: (chain) => ({
+            http: activeNetwork.provider,
+          }),
+        }),
+      ]
+    );
+
+    return createClient({
+      provider,
+      webSocketProvider,
+      connectors: [
+        new WalletConnectConnector({
+          chains,
+          options: {
+            qrcode: true,
+          },
+        }),
+      ],
+    });
+  }, [activeNetwork]);
 
   return (
     <WagmiConfig client={client}>
