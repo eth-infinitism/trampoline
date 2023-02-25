@@ -50,7 +50,7 @@ var options = {
     notHotReload: ['background', 'contentScript', 'injectScript'],
   },
   output: {
-    filename: '[name].bundle.js',
+    filename: 'ex_[name].bundle.js',
     path: path.resolve(__dirname, 'build'),
     clean: true,
     publicPath: ASSET_PATH,

@@ -21,10 +21,11 @@ const FACTORY_ADDRESS = '0x6C583EE7f3a80cB53dDc4789B0Af1aaFf90e55F3';
  * - nonce method is "nonce()"
  * - execute method is "execFromEntryPoint()"
  */
-class SimpleAccountAPI extends AccountApiType {
+class BLSAccountAPI extends AccountApiType {
   name: string;
   factoryAddress?: string;
-  owner: Wallet;
+  ownerOne: Wallet;
+  ownerTwo: string;
   index: number;
 
   /**
@@ -35,20 +36,22 @@ class SimpleAccountAPI extends AccountApiType {
 
   factory?: SimpleAccountFactory;
 
-  constructor(params: AccountApiParamsType<{}>) {
+  constructor(params: AccountApiParamsType<{ address: string }>) {
     super(params);
     this.factoryAddress = FACTORY_ADDRESS;
 
-    this.owner = params.deserializeState?.privateKey
+    this.ownerOne = params.deserializeState?.privateKey
       ? new ethers.Wallet(params.deserializeState?.privateKey)
       : ethers.Wallet.createRandom();
+    this.ownerTwo = params.context?.address || '';
     this.index = 0;
     this.name = 'SimpleAccountAPI';
   }
 
   serialize = async (): Promise<object> => {
     return {
-      privateKey: this.owner.privateKey,
+      privateKey: this.ownerOne.privateKey,
+      ownerTwo: this.ownerTwo,
     };
   };
 
@@ -80,11 +83,16 @@ class SimpleAccountAPI extends AccountApiType {
     return hexConcat([
       this.factory.address,
       this.factory.interface.encodeFunctionData('createAccount', [
-        await this.owner.getAddress(),
+        await this.ownerOne.getAddress(),
         this.index,
       ]),
     ]);
   }
+
+   getUserOpHashToSign = async () => {
+
+    return 5
+   }
 
   async getNonce(): Promise<BigNumber> {
     if (await this.checkAccountPhantom()) {
@@ -114,15 +122,22 @@ class SimpleAccountAPI extends AccountApiType {
   }
 
   async signUserOpHash(userOpHash: string): Promise<string> {
-    return await this.owner.signMessage(arrayify(userOpHash));
+    return await this.ownerOne.signMessage(arrayify(userOpHash));
   }
 
   signMessage = async (
     context: any,
     request?: MessageSigningRequest
   ): Promise<string> => {
-    return this.owner.signMessage(request?.rawSigningData || '');
+    return this.ownerOne.signMessage(request?.rawSigningData || '');
   };
+
+  async createUnsignedUserOp(
+    info: TransactionDetailsForUserOp,
+    context: any
+  ): Promise<UserOperationStruct> {
+    return super.createSignedUserOp(info);
+  }
 
   async createUnsignedUserOpForTransactions(
     transactions: TransactionDetailsForUserOp[]
@@ -177,4 +192,4 @@ class SimpleAccountAPI extends AccountApiType {
   }
 }
 
-export default SimpleAccountAPI;
+export default BLSAccountAPI;

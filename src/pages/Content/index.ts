@@ -74,8 +74,7 @@ function injectWindowProvider(): void {
     // this makes the script loading blocking which is good for us
     // bc we want to load before anybody has a chance to temper w/ the window obj
     scriptTag.setAttribute('async', 'false');
-    console.log(chrome.runtime.getURL('injectScript.bundle.js'), '---------');
-    scriptTag.src = chrome.runtime.getURL('injectScript.bundle.js');
+    scriptTag.src = chrome.runtime.getURL('ex_injectScript.bundle.js');
     container.insertBefore(scriptTag, container.children[0]);
   } catch (e) {
     throw new Error(
