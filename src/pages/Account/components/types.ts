@@ -2,6 +2,7 @@ import { UserOperationStruct } from '@account-abstraction/contracts';
 import { EthersTransactionRequest } from '../../Background/services/provider-bridge';
 
 export interface OnboardingComponentProps {
+  accountName: string;
   onOnboardingComplete: (context?: any) => void;
 }
 
