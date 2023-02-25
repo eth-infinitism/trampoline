@@ -7,7 +7,7 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   useBackgroundDispatch,
@@ -29,6 +29,8 @@ import OriginInfo from '../../components/origin-info';
 
 const DappPermission = () => {
   const permission = useBackgroundSelector(selectCurrentPendingPermission);
+  const [awaitingBackgroundDispatch, setAwaitingBackgroundDispatch] =
+    useState(false);
 
   const activeAccount = useBackgroundSelector(getActiveAccount);
   const accountInfo = useBackgroundSelector((state) =>
@@ -39,13 +41,14 @@ const DappPermission = () => {
   const backgroundDispatch = useBackgroundDispatch();
 
   useEffect(() => {
-    if (!permission) navigate('/');
-  }, [permission, navigate]);
+    if (!permission && !awaitingBackgroundDispatch) navigate('/');
+  }, [permission, awaitingBackgroundDispatch, navigate]);
 
   const deny = useCallback(async () => {
     console.log('is this the problem?');
     // The denyOrRevokePermission will be dispatched in the onbeforeunload effect
     if (typeof permission !== 'undefined') {
+      setAwaitingBackgroundDispatch(true);
       await backgroundDispatch(
         denyOrRevokePermission({
           ...permission,
@@ -60,6 +63,7 @@ const DappPermission = () => {
       typeof permission !== 'undefined' &&
       typeof activeAccount !== 'undefined'
     ) {
+      setAwaitingBackgroundDispatch(true);
       await backgroundDispatch(
         grantPermission({
           ...permission,
