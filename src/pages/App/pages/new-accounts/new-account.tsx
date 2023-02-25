@@ -189,7 +189,10 @@ const NewAccount = () => {
           {!showLoader &&
             stage === 'account-onboarding' &&
             AccountOnboarding && (
-              <AccountOnboarding onOnboardingComplete={onOnboardingComplete} />
+              <AccountOnboarding
+                accountName={name}
+                onOnboardingComplete={onOnboardingComplete}
+              />
             )}
         </Box>
       </Stack>
