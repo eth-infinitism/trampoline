@@ -41,6 +41,7 @@ export interface AccountState {
     evm: AccountsByChainID;
   };
   accountApiCallResult?: any;
+  accountApiCallResultState?: 'awaiting' | 'set';
 }
 
 const initialState = {
@@ -104,6 +105,13 @@ const accountSlice = createSlice({
       ...state,
       accountApiCallResult: payload,
     }),
+    setAccountApiCallResultState: (
+      state: AccountState,
+      { payload }: { payload: 'awaiting' | 'set' }
+    ) => ({
+      ...state,
+      accountApiCallResultState: payload,
+    }),
     setAccountData: (
       state: AccountState,
       {
@@ -163,6 +171,8 @@ export const callAccountApiThunk = createBackgroundAsyncThunk(
     }: { address: string; functionName: string; args?: any[] },
     { dispatch, extra: { mainServiceManager } }
   ) => {
+    accountSlice.actions.setAccountApiCallResultState('awaiting');
+
     const keyringService = mainServiceManager.getService(
       KeyringService.name
     ) as KeyringService;
@@ -174,5 +184,6 @@ export const callAccountApiThunk = createBackgroundAsyncThunk(
     );
 
     accountSlice.actions.setAccountApiCallResult(result);
+    accountSlice.actions.setAccountApiCallResultState('set');
   }
 );

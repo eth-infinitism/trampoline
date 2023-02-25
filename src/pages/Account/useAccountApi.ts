@@ -1,7 +1,10 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useBackgroundDispatch, useBackgroundSelector } from '../App/hooks';
 import { callAccountApiThunk } from '../Background/redux-slices/account';
-import { getActiveAccount } from '../Background/redux-slices/selectors/accountSelectors';
+import {
+  getAccountApiCallResult,
+  getActiveAccount,
+} from '../Background/redux-slices/selectors/accountSelectors';
 
 const useAccountApi = () => {
   const [result, setResult] = useState(null);
@@ -9,6 +12,9 @@ const useAccountApi = () => {
   const activeAccount = useBackgroundSelector(getActiveAccount);
 
   const backgroundDispatch = useBackgroundDispatch();
+
+  const { accountApiCallResult, accountApiCallResultState } =
+    useBackgroundSelector(getAccountApiCallResult);
 
   const callAccountApi = useCallback(
     async (functionName: string, args?: any[]) => {
@@ -19,8 +25,15 @@ const useAccountApi = () => {
         );
       }
     },
-    [backgroundDispatch]
+    [backgroundDispatch, activeAccount]
   );
+
+  useEffect(() => {
+    if (accountApiCallResultState === 'set' && loading) {
+      setResult(accountApiCallResult);
+      setLoading(false);
+    }
+  }, [accountApiCallResult, accountApiCallResultState, loading]);
 
   return {
     result,
