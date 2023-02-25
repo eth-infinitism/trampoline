@@ -21,11 +21,11 @@ export abstract class AccountApiType extends BaseAccountAPI {
   ): Promise<UserOperationStruct>;
 }
 
-export interface AccountApiParamsType extends BaseApiParams {
-  context?: any;
+export interface AccountApiParamsType<T> extends BaseApiParams {
+  context?: T;
   deserializeState?: any;
 }
 
 export type AccountImplementationType = new (
-  params: AccountApiParamsType
+  params: AccountApiParamsType<any>
 ) => AccountApiType;

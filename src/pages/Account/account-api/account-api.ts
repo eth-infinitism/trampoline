@@ -35,7 +35,7 @@ class SimpleAccountAPI extends AccountApiType {
 
   factory?: SimpleAccountFactory;
 
-  constructor(params: AccountApiParamsType) {
+  constructor(params: AccountApiParamsType<{}>) {
     super(params);
     this.factoryAddress = FACTORY_ADDRESS;
 
