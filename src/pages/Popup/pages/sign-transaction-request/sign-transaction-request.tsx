@@ -241,7 +241,7 @@ const SignTransactionRequest = () => {
   }, [activeAccount, backgroundDispatch]);
 
   const onComplete = useCallback(
-    async (context: any) => {
+    async (modifiedTransaction: EthersTransactionRequest, context?: any) => {
       if (activeAccount) {
         backgroundDispatch(createUnsignedUserOp(activeAccount));
         setContext(context);

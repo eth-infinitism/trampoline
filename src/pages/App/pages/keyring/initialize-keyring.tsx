@@ -78,7 +78,7 @@ const InitializeKeyring = () => {
     }
   }, [keyringState, navigate, state]);
 
-  return (
+  return Config.enablePasswordEncryption ? (
     <Container sx={{ height: '100vh' }}>
       <Stack
         spacing={2}
@@ -210,7 +210,7 @@ const InitializeKeyring = () => {
         </Box>
       </Stack>
     </Container>
-  );
+  ) : null;
 };
 
 export default InitializeKeyring;
