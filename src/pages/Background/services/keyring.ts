@@ -309,6 +309,16 @@ export default class KeyringService extends BaseService<Events> {
     return keyring.signMessage(context, request);
   };
 
+  callAccountApi = async (
+    address: string,
+    functionName: string,
+    args?: any[]
+  ) => {
+    const keyring = this.keyrings[address];
+
+    return args ? keyring[functionName](...args) : keyring[functionName]();
+  };
+
   sendTransaction = async (
     address: string,
     transaction: EthersTransactionRequest

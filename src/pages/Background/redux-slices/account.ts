@@ -40,6 +40,7 @@ export interface AccountState {
     };
     evm: AccountsByChainID;
   };
+  accountApiCallResult?: any;
 }
 
 const initialState = {
@@ -96,6 +97,13 @@ const accountSlice = createSlice({
         },
       },
     }),
+    setAccountApiCallResult: (
+      state: AccountState,
+      { payload }: { payload: any }
+    ) => ({
+      ...state,
+      accountApiCallResult: payload,
+    }),
     setAccountData: (
       state: AccountState,
       {
@@ -142,5 +150,29 @@ export const getAccountData = createBackgroundAsyncThunk(
         })
       )
     );
+  }
+);
+
+export const callAccountApiThunk = createBackgroundAsyncThunk(
+  'account/callAccountApiThunk',
+  async (
+    {
+      address,
+      functionName,
+      args,
+    }: { address: string; functionName: string; args?: any[] },
+    { dispatch, extra: { mainServiceManager } }
+  ) => {
+    const keyringService = mainServiceManager.getService(
+      KeyringService.name
+    ) as KeyringService;
+
+    const result = await keyringService.callAccountApi(
+      address,
+      functionName,
+      args
+    );
+
+    accountSlice.actions.setAccountApiCallResult(result);
   }
 );
