@@ -56,3 +56,11 @@ export const getAccountInfo = createSelector(
   [getAccountsData, (state, address) => address],
   (accountsData, address) => accountsData.info[address]
 );
+
+export const getAccountApiCallResult = createSelector(
+  getAccountState,
+  (account) => ({
+    accountApiCallResult: account.accountApiCallResult,
+    accountApiCallResultState: account.accountApiCallResultState,
+  })
+);
