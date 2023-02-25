@@ -67,10 +67,7 @@ const Intro = () => {
               variant="contained"
               onClick={() => navigate('/accounts/new')}
             >
-              Create new account
-            </Button>
-            <Button size="large" variant="outlined">
-              Recover account
+              Create/recover new account
             </Button>
           </Stack>
         </CardActions>
