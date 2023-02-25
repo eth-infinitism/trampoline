@@ -171,7 +171,7 @@ export const callAccountApiThunk = createBackgroundAsyncThunk(
     }: { address: string; functionName: string; args?: any[] },
     { dispatch, extra: { mainServiceManager } }
   ) => {
-    accountSlice.actions.setAccountApiCallResultState('awaiting');
+    dispatch(accountSlice.actions.setAccountApiCallResultState('awaiting'));
 
     const keyringService = mainServiceManager.getService(
       KeyringService.name
@@ -183,7 +183,7 @@ export const callAccountApiThunk = createBackgroundAsyncThunk(
       args
     );
 
-    accountSlice.actions.setAccountApiCallResult(result);
-    accountSlice.actions.setAccountApiCallResultState('set');
+    dispatch(accountSlice.actions.setAccountApiCallResult(result));
+    dispatch(accountSlice.actions.setAccountApiCallResultState('set'));
   }
 );
