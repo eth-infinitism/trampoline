@@ -7,7 +7,7 @@ import {
   UserOperationStruct,
 } from '@account-abstraction/contracts';
 import { arrayify, hexConcat } from 'ethers/lib/utils';
-
+import Config from '../../../exconfig.json';
 import { AccountApiParamsType, AccountApiType } from './types';
 import { MessageSigningRequest } from '../../Background/redux-slices/signing';
 import { TransactionDetailsForUserOp } from '@account-abstraction/sdk/dist/src/TransactionDetailsForUserOp';
@@ -18,7 +18,8 @@ import {
   TwoOwnerAccount__factory,
 } from './typechain-types';
 
-const FACTORY_ADDRESS = '0x6c0ec05Ad55C8B8427119ce50b6087E7B0C9c23e';
+const FACTORY_ADDRESS =
+  Config.factory_address || '0x6c0ec05Ad55C8B8427119ce50b6087E7B0C9c23e';
 
 /**
  * An implementation of the BaseAccountAPI using the SimpleAccount contract.
