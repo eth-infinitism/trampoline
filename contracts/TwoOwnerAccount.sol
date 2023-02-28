@@ -69,8 +69,7 @@ contract TwoOwnerAccount is SimpleAccount {
     function _validateSignature(
         UserOperation calldata userOp,
         bytes32 userOpHash
-    ) internal view returns (uint256 validationData) {
-        return 0;
+    ) internal view override returns (uint256 validationData) {
         (userOp, userOpHash);
         console.log('HERE');
 
@@ -95,7 +94,7 @@ contract TwoOwnerAccount is SimpleAccount {
 
         if (ownerOneCheck && ownerTwoCheck) return 0;
 
-        return 0;
+        return SIG_VALIDATION_FAILED;
     }
 
     function encodeSignature(
