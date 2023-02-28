@@ -290,6 +290,7 @@ const SignTransactionRequest = () => {
   return SignTransactionComponent &&
     sendTransactionRequest.transactionRequest ? (
     <SignTransactionComponent
+      onReject={onReject}
       transaction={sendTransactionRequest.transactionRequest}
       onComplete={onComplete}
     />
