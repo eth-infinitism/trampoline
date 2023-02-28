@@ -47,8 +47,8 @@ contract TwoOwnerAccount is SimpleAccount {
             (bytes, bytes)
         );
 
-        bool ownerOneCheck = ownerOne != hash.recover(signatureOne);
-        bool ownerTwoCheck = ownerTwo != hash.recover(signatureTwo);
+        bool ownerOneCheck = ownerOne == hash.recover(signatureOne);
+        bool ownerTwoCheck = ownerTwo == hash.recover(signatureTwo);
 
         if (ownerOneCheck && ownerTwoCheck) return 0;
 
