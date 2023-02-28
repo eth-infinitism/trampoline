@@ -2,6 +2,7 @@
 pragma solidity ^0.8.12;
 
 import '@account-abstraction/contracts/samples/SimpleAccount.sol';
+import 'hardhat/console.sol';
 
 /**
  * Minimal BLS-based account that uses an aggregated signature.
@@ -34,25 +35,67 @@ contract TwoOwnerAccount is SimpleAccount {
         ownerTwo = _ownerTwo;
     }
 
+    function external_validateSignature(
+        bytes memory signature,
+        bytes32 userOpHash
+    ) external view returns (uint256 validationData) {
+        (signature, userOpHash);
+        console.log('HERE');
+
+        bytes32 hash = userOpHash.toEthSignedMessageHash();
+
+        console.logBytes32(userOpHash);
+        console.logBytes32(hash);
+
+        (bytes memory signatureOne, bytes memory signatureTwo) = abi.decode(
+            signature,
+            (bytes, bytes)
+        );
+
+        address recoveryOne = hash.recover(signatureOne);
+        address recoveryTwo = hash.recover(signatureTwo);
+
+        console.logAddress(recoveryOne);
+        console.logAddress(recoveryTwo);
+
+        bool ownerOneCheck = ownerOne == recoveryOne;
+        bool ownerTwoCheck = ownerTwo == recoveryTwo;
+
+        if (ownerOneCheck && ownerTwoCheck) return 0;
+
+        return SIG_VALIDATION_FAILED;
+    }
+
     function _validateSignature(
         UserOperation calldata userOp,
         bytes32 userOpHash
     ) internal view returns (uint256 validationData) {
+        return 0;
         (userOp, userOpHash);
+        console.log('HERE');
 
         bytes32 hash = userOpHash.toEthSignedMessageHash();
+
+        console.logBytes32(userOpHash);
+        console.logBytes32(hash);
 
         (bytes memory signatureOne, bytes memory signatureTwo) = abi.decode(
             userOp.signature,
             (bytes, bytes)
         );
 
-        bool ownerOneCheck = ownerOne == hash.recover(signatureOne);
-        bool ownerTwoCheck = ownerTwo == hash.recover(signatureTwo);
+        address recoveryOne = hash.recover(signatureOne);
+        address recoveryTwo = hash.recover(signatureTwo);
+
+        console.logAddress(recoveryOne);
+        console.logAddress(recoveryTwo);
+
+        bool ownerOneCheck = ownerOne == recoveryOne;
+        bool ownerTwoCheck = ownerTwo == recoveryTwo;
 
         if (ownerOneCheck && ownerTwoCheck) return 0;
 
-        return SIG_VALIDATION_FAILED;
+        return 0;
     }
 
     function encodeSignature(

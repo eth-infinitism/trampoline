@@ -31,7 +31,11 @@ export const initialState: KeyringsState = {
   keyrings: [],
   keyringMetadata: {},
   vault: {
-    vault: '',
+    vault:
+      '{"data":"Ukexw7sD847Dj98jjvGP+USD","iv":"+X2ZjepqanEDFIJneBDHcw==","salt":"LWHFdiZSZwESRu0M5vBaeLIBwszt8zclfbUH4h8tWFU="}',
+    encryptionKey:
+      '{"alg":"A256GCM","ext":true,"k":"SnGTN4MUv2Ugv7wy_dGvb-Tmz-CKNnMYbyBHIfUbYJg","key_ops":["encrypt","decrypt"],"kty":"oct"}',
+    encryptionSalt: 'LWHFdiZSZwESRu0M5vBaeLIBwszt8zclfbUH4h8tWFU=',
   },
   importing: false,
   status: 'uninitialized',

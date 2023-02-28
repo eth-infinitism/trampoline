@@ -101,19 +101,26 @@ const DeployAccount = () => {
   const deployAcount = useCallback(async () => {
     if (!activeAccount) return;
     setDeployLoader(true);
-    await backgroundDispatch(
-      sendTransactionsRequest({
-        transactionsRequest: [
+
+    if (window.ethereum) {
+      const accounts = await window.ethereum.request({
+        method: 'eth_requestAccounts',
+      });
+      const txHash = await window.ethereum.request({
+        method: 'eth_sendTransaction',
+        params: [
           {
             from: activeAccount,
             to: ethers.constants.AddressZero,
             data: '0x',
           },
         ],
-        origin: 'internal'
-      })
-    );
-    await backgroundDispatch(sendTransaction(activeAccount));
+      });
+
+      console.log(accounts, txHash);
+    }
+
+    // await backgroundDispatch(sendTransaction(activeAccount));
   }, [backgroundDispatch, activeAccount]);
 
   return (
