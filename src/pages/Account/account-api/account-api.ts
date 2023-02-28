@@ -11,8 +11,14 @@ import { arrayify, hexConcat } from 'ethers/lib/utils';
 import { AccountApiParamsType, AccountApiType } from './types';
 import { MessageSigningRequest } from '../../Background/redux-slices/signing';
 import { TransactionDetailsForUserOp } from '@account-abstraction/sdk/dist/src/TransactionDetailsForUserOp';
+import {
+  TwoOwnerAccount,
+  TwoOwnerAccountFactory,
+  TwoOwnerAccountFactory__factory,
+  TwoOwnerAccount__factory,
+} from './typechain-types';
 
-const FACTORY_ADDRESS = '0x6C583EE7f3a80cB53dDc4789B0Af1aaFf90e55F3';
+const FACTORY_ADDRESS = '0xF02ce35c9d9a5c3AE1E4aEeef0f624bC11ed10F4';
 
 /**
  * An implementation of the BaseAccountAPI using the SimpleAccount contract.
@@ -21,7 +27,7 @@ const FACTORY_ADDRESS = '0x6C583EE7f3a80cB53dDc4789B0Af1aaFf90e55F3';
  * - nonce method is "nonce()"
  * - execute method is "execFromEntryPoint()"
  */
-class BLSAccountAPI extends AccountApiType {
+class TwoOwnerAccountAPI extends AccountApiType {
   name: string;
   factoryAddress?: string;
   ownerOne: Wallet;
@@ -32,9 +38,9 @@ class BLSAccountAPI extends AccountApiType {
    * our account contract.
    * should support the "execFromEntryPoint" and "nonce" methods
    */
-  accountContract?: SimpleAccount;
+  accountContract?: TwoOwnerAccount;
 
-  factory?: SimpleAccountFactory;
+  factory?: TwoOwnerAccountFactory;
 
   constructor(params: AccountApiParamsType<{ address: string }>) {
     super(params);
@@ -55,9 +61,9 @@ class BLSAccountAPI extends AccountApiType {
     };
   };
 
-  async _getAccountContract(): Promise<SimpleAccount> {
+  async _getAccountContract(): Promise<TwoOwnerAccount> {
     if (this.accountContract == null) {
-      this.accountContract = SimpleAccount__factory.connect(
+      this.accountContract = TwoOwnerAccount__factory.connect(
         await this.getAccountAddress(),
         this.provider
       );
@@ -72,7 +78,7 @@ class BLSAccountAPI extends AccountApiType {
   async getAccountInitCode(): Promise<string> {
     if (this.factory == null) {
       if (this.factoryAddress != null && this.factoryAddress !== '') {
-        this.factory = SimpleAccountFactory__factory.connect(
+        this.factory = TwoOwnerAccountFactory__factory.connect(
           this.factoryAddress,
           this.provider
         );
@@ -84,13 +90,14 @@ class BLSAccountAPI extends AccountApiType {
       this.factory.address,
       this.factory.interface.encodeFunctionData('createAccount', [
         await this.ownerOne.getAddress(),
+        this.ownerTwo,
         this.index,
       ]),
     ]);
   }
 
-  getUserOpHashToSign = async () => {
-    return 5;
+  getUserOpHashToSign = async (userOp: UserOperationStruct) => {
+    return this.getUserOpHash(userOp);
   };
 
   async getNonce(): Promise<BigNumber> {
@@ -133,11 +140,20 @@ class BLSAccountAPI extends AccountApiType {
 
   signUserOpWithContext = async (
     userOp: UserOperationStruct,
-    context: any
+    context: { signedMessage: string }
   ): Promise<UserOperationStruct> => {
+    // TODO get signature in cotext and append it
+
+    console.log('context with signedmessage====', context);
     return {
       ...userOp,
-      signature: await this.signUserOpHash(await this.getUserOpHash(userOp)),
+      signature: ethers.utils.defaultAbiCoder.encode(
+        ['bytes', 'bytes'],
+        [
+          await this.signUserOpHash(await this.getUserOpHash(userOp)),
+          context.signedMessage,
+        ]
+      ),
     };
   };
 
@@ -194,4 +210,4 @@ class BLSAccountAPI extends AccountApiType {
   }
 }
 
-export default BLSAccountAPI;
+export default TwoOwnerAccountAPI;
