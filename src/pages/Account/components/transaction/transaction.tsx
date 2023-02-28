@@ -12,6 +12,7 @@ import {
   Typography,
 } from '@mui/material';
 import { ethers } from 'ethers';
+import { arrayify } from 'ethers/lib/utils.js';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useAccount, useConnect, useSignMessage } from 'wagmi';
 import {
@@ -272,7 +273,7 @@ const Transaction = ({
 
   useEffect(() => {
     if (result) {
-      signMessage({ message: result });
+      signMessage({ message: arrayify(result) });
     }
   }, [result, loading, signMessage]);
 

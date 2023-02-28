@@ -18,7 +18,7 @@ import {
   TwoOwnerAccount__factory,
 } from './typechain-types';
 
-const FACTORY_ADDRESS = '0xF02ce35c9d9a5c3AE1E4aEeef0f624bC11ed10F4';
+const FACTORY_ADDRESS = '0x6c0ec05Ad55C8B8427119ce50b6087E7B0C9c23e';
 
 /**
  * An implementation of the BaseAccountAPI using the SimpleAccount contract.
