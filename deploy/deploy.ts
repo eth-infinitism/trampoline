@@ -11,24 +11,5 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     args: [config.network.entryPointAddress],
     log: true,
   });
-  if (
-    fs.existsSync(
-      '/Users/plusminushalf/dev/trampoline-example/src/pages/Account/account-api/typechain-types'
-    )
-  )
-    fs.rmdirSync(
-      '/Users/plusminushalf/dev/trampoline-example/src/pages/Account/account-api/typechain-types',
-      {
-        recursive: true,
-      }
-    );
-  fs.cpSync(
-    '/Users/plusminushalf/dev/trampoline-example/typechain-types',
-    '/Users/plusminushalf/dev/trampoline-example/src/pages/Account/account-api/typechain-types',
-    {
-      recursive: true,
-      force: true,
-    }
-  );
 };
 export default func;

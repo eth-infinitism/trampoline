@@ -57,4 +57,5 @@ typechain
 cache
 artifacts
 typechain-types
-
+deployments
+mnemonic.txt
