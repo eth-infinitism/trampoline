@@ -42,7 +42,7 @@ const Home = () => {
             alignItems="center"
             sx={{ m: 4 }}
           >
-            <TransferAssetButton />
+            <TransferAssetButton activeAccount={activeAccount || ''} />
           </Box>
           <AccountActivity />
         </CardContent>

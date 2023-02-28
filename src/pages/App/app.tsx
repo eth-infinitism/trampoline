@@ -13,6 +13,7 @@ import { useBackgroundSelector } from './hooks';
 import { getActiveNetwork } from '../Background/redux-slices/selectors/networkSelectors';
 import DeployAccount from './pages/deploy-account';
 import { jsonRpcProvider } from '@wagmi/core/providers/jsonRpc';
+import '../Content/index';
 
 import { WalletConnectConnector } from 'wagmi/connectors/walletConnect';
 import Config from '../../exconfig.json';
