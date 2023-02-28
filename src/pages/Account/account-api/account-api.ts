@@ -132,12 +132,15 @@ class BLSAccountAPI extends AccountApiType {
     return this.ownerOne.signMessage(request?.rawSigningData || '');
   };
 
-  async createUnsignedUserOp(
-    info: TransactionDetailsForUserOp,
+  signUserOpWithContext = async (
+    userOp: UserOperationStruct,
     context: any
-  ): Promise<UserOperationStruct> {
-    return super.createSignedUserOp(info);
-  }
+  ): Promise<UserOperationStruct> => {
+    return {
+      ...userOp,
+      signature: await this.signUserOpHash(await this.getUserOpHash(userOp)),
+    };
+  };
 
   async createUnsignedUserOpForTransactions(
     transactions: TransactionDetailsForUserOp[]
