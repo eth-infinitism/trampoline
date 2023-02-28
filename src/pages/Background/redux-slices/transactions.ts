@@ -154,7 +154,10 @@ export default transactionsSlice.reducer;
 
 export const sendTransaction = createBackgroundAsyncThunk(
   'transactions/sendTransaction',
-  async (address: string, { dispatch, extra: { mainServiceManager } }) => {
+  async (
+    { address, context }: { address: string; context?: any },
+    { dispatch, extra: { mainServiceManager } }
+  ) => {
     const keyringService = mainServiceManager.getService(
       KeyringService.name
     ) as KeyringService;
@@ -164,9 +167,10 @@ export const sendTransaction = createBackgroundAsyncThunk(
     const origin = state.transactions.requestOrigin;
 
     if (unsignedUserOp) {
-      const signedUserOp = await keyringService.signUserOp(
+      const signedUserOp = await keyringService.signUserOpWithContext(
         address,
-        unsignedUserOp
+        unsignedUserOp,
+        context
       );
       const txnHash = keyringService.sendUserOp(address, signedUserOp);
 
