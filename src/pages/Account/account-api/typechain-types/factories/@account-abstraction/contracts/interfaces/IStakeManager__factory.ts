@@ -47,7 +47,7 @@ const _abi = [
       {
         indexed: false,
         internalType: "uint256",
-        name: "withdrawTime",
+        name: "unstakeDelaySec",
         type: "uint256",
       },
     ],
@@ -201,9 +201,9 @@ const _abi = [
             type: "uint32",
           },
           {
-            internalType: "uint64",
+            internalType: "uint48",
             name: "withdrawTime",
-            type: "uint64",
+            type: "uint48",
           },
         ],
         internalType: "struct IStakeManager.DepositInfo",

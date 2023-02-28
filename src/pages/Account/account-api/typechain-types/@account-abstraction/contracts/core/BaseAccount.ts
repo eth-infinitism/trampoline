@@ -67,7 +67,7 @@ export interface BaseAccountInterface extends utils.Interface {
   functions: {
     "entryPoint()": FunctionFragment;
     "nonce()": FunctionFragment;
-    "validateUserOp((address,uint256,bytes,bytes,uint256,uint256,uint256,uint256,uint256,bytes,bytes),bytes32,address,uint256)": FunctionFragment;
+    "validateUserOp((address,uint256,bytes,bytes,uint256,uint256,uint256,uint256,uint256,bytes,bytes),bytes32,uint256)": FunctionFragment;
   };
 
   getFunction(
@@ -84,7 +84,6 @@ export interface BaseAccountInterface extends utils.Interface {
     values: [
       UserOperationStruct,
       PromiseOrValue<BytesLike>,
-      PromiseOrValue<string>,
       PromiseOrValue<BigNumberish>
     ]
   ): string;
@@ -133,7 +132,6 @@ export interface BaseAccount extends BaseContract {
     validateUserOp(
       userOp: UserOperationStruct,
       userOpHash: PromiseOrValue<BytesLike>,
-      aggregator: PromiseOrValue<string>,
       missingAccountFunds: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
@@ -146,7 +144,6 @@ export interface BaseAccount extends BaseContract {
   validateUserOp(
     userOp: UserOperationStruct,
     userOpHash: PromiseOrValue<BytesLike>,
-    aggregator: PromiseOrValue<string>,
     missingAccountFunds: PromiseOrValue<BigNumberish>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
@@ -159,7 +156,6 @@ export interface BaseAccount extends BaseContract {
     validateUserOp(
       userOp: UserOperationStruct,
       userOpHash: PromiseOrValue<BytesLike>,
-      aggregator: PromiseOrValue<string>,
       missingAccountFunds: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
@@ -175,7 +171,6 @@ export interface BaseAccount extends BaseContract {
     validateUserOp(
       userOp: UserOperationStruct,
       userOpHash: PromiseOrValue<BytesLike>,
-      aggregator: PromiseOrValue<string>,
       missingAccountFunds: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
@@ -189,7 +184,6 @@ export interface BaseAccount extends BaseContract {
     validateUserOp(
       userOp: UserOperationStruct,
       userOpHash: PromiseOrValue<BytesLike>,
-      aggregator: PromiseOrValue<string>,
       missingAccountFunds: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;

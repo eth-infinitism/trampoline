@@ -82,13 +82,13 @@ export declare namespace IStakeManager {
     boolean,
     BigNumber,
     number,
-    BigNumber
+    number
   ] & {
     deposit: BigNumber;
     staked: boolean;
     stake: BigNumber;
     unstakeDelaySec: number;
-    withdrawTime: BigNumber;
+    withdrawTime: number;
   };
 }
 
@@ -120,7 +120,7 @@ export interface IEntryPointInterface extends utils.Interface {
     "getUserOpHash((address,uint256,bytes,bytes,uint256,uint256,uint256,uint256,uint256,bytes,bytes))": FunctionFragment;
     "handleAggregatedOps(((address,uint256,bytes,bytes,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],address,bytes)[],address)": FunctionFragment;
     "handleOps((address,uint256,bytes,bytes,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],address)": FunctionFragment;
-    "simulateHandleOp((address,uint256,bytes,bytes,uint256,uint256,uint256,uint256,uint256,bytes,bytes))": FunctionFragment;
+    "simulateHandleOp((address,uint256,bytes,bytes,uint256,uint256,uint256,uint256,uint256,bytes,bytes),address,bytes)": FunctionFragment;
     "simulateValidation((address,uint256,bytes,bytes,uint256,uint256,uint256,uint256,uint256,bytes,bytes))": FunctionFragment;
     "unlockStake()": FunctionFragment;
     "withdrawStake(address)": FunctionFragment;
@@ -178,7 +178,11 @@ export interface IEntryPointInterface extends utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "simulateHandleOp",
-    values: [UserOperationStruct]
+    values: [
+      UserOperationStruct,
+      PromiseOrValue<string>,
+      PromiseOrValue<BytesLike>
+    ]
   ): string;
   encodeFunctionData(
     functionFragment: "simulateValidation",
@@ -296,7 +300,7 @@ export type SignatureAggregatorChangedEventFilter =
 export interface StakeLockedEventObject {
   account: string;
   totalStaked: BigNumber;
-  withdrawTime: BigNumber;
+  unstakeDelaySec: BigNumber;
 }
 export type StakeLockedEvent = TypedEvent<
   [string, BigNumber, BigNumber],
@@ -446,6 +450,8 @@ export interface IEntryPoint extends BaseContract {
 
     simulateHandleOp(
       op: UserOperationStruct,
+      target: PromiseOrValue<string>,
+      targetCallData: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
@@ -514,6 +520,8 @@ export interface IEntryPoint extends BaseContract {
 
   simulateHandleOp(
     op: UserOperationStruct,
+    target: PromiseOrValue<string>,
+    targetCallData: PromiseOrValue<BytesLike>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
@@ -582,6 +590,8 @@ export interface IEntryPoint extends BaseContract {
 
     simulateHandleOp(
       op: UserOperationStruct,
+      target: PromiseOrValue<string>,
+      targetCallData: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -628,21 +638,21 @@ export interface IEntryPoint extends BaseContract {
     ): DepositedEventFilter;
 
     "SignatureAggregatorChanged(address)"(
-      aggregator?: null
+      aggregator?: PromiseOrValue<string> | null
     ): SignatureAggregatorChangedEventFilter;
     SignatureAggregatorChanged(
-      aggregator?: null
+      aggregator?: PromiseOrValue<string> | null
     ): SignatureAggregatorChangedEventFilter;
 
     "StakeLocked(address,uint256,uint256)"(
       account?: PromiseOrValue<string> | null,
       totalStaked?: null,
-      withdrawTime?: null
+      unstakeDelaySec?: null
     ): StakeLockedEventFilter;
     StakeLocked(
       account?: PromiseOrValue<string> | null,
       totalStaked?: null,
-      withdrawTime?: null
+      unstakeDelaySec?: null
     ): StakeLockedEventFilter;
 
     "StakeUnlocked(address,uint256)"(
@@ -754,6 +764,8 @@ export interface IEntryPoint extends BaseContract {
 
     simulateHandleOp(
       op: UserOperationStruct,
+      target: PromiseOrValue<string>,
+      targetCallData: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
@@ -823,6 +835,8 @@ export interface IEntryPoint extends BaseContract {
 
     simulateHandleOp(
       op: UserOperationStruct,
+      target: PromiseOrValue<string>,
+      targetCallData: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 

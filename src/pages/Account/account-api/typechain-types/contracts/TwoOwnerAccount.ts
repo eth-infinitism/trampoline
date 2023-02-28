@@ -86,7 +86,7 @@ export interface TwoOwnerAccountInterface extends utils.Interface {
     "proxiableUUID()": FunctionFragment;
     "upgradeTo(address)": FunctionFragment;
     "upgradeToAndCall(address,bytes)": FunctionFragment;
-    "validateUserOp((address,uint256,bytes,bytes,uint256,uint256,uint256,uint256,uint256,bytes,bytes),bytes32,address,uint256)": FunctionFragment;
+    "validateUserOp((address,uint256,bytes,bytes,uint256,uint256,uint256,uint256,uint256,bytes,bytes),bytes32,uint256)": FunctionFragment;
     "withdrawDepositTo(address,uint256)": FunctionFragment;
   };
 
@@ -173,7 +173,6 @@ export interface TwoOwnerAccountInterface extends utils.Interface {
     values: [
       UserOperationStruct,
       PromiseOrValue<BytesLike>,
-      PromiseOrValue<string>,
       PromiseOrValue<BigNumberish>
     ]
   ): string;
@@ -385,7 +384,6 @@ export interface TwoOwnerAccount extends BaseContract {
     validateUserOp(
       userOp: UserOperationStruct,
       userOpHash: PromiseOrValue<BytesLike>,
-      aggregator: PromiseOrValue<string>,
       missingAccountFunds: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
@@ -465,7 +463,6 @@ export interface TwoOwnerAccount extends BaseContract {
   validateUserOp(
     userOp: UserOperationStruct,
     userOpHash: PromiseOrValue<BytesLike>,
-    aggregator: PromiseOrValue<string>,
     missingAccountFunds: PromiseOrValue<BigNumberish>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
@@ -543,7 +540,6 @@ export interface TwoOwnerAccount extends BaseContract {
     validateUserOp(
       userOp: UserOperationStruct,
       userOpHash: PromiseOrValue<BytesLike>,
-      aggregator: PromiseOrValue<string>,
       missingAccountFunds: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
@@ -661,7 +657,6 @@ export interface TwoOwnerAccount extends BaseContract {
     validateUserOp(
       userOp: UserOperationStruct,
       userOpHash: PromiseOrValue<BytesLike>,
-      aggregator: PromiseOrValue<string>,
       missingAccountFunds: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
@@ -742,7 +737,6 @@ export interface TwoOwnerAccount extends BaseContract {
     validateUserOp(
       userOp: UserOperationStruct,
       userOpHash: PromiseOrValue<BytesLike>,
-      aggregator: PromiseOrValue<string>,
       missingAccountFunds: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
