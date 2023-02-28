@@ -177,6 +177,17 @@ class TwoOwnerAccountAPI extends AccountApiType {
     };
   };
 
+  async createUnsignedUserOp(
+    info: TransactionDetailsForUserOp
+  ): Promise<UserOperationStruct> {
+    const userOp = await super.createUnsignedUserOp(info);
+    await userOp.preVerificationGas;
+    console.log(userOp);
+    userOp.preVerificationGas = Number(await userOp.preVerificationGas) * 2.5;
+    console.log(userOp);
+    return userOp;
+  }
+
   async createUnsignedUserOpForTransactions(
     transactions: TransactionDetailsForUserOp[]
   ): Promise<UserOperationStruct> {
