@@ -336,13 +336,14 @@ export default class KeyringService extends BaseService<Events> {
     });
   };
 
-  signUserOp = async (
+  signUserOpWithContext = async (
     address: string,
-    userOp: UserOperationStruct
+    userOp: UserOperationStruct,
+    context?: any
   ): Promise<UserOperationStruct> => {
     const keyring = this.keyrings[address];
 
-    return keyring.signUserOp(userOp);
+    return keyring.signUserOpWithContext(userOp, context);
   };
 
   sendUserOp = async (
