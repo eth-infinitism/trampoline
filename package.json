@@ -9,9 +9,10 @@
   },
   "scripts": {
     "devtools": "npx redux-devtools --hostname=localhost --port=8000 --open",
-    "build": "node utils/build.js",
-    "start": "node utils/webserver.js",
-    "prettier": "prettier --write '**/*.{js,jsx,ts,tsx,json,css,scss,md}'"
+    "build": "npx hardhat clean && npx hardhat compile && node utils/build.js",
+    "start": "npx hardhat clean && npx hardhat compile && node utils/webserver.js",
+    "prettier": "prettier --write '**/*.{js,jsx,ts,tsx,json,css,scss,md}'",
+    "deploy": "npx ha"
   },
   "dependencies": {
     "@account-abstraction/contracts": "^0.5.0",
