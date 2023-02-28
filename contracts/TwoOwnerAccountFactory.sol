@@ -5,7 +5,6 @@ import '@openzeppelin/contracts/utils/Create2.sol';
 import '@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol';
 
 import './TwoOwnerAccount.sol';
-import 'hardhat/console.sol';
 
 contract TwoOwnerAccountFactory {
     TwoOwnerAccount public immutable accountImplementation;
@@ -25,7 +24,6 @@ contract TwoOwnerAccountFactory {
         address _ownerTwo,
         uint256 salt
     ) public returns (TwoOwnerAccount ret) {
-        console.log('Lets see if we are here');
         address addr = getAddress(_ownerOne, _ownerTwo, salt);
         uint256 codeSize = addr.code.length;
         if (codeSize > 0) {
@@ -42,8 +40,6 @@ contract TwoOwnerAccountFactory {
                 )
             )
         );
-        console.log('We deployed it?');
-        console.logAddress(address(ret));
     }
 
     /**
