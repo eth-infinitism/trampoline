@@ -10,17 +10,12 @@ import React, { useEffect } from 'react';
 import { useAccount, useConnect, useSignMessage } from 'wagmi';
 import { EthersTransactionRequest } from '../../../Background/services/provider-bridge';
 import useAccountApi from '../../useAccountApi';
+import { TransactionComponentProps } from '../types';
 
 const Transaction = ({
   transaction,
   onComplete,
-}: {
-  transaction: EthersTransactionRequest;
-  onComplete: (
-    modifiedTransaction: EthersTransactionRequest,
-    context: any
-  ) => void;
-}) => {
+}: TransactionComponentProps) => {
   const { connect, connectors, isLoading, error, pendingConnector } =
     useConnect();
 
