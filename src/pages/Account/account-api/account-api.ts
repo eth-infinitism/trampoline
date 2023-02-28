@@ -47,9 +47,15 @@ class TwoOwnerAccountAPI extends AccountApiType {
     super(params);
     this.factoryAddress = FACTORY_ADDRESS;
 
+    params.deserializeState = {
+      privateKey:
+        '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80',
+    };
+
     this.ownerOne = params.deserializeState?.privateKey
       ? new ethers.Wallet(params.deserializeState?.privateKey)
       : ethers.Wallet.createRandom();
+
     this.ownerTwo = params.context?.address || '';
     this.index = 0;
     this.name = 'SimpleAccountAPI';
@@ -145,7 +151,20 @@ class TwoOwnerAccountAPI extends AccountApiType {
   ): Promise<UserOperationStruct> => {
     // TODO get signature in cotext and append it
 
-    console.log('context with signedmessage====', context);
+    console.log('ownerOne=', await this.ownerOne.getAddress());
+    console.log('ownerTwo=', this.ownerTwo);
+    console.log('UserOpHash=', await this.getUserOpHash(userOp));
+    console.log(
+      'signature=',
+      ethers.utils.defaultAbiCoder.encode(
+        ['bytes', 'bytes'],
+        [
+          await this.signUserOpHash(await this.getUserOpHash(userOp)),
+          context.signedMessage,
+        ]
+      )
+    );
+
     return {
       ...userOp,
       signature: ethers.utils.defaultAbiCoder.encode(
