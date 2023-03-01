@@ -1,5 +1,5 @@
 import { UserOperationStruct } from '@account-abstraction/contracts';
-import { EthersTransactionRequest } from '../../Background/services/provider-bridge';
+import { EthersTransactionRequest } from '../../Background/services/types';
 
 export interface OnboardingComponentProps {
   accountName: string;

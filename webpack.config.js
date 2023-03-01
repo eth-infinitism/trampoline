@@ -8,7 +8,7 @@ var webpack = require('webpack'),
 var { CleanWebpackPlugin } = require('clean-webpack-plugin');
 var ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
 var ReactRefreshTypeScript = require('react-refresh-typescript');
-// const NodePolyfillPlugin = require('node-polyfill-webpack-plugin');
+const NodePolyfillPlugin = require('node-polyfill-webpack-plugin');
 
 const ASSET_PATH = process.env.ASSET_PATH || '/';
 
@@ -45,6 +45,14 @@ var options = {
     background: path.join(__dirname, 'src', 'pages', 'Background', 'index.ts'),
     contentScript: path.join(__dirname, 'src', 'pages', 'Content', 'index.ts'),
     injectScript: path.join(__dirname, 'src', 'pages', 'Content', 'inject.ts'),
+    iframe: path.join(
+      __dirname,
+      'src',
+      'pages',
+      'Account',
+      'fingerprint-iframe',
+      'index.jsx'
+    ),
   },
   chromeExtensionBoilerplate: {
     notHotReload: ['background', 'contentScript', 'injectScript'],
@@ -138,7 +146,7 @@ var options = {
       .concat(['.js', '.jsx', '.ts', '.tsx', '.css']),
   },
   plugins: [
-    // new NodePolyfillPlugin(),
+    new NodePolyfillPlugin(),
     new webpack.ProvidePlugin({
       Buffer: ['buffer', 'Buffer'],
     }),
@@ -201,6 +209,19 @@ var options = {
           force: true,
         },
       ],
+    }),
+    new HtmlWebpackPlugin({
+      template: path.join(
+        __dirname,
+        'src',
+        'pages',
+        'Account',
+        'fingerprint-iframe',
+        'index.html'
+      ),
+      filename: 'iframe.html',
+      chunks: ['iframe'],
+      cache: false,
     }),
     new HtmlWebpackPlugin({
       template: path.join(__dirname, 'src', 'pages', 'App', 'index.html'),

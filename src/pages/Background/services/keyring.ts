@@ -16,7 +16,7 @@ import { AccountData } from '../redux-slices/account';
 import { AccountBalance } from '../types/account';
 import { DomainName, URI } from '../types/common';
 import { EVMNetwork } from '../types/network';
-import { EthersTransactionRequest } from './provider-bridge';
+import { EthersTransactionRequest } from './types';
 import { UserOperationStruct } from '@account-abstraction/contracts';
 
 interface Events extends ServiceLifecycleEvents {
