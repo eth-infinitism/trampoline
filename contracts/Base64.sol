@@ -6,10 +6,10 @@ library Base64 {
     bytes private constant base64urlchars =
         'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
 
-    function encode(bytes32 _str) internal pure returns (bytes memory) {
+    function encode(string memory _str) internal pure returns (string memory) {
         bytes memory _bs = new bytes(32);
         for (uint256 k = 0; k < 32; k++) {
-            _bs[k] = _str[k];
+            data[k] = _str[k];
         }
 
         uint256 rem = _bs.length % 3;
@@ -46,7 +46,7 @@ library Base64 {
             }
         }
 
-        return res;
+        return string(res);
     }
 
     function encode3(

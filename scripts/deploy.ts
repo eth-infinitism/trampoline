@@ -21,7 +21,7 @@ async function main() {
   console.log(Buffer.from('0x7b2274797065223a2277656261757', 'hex').length);
 
   signer.sendTransaction({
-    to: '0x4097688a4aC349e360cF3FC80Ff31B0fE365D053',
+    to: '0xe213b8Fa1e9F0f565F9325Be029dFe0C77bB63d1',
     value: ethers.utils.parseEther('0.1'),
   });
 
