@@ -17,6 +17,9 @@
       "js": ["ex_contentScript.bundle.js"]
     }
   ],
+  "externally_connectable": {
+    "matches": ["http://localhost:3000/*"]
+  },
   "web_accessible_resources": [
     {
       "resources": ["icon-128.png", "icon-34.png"],

@@ -254,12 +254,16 @@ const Transaction = ({
   );
 
   useEffect(() => {
-    const listenToMessageEvent = ({ signature }: any, sender: any) => {
+    const listenToMessageEvent = (
+      { signature, clientDataJSON }: any,
+      sender: any
+    ) => {
       if (
+        sender &&
         sender.url.includes('http://localhost:3000/iframe.html#/request-sign')
       ) {
         console.log(signature, 'signature');
-        onComplete(transaction, { signature });
+        onComplete(transaction, { signature, clientDataJSON });
       }
     };
 
