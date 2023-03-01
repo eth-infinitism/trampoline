@@ -4,13 +4,13 @@ pragma solidity ^0.8.12;
 import '@openzeppelin/contracts/utils/Create2.sol';
 import '@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol';
 
-import './TwoOwnerAccount.sol';
+import './WebauthnAccount.sol';
 
-contract TwoOwnerAccountFactory {
-    TwoOwnerAccount public immutable accountImplementation;
+contract WebauthnAccountFactory {
+    WebauthnAccount public immutable accountImplementation;
 
     constructor(IEntryPoint _entryPoint) {
-        accountImplementation = new TwoOwnerAccount(_entryPoint);
+        accountImplementation = new WebauthnAccount(_entryPoint);
     }
 
     /**
@@ -20,22 +20,22 @@ contract TwoOwnerAccountFactory {
      * This method returns an existing account address so that entryPoint.getSenderAddress() would work even after account creation
      */
     function createAccount(
-        address _ownerOne,
-        address _ownerTwo,
+        address anEllipticCurve,
+        uint256[2] memory _q,
         uint256 salt
-    ) public returns (TwoOwnerAccount ret) {
-        address addr = getAddress(_ownerOne, _ownerTwo, salt);
+    ) public returns (WebauthnAccount ret) {
+        address addr = getAddress(anEllipticCurve, _q, salt);
         uint256 codeSize = addr.code.length;
         if (codeSize > 0) {
-            return TwoOwnerAccount(payable(addr));
+            return WebauthnAccount(payable(addr));
         }
-        ret = TwoOwnerAccount(
+        ret = WebauthnAccount(
             payable(
                 new ERC1967Proxy{salt: bytes32(salt)}(
                     address(accountImplementation),
                     abi.encodeCall(
-                        TwoOwnerAccount.initialize,
-                        (_ownerOne, _ownerTwo)
+                        WebauthnAccount.initialize,
+                        (anEllipticCurve, _q)
                     )
                 )
             )
@@ -46,8 +46,8 @@ contract TwoOwnerAccountFactory {
      * calculate the counterfactual address of this account as it would be returned by createAccount()
      */
     function getAddress(
-        address _ownerOne,
-        address _ownerTwo,
+        address anEllipticCurve,
+        uint256[2] memory _q,
         uint256 salt
     ) public view returns (address) {
         return
@@ -59,8 +59,8 @@ contract TwoOwnerAccountFactory {
                         abi.encode(
                             address(accountImplementation),
                             abi.encodeCall(
-                                TwoOwnerAccount.initialize,
-                                (_ownerOne, _ownerTwo)
+                                WebauthnAccount.initialize,
+                                (anEllipticCurve, _q)
                             )
                         )
                     )

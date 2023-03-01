@@ -1,25 +1,25 @@
-import { BigNumber, BigNumberish, ethers, Wallet } from 'ethers';
-import {
-  SimpleAccount,
-  SimpleAccount__factory,
-  SimpleAccountFactory,
-  SimpleAccountFactory__factory,
-  UserOperationStruct,
-} from '@account-abstraction/contracts';
-import { arrayify, hexConcat } from 'ethers/lib/utils';
-import Config from '../../../exconfig.json';
+import { BigNumber, BigNumberish, ethers } from 'ethers';
+import { UserOperationStruct } from '@account-abstraction/contracts';
+import { hexConcat } from 'ethers/lib/utils';
+
 import { AccountApiParamsType, AccountApiType } from './types';
 import { MessageSigningRequest } from '../../Background/redux-slices/signing';
 import { TransactionDetailsForUserOp } from '@account-abstraction/sdk/dist/src/TransactionDetailsForUserOp';
+import { EthersTransactionRequest } from '../../Background/services/types';
 import {
-  TwoOwnerAccount,
-  TwoOwnerAccountFactory,
-  TwoOwnerAccountFactory__factory,
-  TwoOwnerAccount__factory,
+  WebauthnAccount,
+  WebauthnAccountFactory,
+  WebauthnAccountFactory__factory,
+  WebauthnAccount__factory,
 } from './typechain-types';
 
-const FACTORY_ADDRESS =
-  Config.factory_address || '0x6c0ec05Ad55C8B8427119ce50b6087E7B0C9c23e';
+const FACTORY_ADDRESS = '0x52aeBE6d31478B24EdfC9ab1c1fFB9e23e37c744';
+
+export type QValues = {
+  credentialId: string;
+  q0: string;
+  q1: string;
+};
 
 /**
  * An implementation of the BaseAccountAPI using the SimpleAccount contract.
@@ -28,44 +28,47 @@ const FACTORY_ADDRESS =
  * - nonce method is "nonce()"
  * - execute method is "execFromEntryPoint()"
  */
-class TwoOwnerAccountAPI extends AccountApiType {
+class BLSAccountAPI extends AccountApiType {
   name: string;
   factoryAddress?: string;
-  ownerOne: Wallet;
-  ownerTwo: string;
+  ec: string;
+  q_values: QValues;
   index: number;
 
   /**
    * our account contract.
    * should support the "execFromEntryPoint" and "nonce" methods
    */
-  accountContract?: TwoOwnerAccount;
+  accountContract?: WebauthnAccount;
 
-  factory?: TwoOwnerAccountFactory;
+  factory?: WebauthnAccountFactory;
 
-  constructor(params: AccountApiParamsType<{ address: string }>) {
+  constructor(
+    params: AccountApiParamsType<{
+      q_values: QValues;
+    }>
+  ) {
     super(params);
     this.factoryAddress = FACTORY_ADDRESS;
 
-    this.ownerOne = params.deserializeState?.privateKey
-      ? new ethers.Wallet(params.deserializeState?.privateKey)
-      : ethers.Wallet.createRandom();
+    if (!params.context?.q_values) throw new Error('Need q_values');
 
-    this.ownerTwo = params.context?.address || '';
+    this.ec = '0x16367BB04F0Bb6D4fc89d2aa31c32E0ddA609508';
+    this.q_values = params.context?.q_values;
+
     this.index = 0;
     this.name = 'SimpleAccountAPI';
   }
 
   serialize = async (): Promise<object> => {
     return {
-      privateKey: this.ownerOne.privateKey,
-      ownerTwo: this.ownerTwo,
+      q_values: this.q_values,
     };
   };
 
-  async _getAccountContract(): Promise<TwoOwnerAccount> {
+  async _getAccountContract(): Promise<WebauthnAccount> {
     if (this.accountContract == null) {
-      this.accountContract = TwoOwnerAccount__factory.connect(
+      this.accountContract = WebauthnAccount__factory.connect(
         await this.getAccountAddress(),
         this.provider
       );
@@ -80,7 +83,7 @@ class TwoOwnerAccountAPI extends AccountApiType {
   async getAccountInitCode(): Promise<string> {
     if (this.factory == null) {
       if (this.factoryAddress != null && this.factoryAddress !== '') {
-        this.factory = TwoOwnerAccountFactory__factory.connect(
+        this.factory = WebauthnAccountFactory__factory.connect(
           this.factoryAddress,
           this.provider
         );
@@ -91,15 +94,34 @@ class TwoOwnerAccountAPI extends AccountApiType {
     return hexConcat([
       this.factory.address,
       this.factory.interface.encodeFunctionData('createAccount', [
-        await this.ownerOne.getAddress(),
-        this.ownerTwo,
+        this.ec,
+        [this.q_values.q0, this.q_values.q1],
         this.index,
       ]),
     ]);
   }
 
-  getUserOpHashToSign = async (userOp: UserOperationStruct) => {
+  getUserOpHashToSign = async (transaction: EthersTransactionRequest) => {
+    const userOp = await this.createUnsignedUserOp({
+      target: transaction.to,
+      data: transaction.data
+        ? ethers.utils.hexConcat([transaction.data])
+        : '0x',
+      value: transaction.value,
+      gasLimit: transaction.gasLimit,
+      maxFeePerGas: transaction.maxFeePerGas,
+      maxPriorityFeePerGas: transaction.maxPriorityFeePerGas,
+    });
     return this.getUserOpHash(userOp);
+  };
+
+  getUserOpHashToSignAndCredentialId = async (
+    transaction: EthersTransactionRequest
+  ) => {
+    return {
+      credentialId: this.q_values.credentialId,
+      userOpHash: await this.getUserOpHashToSign(transaction),
+    };
   };
 
   async getNonce(): Promise<BigNumber> {
@@ -130,58 +152,36 @@ class TwoOwnerAccountAPI extends AccountApiType {
   }
 
   async signUserOpHash(userOpHash: string): Promise<string> {
-    return await this.ownerOne.signMessage(arrayify(userOpHash));
+    // return await this.ownerOne.signMessage(arrayify(userOpHash));
+    return '';
+  }
+
+  async signUserOpWithContext(
+    userOp: UserOperationStruct,
+    context: any
+  ): Promise<UserOperationStruct> {
+    const userOphash = await this.getUserOpHash(userOp);
+
+    console.log(
+      'q_values',
+      JSON.stringify([this.q_values.q0, this.q_values.q1])
+    );
+    console.log('signature', JSON.stringify(context.signature));
+    console.log('userOphash', userOphash);
+
+    return {
+      ...userOp,
+      signature: ethers.utils.hexConcat(context.signature),
+    };
   }
 
   signMessage = async (
     context: any,
     request?: MessageSigningRequest
   ): Promise<string> => {
-    return this.ownerOne.signMessage(request?.rawSigningData || '');
+    // return this.ownerOne.signMessage(request?.rawSigningData || '');
+    return '';
   };
-
-  signUserOpWithContext = async (
-    userOp: UserOperationStruct,
-    context: { signedMessage: string }
-  ): Promise<UserOperationStruct> => {
-    // TODO get signature in cotext and append it
-
-    console.log('ownerOne=', await this.ownerOne.getAddress());
-    console.log('ownerTwo=', this.ownerTwo);
-    console.log('UserOpHash=', await this.getUserOpHash(userOp));
-    console.log(
-      'signature=',
-      ethers.utils.defaultAbiCoder.encode(
-        ['bytes', 'bytes'],
-        [
-          await this.signUserOpHash(await this.getUserOpHash(userOp)),
-          context.signedMessage,
-        ]
-      )
-    );
-
-    return {
-      ...userOp,
-      signature: ethers.utils.defaultAbiCoder.encode(
-        ['bytes', 'bytes'],
-        [
-          await this.signUserOpHash(await this.getUserOpHash(userOp)),
-          context.signedMessage,
-        ]
-      ),
-    };
-  };
-
-  async createUnsignedUserOp(
-    info: TransactionDetailsForUserOp
-  ): Promise<UserOperationStruct> {
-    const userOp = await super.createUnsignedUserOp(info);
-    await userOp.preVerificationGas;
-    console.log(userOp);
-    userOp.preVerificationGas = Number(await userOp.preVerificationGas) * 2.5;
-    console.log(userOp);
-    return userOp;
-  }
 
   async createUnsignedUserOpForTransactions(
     transactions: TransactionDetailsForUserOp[]
@@ -236,4 +236,4 @@ class TwoOwnerAccountAPI extends AccountApiType {
   }
 }
 
-export default TwoOwnerAccountAPI;
+export default BLSAccountAPI;
