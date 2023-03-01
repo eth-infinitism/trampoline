@@ -57,10 +57,11 @@ contract WebauthnAccount is SimpleAccount {
 
         (uint256 r, uint256 s) = this._getRSValues(signature);
 
-        bytes memory base64EncodedRequestId = Base64.encode(requestId);
+        string memory base64EncodedRequestId = Base64.encode(requestId);
 
         console.logBytes32(requestId);
-        console.logBytes(base64EncodedRequestId);
+        console.log(base64EncodedRequestId);
+        console.logBytes(bytes(base64EncodedRequestId));
 
         bytes memory requestIdFromClientDataJSON = this._getRequestId(
             clientDataJSON
