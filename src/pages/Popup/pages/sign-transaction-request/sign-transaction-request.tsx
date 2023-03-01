@@ -36,7 +36,7 @@ import {
   rejectTransaction,
   sendTransaction,
 } from '../../../Background/redux-slices/transactions';
-import { EthersTransactionRequest } from '../../../Background/services/provider-bridge';
+import { EthersTransactionRequest } from '../../../Background/services/types';
 import AccountInfo from '../../components/account-info';
 import OriginInfo from '../../components/origin-info';
 import Config from '../../../../exconfig.json';

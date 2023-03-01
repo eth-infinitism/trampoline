@@ -2,7 +2,6 @@ import { UserOperationStruct } from '@account-abstraction/contracts';
 import {
   Box,
   Button,
-  CardActions,
   CardContent,
   CircularProgress,
   Container,
@@ -12,9 +11,7 @@ import {
   Typography,
 } from '@mui/material';
 import { ethers } from 'ethers';
-import { arrayify } from 'ethers/lib/utils.js';
 import React, { useCallback, useEffect, useState } from 'react';
-import { useAccount, useConnect, useSignMessage } from 'wagmi';
 import {
   useBackgroundDispatch,
   useBackgroundSelector,
@@ -30,11 +27,10 @@ import {
   selectCurrentPendingSendTransactionUserOp,
 } from '../../../Background/redux-slices/selectors/transactionsSelectors';
 import { createUnsignedUserOp } from '../../../Background/redux-slices/transactions';
-import { EthersTransactionRequest } from '../../../Background/services/provider-bridge';
+import { EthersTransactionRequest } from '../../../Background/services/types';
 import AccountInfo from '../../../Popup/components/account-info';
 import OriginInfo from '../../../Popup/components/origin-info';
 import useAccountApi from '../../useAccountApi';
-import { TransactionComponentProps } from '../types';
 
 const SignTransactionConfirmation = ({
   activeNetwork,
@@ -149,7 +145,7 @@ const SignTransactionConfirmation = ({
         </Typography>
         <Stack spacing={2}>
           {transactions.map((transaction: EthersTransactionRequest) => (
-            <Paper key={transaction.to} sx={{ p: 2 }}>
+            <Paper sx={{ p: 2 }}>
               <Typography variant="subtitle2" sx={{ mb: 2 }}>
                 To:{' '}
                 <Typography component="span" variant="body2">
@@ -216,13 +212,18 @@ const Transaction = ({
   transaction,
   onComplete,
   onReject,
-}: TransactionComponentProps) => {
+}: {
+  transaction: EthersTransactionRequest;
+  onComplete: (
+    modifiedTransaction: EthersTransactionRequest,
+    context: any
+  ) => void;
+  onReject: () => Promise<void>;
+}) => {
   const [stage, setStage] = useState<'show-transaction' | 'awaiting-signature'>(
     'show-transaction'
   );
-
-  const { connect, connectors, isLoading, error, pendingConnector } =
-    useConnect();
+  const { result, loading, callAccountApi } = useAccountApi();
 
   const backgroundDispatch = useBackgroundDispatch();
   const activeAccount = useBackgroundSelector(getActiveAccount);
@@ -252,58 +253,37 @@ const Transaction = ({
     })
   );
 
-  const { result, loading, callAccountApi } = useAccountApi();
+  useEffect(() => {
+    const listenToMessageEvent = ({ signature }: any, sender: any) => {
+      if (
+        sender.url.includes('http://localhost:3000/iframe.html#/request-sign')
+      ) {
+        console.log(signature, 'signature');
+        onComplete(transaction, { signature });
+      }
+    };
 
-  const { isConnected } = useAccount();
+    window.addEventListener('message', listenToMessageEvent);
 
-  const { data: signedMessage, signMessage } = useSignMessage({
-    onSuccess(data, variables) {
-      // Verify signature when sign message succeeds
-      console.log(data, variables);
-    },
-  });
+    chrome.runtime.onMessageExternal.addListener(listenToMessageEvent);
+
+    return () =>
+      chrome.runtime.onMessageExternal.removeListener(listenToMessageEvent);
+  }, [onComplete, transaction]);
 
   useEffect(() => {
-    if (signedMessage) {
-      onComplete(transaction, {
-        signedMessage,
-      });
-    }
-  }, [signedMessage, onComplete, transaction]);
-
-  useEffect(() => {
-    if (result) {
-      signMessage({ message: arrayify(result) });
-    }
-  }, [result, loading, signMessage]);
-
-  useEffect(() => {
-    if (!isConnected) {
-      connect({ connector: connectors[0] });
-    }
-  }, [isConnected, connect, connectors, callAccountApi]);
+    callAccountApi('getUserOpHashToSignAndCredentialId', [transaction]);
+  }, [callAccountApi, transaction]);
 
   const onSend = useCallback(() => {
-    setStage('awaiting-signature');
-    callAccountApi('getUserOpHashToSign', [pendingUserOp]);
-  }, [callAccountApi, pendingUserOp]);
+    if (result) {
+      window.open(
+        `http://localhost:3000/iframe.html#/request-sign/${chrome.runtime.id}/${result.userOpHash}/${result.credentialId}`
+      );
+    }
+  }, [result]);
 
-  if (!pendingUserOp)
-    return (
-      <CardContent>
-        <CircularProgress
-          size={24}
-          sx={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            marginTop: '-12px',
-            marginLeft: '-12px',
-          }}
-        />
-      </CardContent>
-    );
-
+  console.log(stage, pendingUserOp, sendTransactionRequest);
   if (
     stage === 'show-transaction' &&
     pendingUserOp &&
@@ -322,49 +302,13 @@ const Transaction = ({
       />
     );
 
-  return !isConnected ? (
-    <>
-      <CardContent>
-        <Typography variant="h3" gutterBottom>
-          Connect 2FA Device
-        </Typography>
-        <Typography variant="body1" color="text.secondary">
-          All your transactions must be signed by your mobile wallet and this
-          chrome extension to prevent fraudulant transactions.
-          <br />
-        </Typography>
-      </CardContent>
-      <CardActions sx={{ pl: 4, pr: 4, width: '100%' }}>
-        <Stack spacing={2} sx={{ width: '100%' }}>
-          {connectors.map((connector) => (
-            <Button
-              size="large"
-              variant="contained"
-              disabled={!connector.ready}
-              key={connector.id}
-              onClick={() => connect({ connector })}
-            >
-              {connector.name}
-              {!connector.ready && ' (unsupported)'}
-              {isLoading &&
-                connector.id === pendingConnector?.id &&
-                ' (connecting)'}
-            </Button>
-          ))}
-
-          {error && <Typography>{error.message}</Typography>}
-        </Stack>
-      </CardActions>
-    </>
-  ) : (
+  return (
     <CardContent>
-      <Typography variant="h3" gutterBottom>
-        Awaiting Signature
-      </Typography>
-      <Typography variant="body1" color="text.secondary">
-        Check your phone, a signature request has been sent for the transaction.
-        <br />
-      </Typography>
+      {stage === 'awaiting-signature' ? (
+        <Typography variant="h3" gutterBottom>
+          Awaiting Signature
+        </Typography>
+      ) : null}
       <CircularProgress
         size={24}
         sx={{

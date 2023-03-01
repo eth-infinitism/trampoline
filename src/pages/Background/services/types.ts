@@ -1,9 +1,32 @@
 import Emittery from 'emittery';
+import { BigNumberish, BytesLike } from 'ethers';
+import { AccessListish } from 'ethers/lib/utils.js';
 
 export interface ServiceLifecycleEvents {
   serviceStarted: void;
   serviceStopped: void;
 }
+
+export type EthersTransactionRequest = {
+  to: string;
+  from?: string;
+  nonce?: BigNumberish;
+
+  gasLimit?: BigNumberish;
+  gasPrice?: BigNumberish;
+
+  data?: BytesLike;
+  value?: BigNumberish;
+  chainId?: number;
+
+  type?: number;
+  accessList?: AccessListish;
+
+  maxPriorityFeePerGas?: BigNumberish;
+  maxFeePerGas?: BigNumberish;
+
+  customData?: Record<string, any>;
+};
 
 /**
  * A simple interface for service lifecycles and event emission. Services

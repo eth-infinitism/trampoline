@@ -1,6 +1,6 @@
 import BaseService, { BaseServiceCreateProps } from './base';
 import MainServiceManager from './main';
-import { ServiceLifecycleEvents } from './types';
+import { EthersTransactionRequest, ServiceLifecycleEvents } from './types';
 import browser from 'webextension-polyfill';
 import {
   EIP1193ErrorPayload,
@@ -11,7 +11,6 @@ import { AA_EXTENSION_CONFIG, EXTERNAL_PORT_NAME } from '../constants';
 import { RootState } from '../redux-slices';
 import { isAAExtensionConfigPayload } from '../../Content/window-provider/runtime-type-checks';
 import showExtensionPopup, {
-  checkPermissionSign,
   checkPermissionSign,
   checkPermissionSignTransaction,
   parseSigningData,
@@ -24,41 +23,11 @@ import {
 } from '../../Content/window-provider/eip-1193';
 import { AllowedQueryParamPage } from '../types/chrome-messages';
 import { requestPermission } from '../redux-slices/permissions';
-import { BigNumberish, ethers } from 'ethers';
-import {
-  AccessListish,
-  BytesLike,
-  hexlify,
-  toUtf8Bytes,
-} from 'ethers/lib/utils.js';
-import KeyringService from './keyring';
+import { ethers } from 'ethers';
+import { hexlify, toUtf8Bytes } from 'ethers/lib/utils.js';
 import { signDataRequest } from '../redux-slices/signing';
 import { HexString } from '../types/common';
-import {
-  sendTransactionRequest,
-  sendTransactionsRequest,
-} from '../redux-slices/transactions';
-
-export type EthersTransactionRequest = {
-  to: string;
-  from?: string;
-  nonce?: BigNumberish;
-
-  gasLimit?: BigNumberish;
-  gasPrice?: BigNumberish;
-
-  data?: BytesLike;
-  value?: BigNumberish;
-  chainId?: number;
-
-  type?: number;
-  accessList?: AccessListish;
-
-  maxPriorityFeePerGas?: BigNumberish;
-  maxFeePerGas?: BigNumberish;
-
-  customData?: Record<string, any>;
-};
+import { sendTransactionRequest } from '../redux-slices/transactions';
 
 type JsonRpcTransactionRequest = Omit<EthersTransactionRequest, 'gasLimit'> & {
   gas?: string;
@@ -541,7 +510,7 @@ export default class ProviderBridgeService extends BaseService<Events> {
             ...(params[0] as JsonRpcTransactionRequest),
           },
           origin
-        )
+        );
       //   case 'eth_signTransaction':
       //     return this.signTransaction(
       //       params[0] as JsonRpcTransactionRequest,
