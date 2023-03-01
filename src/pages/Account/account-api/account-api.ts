@@ -12,10 +12,13 @@ import {
   WebauthnAccountFactory__factory,
   WebauthnAccount__factory,
 } from './typechain-types';
+import Config from '../../../exconfig.json';
 
-const FACTORY_ADDRESS = '0x52aeBE6d31478B24EdfC9ab1c1fFB9e23e37c744';
+const FACTORY_ADDRESS =
+  Config.factory_address || '0xc8994CCc4F09524E6996648cb43622D9B82C5192';
 
 export type QValues = {
+  authenticatorDataBytes: string;
   credentialId: string;
   q0: string;
   q1: string;
@@ -28,7 +31,7 @@ export type QValues = {
  * - nonce method is "nonce()"
  * - execute method is "execFromEntryPoint()"
  */
-class BLSAccountAPI extends AccountApiType {
+class WebAuthnAccountAPI extends AccountApiType {
   name: string;
   factoryAddress?: string;
   ec: string;
@@ -45,13 +48,14 @@ class BLSAccountAPI extends AccountApiType {
 
   constructor(
     params: AccountApiParamsType<{
-      q_values: QValues;
+      q_values: QValues | 'Denied';
     }>
   ) {
     super(params);
     this.factoryAddress = FACTORY_ADDRESS;
 
-    if (!params.context?.q_values) throw new Error('Need q_values');
+    if (!params.context?.q_values || params.context?.q_values === 'Denied')
+      throw new Error('Need q_values');
 
     this.ec = '0x16367BB04F0Bb6D4fc89d2aa31c32E0ddA609508';
     this.q_values = params.context?.q_values;
@@ -96,6 +100,7 @@ class BLSAccountAPI extends AccountApiType {
       this.factory.interface.encodeFunctionData('createAccount', [
         this.ec,
         [this.q_values.q0, this.q_values.q1],
+        this.q_values.authenticatorDataBytes,
         this.index,
       ]),
     ]);
@@ -112,7 +117,12 @@ class BLSAccountAPI extends AccountApiType {
       maxFeePerGas: transaction.maxFeePerGas,
       maxPriorityFeePerGas: transaction.maxPriorityFeePerGas,
     });
-    return this.getUserOpHash(userOp);
+    await userOp.preVerificationGas;
+    console.log(userOp);
+    return this.getUserOpHash({
+      ...userOp,
+      preVerificationGas: 466360,
+    });
   };
 
   getUserOpHashToSignAndCredentialId = async (
@@ -152,26 +162,20 @@ class BLSAccountAPI extends AccountApiType {
   }
 
   async signUserOpHash(userOpHash: string): Promise<string> {
-    // return await this.ownerOne.signMessage(arrayify(userOpHash));
-    return '';
+    throw new Error("Shoudn't be called");
   }
 
   async signUserOpWithContext(
     userOp: UserOperationStruct,
     context: any
   ): Promise<UserOperationStruct> {
-    const userOphash = await this.getUserOpHash(userOp);
-
-    console.log(
-      'q_values',
-      JSON.stringify([this.q_values.q0, this.q_values.q1])
-    );
-    console.log('signature', JSON.stringify(context.signature));
-    console.log('userOphash', userOphash);
-
     return {
       ...userOp,
-      signature: ethers.utils.hexConcat(context.signature),
+      preVerificationGas: 466360,
+      signature: ethers.utils.defaultAbiCoder.encode(
+        ['bytes', 'bytes'],
+        [ethers.utils.hexConcat(context.signature), context.clientDataJSON]
+      ),
     };
   }
 
@@ -236,4 +240,4 @@ class BLSAccountAPI extends AccountApiType {
   }
 }
 
-export default BLSAccountAPI;
+export default WebAuthnAccountAPI;

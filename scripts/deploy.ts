@@ -17,9 +17,12 @@ async function main() {
   //     to: '0x48E87c155f748d90A2B5fe8980eeD92805dEb5b6',
   //     value: ethers.utils.parseEther('100'),
   //   });
+
+  console.log(Buffer.from('0x7b2274797065223a2277656261757', 'hex').length);
+
   signer.sendTransaction({
-    to: '0x4255aEa5f32333abdA585801b339abe4886fb42f',
-    value: ethers.utils.parseEther('1'),
+    to: '0x4097688a4aC349e360cF3FC80Ff31B0fE365D053',
+    value: ethers.utils.parseEther('0.1'),
   });
 
   //   console.log(
