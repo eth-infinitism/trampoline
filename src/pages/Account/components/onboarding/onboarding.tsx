@@ -9,9 +9,9 @@ const Onboarding: OnboardingComponent = ({
   useEffect(() => {
     const listenToMessageEvent = (q_values: any, sender: any) => {
       if (
+        sender &&
         sender.url.includes('http://localhost:3000/iframe.html#/create-new')
       ) {
-        console.log(q_values, 'q_values');
         onOnboardingComplete({
           q_values,
         });

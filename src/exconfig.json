@@ -1,12 +1,12 @@
 {
   "enablePasswordEncryption": false,
   "showTransactionConfirmationScreen": false,
-  "factory_address": "0x63B05f624Ce478D724aB4390D92d3cdF4e731f1a",
+  "factory_address": "0x99bbA657f2BbC93c02D617f8bA121cB8Fc104Acf",
   "network": {
     "chainID": "5",
     "family": "EVM",
     "name": "Goerli",
-    "provider": "https://goerli.infura.io/v3/bdabe9d2f9244005af0f566398e648da",
+    "provider": "http://127.0.0.1:8545/",
     "entryPointAddress": "0x0576a174D229E3cFA37253523E645A78A0C91B57",
     "bundler": "http://localhost:9000/rpc",
     "baseAsset": {
