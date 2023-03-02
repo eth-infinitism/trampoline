@@ -23,7 +23,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { initializeKeyring } from '../../../Background/redux-slices/keyrings';
 import { selectKeyringStatus } from '../../../Background/redux-slices/selectors/keyringsSelectors';
 import { useBackgroundDispatch, useBackgroundSelector } from '../../hooks';
-import Config from '../../../../exconfig';
+import Config from '../../../../exconfig.json';
 
 const InitializeKeyring = () => {
   const keyringState = useBackgroundSelector(selectKeyringStatus);
@@ -169,8 +169,8 @@ const InitializeKeyring = () => {
                     onChange={(e, checked) => setDeclaration(checked)}
                   />{' '}
                   <Typography variant="body2" color="text.secondary">
-                    I understand that TRAMPOLINE Account cannot recover this
-                    password for me
+                    I understand that TRAMPOLINE cannot recover this password
+                    for me
                   </Typography>
                 </Stack>
               </FormControl>
