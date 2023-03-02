@@ -169,8 +169,8 @@ const InitializeKeyring = () => {
                     onChange={(e, checked) => setDeclaration(checked)}
                   />{' '}
                   <Typography variant="body2" color="text.secondary">
-                    I understand that TRAMPOLINE Account cannot recover this
-                    password for me
+                    I understand that TRAMPOLINE cannot recover this password
+                    for me
                   </Typography>
                 </Stack>
               </FormControl>
