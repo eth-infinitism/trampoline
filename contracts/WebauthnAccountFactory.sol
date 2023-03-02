@@ -22,15 +22,9 @@ contract WebauthnAccountFactory {
     function createAccount(
         address anEllipticCurve,
         uint256[2] memory _q,
-        bytes memory authenticatorDataBytes,
         uint256 salt
     ) public returns (WebauthnAccount ret) {
-        address addr = getAddress(
-            anEllipticCurve,
-            _q,
-            authenticatorDataBytes,
-            salt
-        );
+        address addr = getAddress(anEllipticCurve, _q, salt);
         uint256 codeSize = addr.code.length;
         if (codeSize > 0) {
             return WebauthnAccount(payable(addr));
@@ -41,7 +35,7 @@ contract WebauthnAccountFactory {
                     address(accountImplementation),
                     abi.encodeCall(
                         WebauthnAccount.initialize,
-                        (anEllipticCurve, _q, authenticatorDataBytes)
+                        (anEllipticCurve, _q)
                     )
                 )
             )
@@ -54,7 +48,6 @@ contract WebauthnAccountFactory {
     function getAddress(
         address anEllipticCurve,
         uint256[2] memory _q,
-        bytes memory authenticatorDataBytes,
         uint256 salt
     ) public view returns (address) {
         return
@@ -67,7 +60,7 @@ contract WebauthnAccountFactory {
                             address(accountImplementation),
                             abi.encodeCall(
                                 WebauthnAccount.initialize,
-                                (anEllipticCurve, _q, authenticatorDataBytes)
+                                (anEllipticCurve, _q)
                             )
                         )
                     )

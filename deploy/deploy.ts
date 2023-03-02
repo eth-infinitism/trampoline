@@ -11,5 +11,11 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     args: [config.network.entryPointAddress],
     log: true,
   });
+  await hre.deployments.deploy('EllipticCurve', {
+    from: accounts[0],
+    deterministic: true,
+    args: [],
+    log: true,
+  });
 };
 export default func;

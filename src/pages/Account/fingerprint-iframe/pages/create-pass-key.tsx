@@ -18,17 +18,11 @@ export const CreatePassKey = () => {
         const publicKey = await getPublicKey(
           credential.response.attestationObject
         );
-
-        const authenticatorDataBytes =
-          '0x' +
-          Buffer.from(
-            getAuthenticatorBytes(credential.response.attestationObject)
-          ).toString('hex');
+        console.log('publicKey', JSON.stringify(publicKey));
 
         const credentialId = credential.id;
 
         await chrome.runtime.sendMessage(chromeid, {
-          authenticatorDataBytes,
           credentialId,
           q0: publicKey[0],
           q1: publicKey[1],
