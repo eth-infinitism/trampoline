@@ -18,15 +18,9 @@ async function main() {
   //     value: ethers.utils.parseEther('100'),
   //   });
 
-  console.log(
-    Buffer.from(
-      btoa('0xd55856062fd2b0e4f6bab76a084fbe872377e1da3a2484a7b3622a701ca86403')
-    ).toString('hex')
-  );
-
   signer.sendTransaction({
-    to: '0xC9C871fDe2505239187E1cc55CF8095fB460cbC7',
-    value: ethers.utils.parseEther('0.8'),
+    to: '0x66E2f7a818f907267235A1e8c1578B613823dAb2',
+    value: ethers.utils.parseEther('0.1'),
   });
 
   //   console.log(
