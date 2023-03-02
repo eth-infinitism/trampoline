@@ -18,7 +18,6 @@ const FACTORY_ADDRESS =
   Config.factory_address || '0xc8994CCc4F09524E6996648cb43622D9B82C5192';
 
 export type QValues = {
-  authenticatorDataBytes: string;
   credentialId: string;
   q0: string;
   q1: string;
@@ -57,7 +56,7 @@ class WebAuthnAccountAPI extends AccountApiType {
     if (!params.context?.q_values || params.context?.q_values === 'Denied')
       throw new Error('Need q_values');
 
-    this.ec = '0x16367BB04F0Bb6D4fc89d2aa31c32E0ddA609508';
+    this.ec = Config.eleptic_curve;
     this.q_values = params.context?.q_values;
 
     this.index = 0;
@@ -100,7 +99,6 @@ class WebAuthnAccountAPI extends AccountApiType {
       this.factory.interface.encodeFunctionData('createAccount', [
         this.ec,
         [this.q_values.q0, this.q_values.q1],
-        this.q_values.authenticatorDataBytes,
         this.index,
       ]),
     ]);
@@ -118,9 +116,11 @@ class WebAuthnAccountAPI extends AccountApiType {
       maxPriorityFeePerGas: transaction.maxPriorityFeePerGas,
     });
     await userOp.preVerificationGas;
+    await userOp.verificationGasLimit;
     console.log(userOp);
     return this.getUserOpHash({
       ...userOp,
+      verificationGasLimit: Number(userOp.verificationGasLimit) * 4,
       preVerificationGas: 466360,
     });
   };
@@ -169,12 +169,18 @@ class WebAuthnAccountAPI extends AccountApiType {
     userOp: UserOperationStruct,
     context: any
   ): Promise<UserOperationStruct> {
+    await userOp.verificationGasLimit;
     return {
       ...userOp,
+      verificationGasLimit: Number(userOp.verificationGasLimit) * 4,
       preVerificationGas: 466360,
       signature: ethers.utils.defaultAbiCoder.encode(
-        ['bytes', 'bytes'],
-        [ethers.utils.hexConcat(context.signature), context.clientDataJSON]
+        ['bytes', 'bytes', 'bytes'],
+        [
+          ethers.utils.hexConcat(context.signature),
+          context.clientDataJSON,
+          context.authDataBuffer,
+        ]
       ),
     };
   }
@@ -186,58 +192,6 @@ class WebAuthnAccountAPI extends AccountApiType {
     // return this.ownerOne.signMessage(request?.rawSigningData || '');
     return '';
   };
-
-  async createUnsignedUserOpForTransactions(
-    transactions: TransactionDetailsForUserOp[]
-  ): Promise<UserOperationStruct> {
-    const accountContract = await this._getAccountContract();
-    const callData = accountContract.interface.encodeFunctionData(
-      'executeBatch',
-      [
-        transactions.map((transaction) => transaction.target),
-        transactions.map((transaction) => transaction.data),
-      ]
-    );
-
-    const callGasLimit = await this.provider.estimateGas({
-      from: this.entryPointAddress,
-      to: this.getAccountAddress(),
-      data: callData,
-    });
-
-    const initCode = await this.getInitCode();
-
-    const initGas = await this.estimateCreationGas(initCode);
-    const verificationGasLimit = BigNumber.from(
-      await this.getVerificationGasLimit()
-    ).add(initGas);
-
-    let maxFeePerGas, maxPriorityFeePerGas;
-
-    const feeData = await this.provider.getFeeData();
-    maxFeePerGas = feeData.maxFeePerGas ?? 0;
-    maxPriorityFeePerGas = feeData.maxPriorityFeePerGas ?? 0;
-
-    const partialUserOp: UserOperationStruct = {
-      sender: await this.getAccountAddress(),
-      nonce: this.getNonce(),
-      initCode,
-      callData,
-      callGasLimit,
-      verificationGasLimit,
-      maxFeePerGas,
-      maxPriorityFeePerGas,
-      paymasterAndData: '',
-      preVerificationGas: 0,
-      signature: '',
-    };
-
-    return {
-      ...partialUserOp,
-      preVerificationGas: this.getPreVerificationGas(partialUserOp),
-      signature: '',
-    };
-  }
 }
 
 export default WebAuthnAccountAPI;

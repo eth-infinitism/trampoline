@@ -9,10 +9,17 @@ import { useParams } from 'react-router-dom';
 // import * as Helper from '../webauthn/helpers';
 import { CircularProgress } from '@mui/material';
 // import crypto from 'crypto';
-import { getCredential, getSignature } from '../webauthn';
+import {
+  createCredential,
+  getCredential,
+  getPublicKey,
+  getSignature,
+  toHash,
+} from '../webauthn';
 import { encode } from '../webauthn/base64url-arraybuffer';
 import { toBuffer } from '../webauthn/utils';
 import base64url from 'base64url';
+import * as Helper from '../webauthn/helpers';
 
 // enum COSEKEYS {
 //   kty = 1,
@@ -59,32 +66,46 @@ export const RequestSign = () => {
         );
 
         const signature = await getSignature(publicKeyCredential);
+        console.log('signature', JSON.stringify(signature));
 
-        const clientDataJSON =
-          '0x' +
-          Buffer.from(publicKeyCredential.response.clientDataJSON).toString(
-            'hex'
-          );
-
+        console.log('requestId', requestId);
+        const base64RequestId = base64url.encode(requestId);
         console.log(
-          requestId,
-          'requestId',
-          base64url.encode(requestId),
-          Buffer.from(base64url.encode(requestId)).toString('hex')
+          'base64RequestId',
+          Buffer.from(base64RequestId).toString('hex')
         );
 
-        console.log('clientDataJSON', clientDataJSON);
+        const authDataBuffer = Buffer.from(
+          publicKeyCredential.response.authenticatorData
+        );
+        console.log('authDataBuffer', authDataBuffer.toString('hex'));
+
+        const clientDataJSON = Buffer.from(
+          publicKeyCredential.response.clientDataJSON
+        );
+        console.log('clientDataJSON', clientDataJSON.toString('hex'));
+
+        const clientDataHash = toHash(clientDataJSON);
+        console.log('clientDataHash', clientDataHash.toString('hex'));
+
+        const signatureBase = Buffer.concat([authDataBuffer, clientDataHash]);
+        console.log('signatureBase', signatureBase.toString('hex'));
+        // ---- PERFECT TILL HERE ----
+
+        const messageHash = toHash(signatureBase);
+        console.log('messageHash', messageHash.toString('hex'));
 
         await chrome.runtime.sendMessage(chromeid, {
           signature,
-          clientDataJSON,
+          clientDataJSON: '0x' + clientDataJSON.toString('hex'),
+          authDataBuffer: '0x' + authDataBuffer.toString('hex'),
         });
       } catch (e) {
         console.log(e);
         await chrome.runtime.sendMessage(chromeid, 'Denied');
       }
       setTimeout(() => {
-        // window.close();
+        window.close();
       }, 100);
     };
 

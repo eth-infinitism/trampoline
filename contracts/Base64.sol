@@ -7,11 +7,7 @@ library Base64 {
         'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
 
     function encode(string memory _str) internal pure returns (string memory) {
-        bytes memory _bs = new bytes(32);
-        for (uint256 k = 0; k < 32; k++) {
-            data[k] = _str[k];
-        }
-
+        bytes memory _bs = bytes(_str);
         uint256 rem = _bs.length % 3;
 
         uint256 res_length = ((_bs.length + 2) / 3) * 4 - ((3 - rem) % 3);

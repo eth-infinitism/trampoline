@@ -1,5 +1,8 @@
-// SPDX-License-Identifier: Undefined
-pragma solidity ^0.8.12;
+/**
+ *Submitted for verification at Etherscan.io on 2019-08-01
+ */
+
+pragma solidity ^0.5.0;
 
 /**
  * @title   EllipticCurve
@@ -45,16 +48,15 @@ contract EllipticCurve {
         uint256 r1 = m;
         uint256 r2 = u;
         uint256 q;
-        unchecked {
-            while (r2 != 0) {
-                q = r1 / r2;
-                (t1, t2, r1, r2) = (t2, t1 - int256(q) * t2, r2, r1 - q * r2);
-            }
 
-            if (t1 < 0) return (m - uint256(-t1));
-
-            return uint256(t1);
+        while (r2 != 0) {
+            q = r1 / r2;
+            (t1, t2, r1, r2) = (t2, t1 - int256(q) * t2, r2, r1 - q * r2);
         }
+
+        if (t1 < 0) return (m - uint256(-t1));
+
+        return uint256(t1);
     }
 
     /**
@@ -65,11 +67,9 @@ contract EllipticCurve {
         pure
         returns (uint256[3] memory P)
     {
-        unchecked {
-            P[2] = addmod(0, 1, p);
-            P[0] = mulmod(x0, P[2], p);
-            P[1] = mulmod(y0, P[2], p);
-        }
+        P[2] = addmod(0, 1, p);
+        P[0] = mulmod(x0, P[2], p);
+        P[1] = mulmod(y0, P[2], p);
     }
 
     /**
@@ -83,9 +83,7 @@ contract EllipticCurve {
     ) public pure returns (uint256[3] memory P) {
         uint256 x;
         uint256 y;
-        unchecked {
-            (x, y) = add(x1, y1, x2, y2);
-        }
+        (x, y) = add(x1, y1, x2, y2);
         P = toProjectivePoint(x, y);
     }
 
@@ -98,11 +96,9 @@ contract EllipticCurve {
         uint256 z0
     ) public pure returns (uint256 x1, uint256 y1) {
         uint256 z0Inv;
-        unchecked {
-            z0Inv = inverseMod(z0, p);
-            x1 = mulmod(x0, z0Inv, p);
-            y1 = mulmod(y0, z0Inv, p);
-        }
+        z0Inv = inverseMod(z0, p);
+        x1 = mulmod(x0, z0Inv, p);
+        y1 = mulmod(y0, z0Inv, p);
     }
 
     /**
@@ -148,19 +144,18 @@ contract EllipticCurve {
         if (0 == x || x == p || 0 == y || y == p) {
             return false;
         }
-        unchecked {
-            uint256 LHS = mulmod(y, y, p); // y^2
-            uint256 RHS = mulmod(mulmod(x, x, p), x, p); // x^3
 
-            if (a != 0) {
-                RHS = addmod(RHS, mulmod(x, a, p), p); // x^3 + a*x
-            }
-            if (b != 0) {
-                RHS = addmod(RHS, b, p); // x^3 + a*x + b
-            }
+        uint256 LHS = mulmod(y, y, p); // y^2
+        uint256 RHS = mulmod(mulmod(x, x, p), x, p); // x^3
 
-            return LHS == RHS;
+        if (a != 0) {
+            RHS = addmod(RHS, mulmod(x, a, p), p); // x^3 + a*x
         }
+        if (b != 0) {
+            RHS = addmod(RHS, b, p); // x^3 + a*x + b
+        }
+
+        return LHS == RHS;
     }
 
     /**
@@ -188,37 +183,36 @@ contract EllipticCurve {
         if (isZeroCurve(x0, y0)) {
             return zeroProj();
         }
-        unchecked {
-            u = mulmod(y0, z0, p);
-            u = mulmod(u, 2, p);
 
-            v = mulmod(u, x0, p);
-            v = mulmod(v, y0, p);
-            v = mulmod(v, 2, p);
+        u = mulmod(y0, z0, p);
+        u = mulmod(u, 2, p);
 
-            x0 = mulmod(x0, x0, p);
-            t = mulmod(x0, 3, p);
+        v = mulmod(u, x0, p);
+        v = mulmod(v, y0, p);
+        v = mulmod(v, 2, p);
 
-            z0 = mulmod(z0, z0, p);
-            z0 = mulmod(z0, a, p);
-            t = addmod(t, z0, p);
+        x0 = mulmod(x0, x0, p);
+        t = mulmod(x0, 3, p);
 
-            w = mulmod(t, t, p);
-            x0 = mulmod(2, v, p);
-            w = addmod(w, p - x0, p);
+        z0 = mulmod(z0, z0, p);
+        z0 = mulmod(z0, a, p);
+        t = addmod(t, z0, p);
 
-            x0 = addmod(v, p - w, p);
-            x0 = mulmod(t, x0, p);
-            y0 = mulmod(y0, u, p);
-            y0 = mulmod(y0, y0, p);
-            y0 = mulmod(2, y0, p);
-            y1 = addmod(x0, p - y0, p);
+        w = mulmod(t, t, p);
+        x0 = mulmod(2, v, p);
+        w = addmod(w, p - x0, p);
 
-            x1 = mulmod(u, w, p);
+        x0 = addmod(v, p - w, p);
+        x0 = mulmod(t, x0, p);
+        y0 = mulmod(y0, u, p);
+        y0 = mulmod(y0, y0, p);
+        y0 = mulmod(2, y0, p);
+        y1 = addmod(x0, p - y0, p);
 
-            z1 = mulmod(u, u, p);
-            z1 = mulmod(z1, u, p);
-        }
+        x1 = mulmod(u, w, p);
+
+        z1 = mulmod(u, u, p);
+        z1 = mulmod(z1, u, p);
     }
 
     /**
@@ -251,13 +245,13 @@ contract EllipticCurve {
         } else if (isZeroCurve(x1, y1)) {
             return (x0, y0, z0);
         }
-        unchecked {
-            t0 = mulmod(y0, z1, p);
-            t1 = mulmod(y1, z0, p);
 
-            u0 = mulmod(x0, z1, p);
-            u1 = mulmod(x1, z0, p);
-        }
+        t0 = mulmod(y0, z1, p);
+        t1 = mulmod(y1, z0, p);
+
+        u0 = mulmod(x0, z1, p);
+        u1 = mulmod(x1, z0, p);
+
         if (u0 == u1) {
             if (t0 == t1) {
                 return twiceProj(x0, y0, z0);
@@ -265,9 +259,8 @@ contract EllipticCurve {
                 return zeroProj();
             }
         }
-        unchecked {
-            (x2, y2, z2) = addProj2(mulmod(z0, z1, p), u0, u1, t1, t0);
-        }
+
+        (x2, y2, z2) = addProj2(mulmod(z0, z1, p), u0, u1, t1, t0);
     }
 
     /**
@@ -294,29 +287,27 @@ contract EllipticCurve {
         uint256 w;
         uint256 t;
 
-        unchecked {
-            t = addmod(t0, p - t1, p);
-            u = addmod(u0, p - u1, p);
-            u2 = mulmod(u, u, p);
+        t = addmod(t0, p - t1, p);
+        u = addmod(u0, p - u1, p);
+        u2 = mulmod(u, u, p);
 
-            w = mulmod(t, t, p);
-            w = mulmod(w, v, p);
-            u1 = addmod(u1, u0, p);
-            u1 = mulmod(u1, u2, p);
-            w = addmod(w, p - u1, p);
+        w = mulmod(t, t, p);
+        w = mulmod(w, v, p);
+        u1 = addmod(u1, u0, p);
+        u1 = mulmod(u1, u2, p);
+        w = addmod(w, p - u1, p);
 
-            x2 = mulmod(u, w, p);
+        x2 = mulmod(u, w, p);
 
-            u3 = mulmod(u2, u, p);
-            u0 = mulmod(u0, u2, p);
-            u0 = addmod(u0, p - w, p);
-            t = mulmod(t, u0, p);
-            t0 = mulmod(t0, u3, p);
+        u3 = mulmod(u2, u, p);
+        u0 = mulmod(u0, u2, p);
+        u0 = addmod(u0, p - w, p);
+        t = mulmod(t, u0, p);
+        t0 = mulmod(t0, u3, p);
 
-            y2 = addmod(t, p - t0, p);
+        y2 = addmod(t, p - t0, p);
 
-            z2 = mulmod(u3, v, p);
-        }
+        z2 = mulmod(u3, v, p);
     }
 
     /**
@@ -454,9 +445,7 @@ contract EllipticCurve {
         }
 
         uint256 Px = inverseMod(P[2], p);
-        unchecked {
-            Px = mulmod(P[0], mulmod(Px, Px, p), p);
-        }
+        Px = mulmod(P[0], mulmod(Px, Px, p), p);
 
         return Px % n == rs[0];
     }
