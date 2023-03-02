@@ -47,7 +47,7 @@ const Header = () => {
         onClick={() => navigate('/')}
       >
         <img height={30} src={logo} className="App-logo" alt="logo" />
-        <Typography variant="h6">EPF ACCOUNT</Typography>
+        <Typography variant="h6">TRAMPOLINE</Typography>
       </Stack>
       <Stack
         direction="row"
