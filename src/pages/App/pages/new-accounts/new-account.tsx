@@ -151,7 +151,6 @@ const NewAccount = () => {
         alignItems="center"
       >
         <Box
-          component="span"
           display="flex"
           flexDirection="column"
           justifyContent="center"
@@ -162,7 +161,6 @@ const NewAccount = () => {
             p: 2,
             border: '1px solid #d6d9dc',
             background: 'white',
-
             borderRadius: 5,
           }}
         >
