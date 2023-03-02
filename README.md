@@ -2,7 +2,7 @@
 
 <img src="src/assets/img/icon-128.png" width="64"/>
 
-This is an example project made on the [Trampoline project](https://github.com/plusminushalf/trampoline). Trampoline is a chrome extension boilerplate code to showcase your own Smart Contract Wallets with React 18 and Webpack 5 support.
+Trampoline is a chrome extension boilerplate code to showcase your own Smart Contract Wallets with React 18 and Webpack 5 support.
 
 ## Installation and Running
 
@@ -26,7 +26,7 @@ This is an example project made on the [Trampoline project](https://github.com/p
 1. Make sure EntryPoint is deployed on the target network.
 2. Edit the `entryPointAddress` in `src/exconfig.json`.
 3. Add your network details in `hardhat.condig.ts`.
-4. Deploy the factory using `ETHERSCAN_API_KEY=<optional> INFURA_ID=<required> npx hardhat deploy --network <network>`.
+4. Deploy the factory using `INFURA_ID=<required> npx hardhat deploy --network <network>`.
 5. Edit the `factory_address` in `src/exconfig.json`
 6. Edit the `bundler` url in `src/exconfig.json` that points to your network and accepts requests for your EntryPoint.
 7. Run `yarn start`
