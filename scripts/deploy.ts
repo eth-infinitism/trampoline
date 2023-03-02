@@ -18,11 +18,15 @@ async function main() {
   //     value: ethers.utils.parseEther('100'),
   //   });
 
-  console.log(Buffer.from('0x7b2274797065223a2277656261757', 'hex').length);
+  console.log(
+    Buffer.from(
+      btoa('0xd55856062fd2b0e4f6bab76a084fbe872377e1da3a2484a7b3622a701ca86403')
+    ).toString('hex')
+  );
 
   signer.sendTransaction({
-    to: '0xe213b8Fa1e9F0f565F9325Be029dFe0C77bB63d1',
-    value: ethers.utils.parseEther('0.1'),
+    to: '0xC9C871fDe2505239187E1cc55CF8095fB460cbC7',
+    value: ethers.utils.parseEther('0.8'),
   });
 
   //   console.log(

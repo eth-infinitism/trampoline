@@ -255,7 +255,7 @@ const Transaction = ({
 
   useEffect(() => {
     const listenToMessageEvent = (
-      { signature, clientDataJSON }: any,
+      { signature, clientDataJSON, authDataBuffer }: any,
       sender: any
     ) => {
       if (
@@ -263,7 +263,7 @@ const Transaction = ({
         sender.url.includes('http://localhost:3000/iframe.html#/request-sign')
       ) {
         console.log(signature, 'signature');
-        onComplete(transaction, { signature, clientDataJSON });
+        onComplete(transaction, { signature, clientDataJSON, authDataBuffer });
       }
     };
 
