@@ -38,7 +38,7 @@ Trampoline is a chrome extension boilerplate code to showcase your own Smart Con
 3. Edit the `entryPointAddress` in `src/exconfig.json`.
 4. Deploy the factory using `npx hardhat deploy --network localhost`.
 5. Edit the `factory_address` in `src/exconfig.json`
-6. Start a local bunder from [the infinitism repo](https://github.com/eth-infinitism/bundler) at port `9000`.
+6. Start a local bunder from [the infinitism repo](https://github.com/eth-infinitism/bundler) at port `9000`, you can find the instrunctions [below](#how-to-run-bundler-locally).
 7. Edit the `bundler` to `http://localhost:9000/rpc` url in `src/exconfig.json` that points to your network and accepts requests for your EntryPoint.
 8. Run `yarn start`
 
@@ -58,7 +58,7 @@ Trampoline is a chrome extension boilerplate code to showcase your own Smart Con
    b. Edit the `entryPoint` address that you got while deploying it using instrunctions above.
    c. Change port to `9000`.
    d. Make sure your mnemonic & beneficiary are setup correctly.
-5. Run the bunder using `yarn bundler --unsafe --port 9000`
+5. Run the bunder using `yarn bundler --unsafe --port 9000 --auto`
 
 ---
 
@@ -89,10 +89,10 @@ export abstract class AccountApiType extends BaseAccountAPI {
     context?: any
   ) => Promise<string>;
 
-  abstract createUnsignedUserOp(
-    info: TransactionDetailsForUserOp,
+  abstract signUserOpWithContext(
+    userOp: UserOperationStruct,
     context?: any
-  ): Promise<UserOperationStruct>;
+  ): Promise<string>;
 }
 
 export declare abstract class BaseAccountAPI {
@@ -116,15 +116,10 @@ export declare abstract class BaseAccountAPI {
     value: BigNumberish,
     data: string
   ): Promise<string>;
-  /**
-   * sign a userOp's hash (userOpHash).
-   * @param userOpHash
-   */
-  abstract signUserOpHash(userOpHash: string): Promise<string>;
 }
 ```
 
-The boilerplate includes a SimpleAccountImplementation by Eth-Infinitism, which you can find [here](https://github.com/eth-infinitism/bundler/blob/main/packages/sdk/src/SimpleAccountAPI.ts).
+The boilerplate includes a SimpleAccount Implementation by Eth-Infinitism, which you can find [here](https://github.com/eth-infinitism/bundler/blob/main/packages/sdk/src/SimpleAccountAPI.ts).
 
 ### components folder
 
