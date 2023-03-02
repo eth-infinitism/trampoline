@@ -196,7 +196,11 @@ const SignTransactionConfirmation = ({
             <Button sx={{ width: 150 }} variant="outlined" onClick={onReject}>
               Reject
             </Button>
-            <Button sx={{ width: 150 }} variant="contained" onClick={onSend}>
+            <Button
+              sx={{ width: 150 }}
+              variant="contained"
+              onClick={() => onSend()}
+            >
               Send
             </Button>
           </Box>
