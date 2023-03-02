@@ -80,9 +80,9 @@ Config of the extension can be set in `excnfig.json` file.
 2. Deploy EntryPoint from [the infinitism repo](https://github.com/eth-infinitism/account-abstraction), you can find the instructions [below](#how-to-deploy-entrypoint-locally).
 3. Edit the `entryPointAddress` in `src/exconfig.ts`.
 4. Deploy the factory using `npx hardhat deploy --network localhost`.
-5. Edit the `factory_address` in `src/exconfig.ts`
-6. Start a local bunder from [the infinitism repo](https://github.com/eth-infinitism/bundler), you can find the instructions [below](#how-to-run-bundler-locally).
-7. Edit the `bundler` to `http://localhost:9000/rpc` url in `src/exconfig.ts` that points to your network and accepts requests for your EntryPoint.
+5. Edit the `factory_address` in `src/exconfig.json`
+6. Start a local bunder from [the infinitism repo](https://github.com/eth-infinitism/bundler) at port `9000`.
+7. Edit the `bundler` to `http://localhost:9000/rpc` url in `src/exconfig.json` that points to your network and accepts requests for your EntryPoint.
 8. Run `yarn start`
 
 ### How to deploy EntryPoint Locally
@@ -98,9 +98,10 @@ Config of the extension can be set in `excnfig.json` file.
 3. Run `yarn preprocess` to compile all the local dependencies.
 4. Edit `bundler.config.json` at `packages/bundler/localconfig`:
    a. Edit `network` to your local hardhat node
-   b. Edit the `entryPoint` address that you got while deploying it using instructions above.
-   c. Make sure your mnemonic & beneficiary are setup correctly.
-5. Run the bunder using `yarn bundler --unsafe --auto`
+   b. Edit the `entryPoint` address that you got while deploying it using instrunctions above.
+   c. Change port to `9000`.
+   d. Make sure your mnemonic & beneficiary are setup correctly.
+5. Run the bunder using `yarn bundler --unsafe --port 9000`
 
 ---
 
@@ -131,25 +132,10 @@ export abstract class AccountApiType extends BaseAccountAPI {
     context?: any
   ) => Promise<string>;
 
-  /**
-   * Called after the user is presented with the pre-transaction confirmation screen
-   * The context passed to this method is the same as the one passed to the
-   * onComplete method of the PreTransactionConfirmationComponent
-   */
-  async createUnsignedUserOpWithContext(
+  abstract createUnsignedUserOp(
     info: TransactionDetailsForUserOp,
-    preTransactionConfirmationContext?: any
+    context?: any
   ): Promise<UserOperationStruct>;
-
-  /**
-   * Called after the user is presented with the post-transaction confirmation screen
-   * The context passed to this method is the same as the one passed to the
-   * onComplete method of the PostTransactionConfirmationComponent
-   */
-  abstract signUserOpWithContext(
-    userOp: UserOperationStruct,
-    postTransactionConfirmationContext?: any
-  ): Promise<string>;
 }
 
 export declare abstract class BaseAccountAPI {
@@ -173,10 +159,15 @@ export declare abstract class BaseAccountAPI {
     value: BigNumberish,
     data: string
   ): Promise<string>;
+  /**
+   * sign a userOp's hash (userOpHash).
+   * @param userOpHash
+   */
+  abstract signUserOpHash(userOpHash: string): Promise<string>;
 }
 ```
 
-The boilerplate includes a SimpleAccount Implementation by Eth-Infinitism, which you can find [here](https://github.com/eth-infinitism/bundler/blob/main/packages/sdk/src/SimpleAccountAPI.ts).
+The boilerplate includes a SimpleAccountImplementation by Eth-Infinitism, which you can find [here](https://github.com/eth-infinitism/bundler/blob/main/packages/sdk/src/SimpleAccountAPI.ts).
 
 ### components folder
 
@@ -238,77 +229,70 @@ The signature of the `signMessage` is as follows, which shows how the `context` 
   ) => Promise<string>;
 ```
 
-The `transaction` folder contains components that are displayed to the user whenever the Dapp requests to initiate a transaction by calling the `eth_sendTransaction` RPC method. These components can display custom information or gather necessary user inputs.
+The `transaction` folder defines the component that will be displayed to the user whenever the dapp requests to initiate a transaction, i.e. dapp calls `eth_sendTransaction` RPC method. You can display custom information or collect user inputs if needed.
 
-There are three key components involved in the transaction process:
-
-- `PreTransactionConfirmationComponent`
-- `TransactionConfirmationComponent`
-- `PostTransactionConfirmationComponent`
-
-The flow of these components' mounting and interaction is detailed below:
-
-## Process Flow
-
-1. **Dapp Initiates Transaction:** The Dapp calls `eth_sendTransaction`.
-
-2. **Pre-Transaction Confirmation:** The `PreTransactionConfirmationComponent` is loaded. It can display any necessary information and also return a `context`.
-
-3. **Unsigned User Operation Creation:** The `context` from the previous step is passed to the background `account-api` function `createUnsignedUserOpWithContext`. This function returns the unsigned user operation with paymaster and data. If the developer requires any specific parameters for the paymaster, they can be included in the `context` from Step 2, which is passed to `createUnsignedUserOpWithContext`.
-
-4. **Transaction Confirmation:** The unsigned user operation is passed to the `TransactionConfirmationComponent`. This is the default transaction confirmation screen, but developers can now modify it as it is part of the `account-api` components. This component is also passed the `context` from Step 2 and can return a new `context`.
-
-5. **Post-Transaction Confirmation:** The `PostTransactionConfirmationComponent` is then mounted with the `context` from Step 4. This is the stage where developers can request external signs after the transaction has been confirmed by the user (for example, in a two-owner setup, a rainbow is needed). This component also returns a `context` which will be passed to `account-api`.
-
-6. **User Operation Signature:** After Step 5, `account-api` is called and the function `signUserOpWithContext` is executed, where the `context` from Step 5 is passed.
-
-7. **User Operation Dispatch:** Once a signature is received from Step 6, the `userOp` is sent to the blockchain.
-
-The signature of the `TransactionComponents` is defined as follows.
+The signature of the `TransactionComponent` is defined as follows.
 
 ```typescript
 export interface TransactionComponentProps {
   transaction: EthersTransactionRequest;
-  onReject: () => Promise<void>;
-}
-
-export interface PreTransactionConfirmationtProps
-  extends TransactionComponentProps {
   onComplete: (
     modifiedTransaction: EthersTransactionRequest,
     context?: any
   ) => Promise<void>;
 }
 
-export interface TransactionConfirmationtProps
-  extends TransactionComponentProps {
-  userOp: UserOperationStruct;
-  context: any;
-  onComplete: (context?: any) => Promise<void>;
+export interface TransactionComponent
+  extends React.FC<TransactionComponentProps> {}
+```
+
+Once the component has collected enough information from the user, it should pass the collected information to `onComplete` as the `context` parameter. You can also modify the transaction if you want and return it also as a parameter of `onComplete` function. This `context` and `modifiedTransaction` will be passed on to your `createUnsignedUserOp` function of `account-api`
+
+The signature of the `createUnsignedUserOp` is as follows, which shows how the `context` will be passed:
+
+```typescript
+  /** sign a message for the user */
+  abstract createUnsignedUserOp: (
+    request?: MessageSigningRequest,
+    context?: any
+  ) => Promise<string>;
+```
+
+If you want you can also attach a paymaster here if your wallet wants to sponsor the transaction as well. The paymaster information will be displayed to the user.
+
+## Config
+
+Config of the extension can be set in `excnfig.json` file.
+
+```json
+{
+  // Enable or disable password for the user.
+  "enablePasswordEncryption": true,
+  // Show default transaction screen
+  "showTransactionConfirmationScreen": true,
+  // Network that your SCW supports. Currently this app only supports a single network, we will soon have support for multiple networks in future
+  "network": {
+    "chainID": "5",
+    "family": "EVM",
+    "name": "Goerli",
+    "provider": "https://goerli.infura.io/v3/bdabe9d2f9244005af0f566398e648da",
+    "entryPointAddress": "0x0F46c65C17AA6b4102046935F33301f0510B163A",
+    "bundler": "https://app.stackup.sh/api/v1/bundler/96771b1b09e802669c33a3fc50f517f0f514a40da6448e24640ecfd83263d336",
+    "baseAsset": {
+      "symbol": "ETH",
+      "name": "ETH",
+      "decimals": 18,
+      "image": "https://ethereum.org/static/6b935ac0e6194247347855dc3d328e83/6ed5f/eth-diamond-black.webp"
+    }
+  }
 }
-
-export interface PostTransactionConfirmationtProps
-  extends TransactionComponentProps {
-  userOp: UserOperationStruct;
-  context: any;
-  onComplete: (context?: any) => Promise<void>;
-}
-
-export interface PreTransactionConfirmation
-  extends React.FC<PreTransactionConfirmationtProps> {}
-
-export interface TransactionConfirmation
-  extends React.FC<TransactionConfirmationtProps> {}
-
-export interface PostTransactionConfirmation
-  extends React.FC<PostTransactionConfirmationtProps> {}
 ```
 
 ## FAQ
 
 ### Is the password screen mandatory?
 
-No you can disable that by setting `enablePasswordEncryption` flag to `false` in `exconfig.ts`.
+No you can disable that by setting `enablePasswordEncryption` flag to `false` in `exconfig.json`.
 
 > **Warning:** the local storage will be unencrypted and your wallet must return an encrypted state when `serialize` function of `account-api` willo be called or else the user's fund will be at risk.
 
@@ -320,12 +304,8 @@ If you want to show a custom screen then you must present it to the user in `Tra
 
 You must return the paymaster information in the `userOp` constructed by the function `createUnsignedUserOp`.
 
-> **Warning:** If `showTransactionConfirmationScreen` has been disabled then the user will not be aware of paymaster and you must inform the user about paymaster in your custom transaction confirmation screen.
+> **Warnming:** If `showTransactionConfirmationScreen` has been disabled then the user will not be aware of paymaster and you must inform the user about paymaster in your custom transaction confirmation screen.
 
 ## Webpack auto-reload and HRM Errors
 
 This repository is based on the boilerplate code found at [lxieyang/chrome-extension-boilerplate-react](https://github.com/lxieyang/chrome-extension-boilerplate-react). To understand how hot-reloading and content scripts work, refer to its README.
-
-### LOGO Attributions
-
-Designed by Tomo Saito, a designer and artist at the Ethereum Foundation. [@tomosaito](https://twitter.com/tomosaito)
