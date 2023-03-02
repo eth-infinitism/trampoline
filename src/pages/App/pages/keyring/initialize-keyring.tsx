@@ -169,7 +169,7 @@ const InitializeKeyring = () => {
                     onChange={(e, checked) => setDeclaration(checked)}
                   />{' '}
                   <Typography variant="body2" color="text.secondary">
-                    I understand that EPF Account cannot recover this password
+                    I understand that TRAMPOLINE cannot recover this password
                     for me
                   </Typography>
                 </Stack>
