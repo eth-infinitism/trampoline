@@ -25,8 +25,8 @@ Trampoline is a chrome extension boilerplate code to showcase your own Smart Con
 
 1. Make sure EntryPoint is deployed on the target network.
 2. Edit the `entryPointAddress` in `src/exconfig.json`.
-3. Add your network details in `hardhat.condig.ts`.
-4. Deploy the factory using `INFURA_ID=<required> npx hardhat deploy --network <network>`.
+3. Add your network details in `hardhat.config.ts`.
+4. Deploy the factory using `ETHERSCAN_API_KEY=<optional> INFURA_ID=<required> npx hardhat deploy --network <network>`.
 5. Edit the `factory_address` in `src/exconfig.json`
 6. Edit the `bundler` url in `src/exconfig.json` that points to your network and accepts requests for your EntryPoint.
 7. Run `yarn start`
