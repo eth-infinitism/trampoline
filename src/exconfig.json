@@ -4,7 +4,7 @@
 
   "factory_address": "0xC5ad16113d1C63d4459195e0ae78e15200fb19e0",
   "network": {
-    "chainID": "5",
+    "chainID": "280",
     "family": "EVM",
     "name": "ZKSync Era Testnet",
     "provider": "'https://zksync2-testnet.zksync.dev'",

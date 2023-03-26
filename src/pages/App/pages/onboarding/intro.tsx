@@ -37,28 +37,28 @@ const Intro = () => {
       >
         <CardContent>
           <Typography textAlign="center" variant="h3" gutterBottom>
-            Start your eth journey
+            Begin your ZKSync Era journey
           </Typography>
           <Typography textAlign="center" variant="body1" color="text.secondary">
             Your smart contract account with unlimited possibilities,{' '}
             <Link>learn more</Link>
           </Typography>
-          <Box
+          {/* <Box
             display="flex"
             justifyContent="center"
             alignItems="center"
             sx={{ p: 5 }}
           >
             <img height={250} src={logo} className="App-logo" alt="logo" />
-          </Box>
-          <Typography
+          </Box> */}
+          {/* <Typography
             textAlign="center"
             sx={{ fontSize: 14 }}
             color="text.secondary"
             gutterBottom
           >
             Ethereum Foundation
-          </Typography>
+          </Typography> */}
         </CardContent>
         <CardActions sx={{ pl: 4, pr: 4, width: '100%' }}>
           <Stack spacing={2} sx={{ width: '100%' }}>
@@ -67,7 +67,7 @@ const Intro = () => {
               variant="contained"
               onClick={() => navigate('/accounts/new')}
             >
-              Create/recover new account
+              Start
             </Button>
           </Stack>
         </CardActions>

@@ -5,8 +5,7 @@
   "options_page": "options.html",
   "background": { "service_worker": "ex_background.bundle.js" },
   "action": {
-    "default_popup": "popup.html",
-    "default_icon": "icon-34.png"
+    "default_popup": "popup.html"
   },
   "icons": {
     "128": "icon-128.png"

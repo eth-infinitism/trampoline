@@ -191,11 +191,20 @@ const NewAccount = () => {
           {/* Add custom account configurations here before the account gets deployed */}
 
           {!showLoader && stage === 'account-onboarding' && (
-            <div>
-              <button onClick={() => onOnboardingComplete()}>
-                Create Account
-              </button>
-            </div>
+            // <div>
+            //   <button onClick={() => onOnboardingComplete()}>
+            //     Create Account
+            //   </button>
+            // </div>
+            <Stack spacing={2} sx={{ width: '100%' }}>
+              <Button
+                size="large"
+                variant="contained"
+                onClick={() => onOnboardingComplete()}
+              >
+                Create account
+              </Button>
+            </Stack>
           )}
 
           {/* {!showLoader &&

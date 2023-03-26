@@ -10,7 +10,7 @@ import {
   Typography,
 } from '@mui/material';
 import { BigNumber, ethers } from 'ethers';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   AccountImplementations,
   ActiveAccountImplementation,
@@ -40,6 +40,48 @@ import { EthersTransactionRequest } from '../../../Background/services/types';
 import AccountInfo from '../../components/account-info';
 import OriginInfo from '../../components/origin-info';
 import Config from '../../../../exconfig.json';
+import { Provider } from 'zksync-web3';
+
+const MEMBERSHIP_ABI = [
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: '_user',
+        type: 'address',
+      },
+    ],
+    name: 'userTier',
+    outputs: [
+      {
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'uint256',
+        name: '_tier',
+        type: 'uint256',
+      },
+    ],
+    name: 'benefit',
+    outputs: [
+      {
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+];
 
 const SignTransactionComponent =
   AccountImplementations[ActiveAccountImplementation].Transaction;
@@ -50,7 +92,7 @@ const SignTransactionConfirmation = ({
   accountInfo,
   originPermission,
   transactions,
-  userOp,
+  // userOp,
   onReject,
   onSend,
 }: {
@@ -59,17 +101,44 @@ const SignTransactionConfirmation = ({
   accountInfo: any;
   originPermission: any;
   transactions: EthersTransactionRequest[];
-  userOp: UserOperationStruct;
+  // userOp: UserOperationStruct;
   onReject: any;
   onSend: any;
 }) => {
   const [showAddPaymasterUI, setShowAddPaymasterUI] = useState<boolean>(false);
   const [addPaymasterLoader, setAddPaymasterLoader] = useState<boolean>(false);
-  const [paymasterUrl, setPaymasterUrl] = useState<string>('');
+  const provider = useMemo(
+    () => new Provider('https://zksync2-testnet.zksync.dev'),
+    []
+  );
 
-  const addPaymaster = () => {
-    setAddPaymasterLoader(true);
-  };
+  console.log('account info', accountInfo, activeAccount);
+
+  const [tier, setTier] = useState<number>(1);
+  const [gasDiscount, setGasDiscount] = useState<number>(0);
+  const [gasCost, setGasCost] = useState();
+
+  useEffect(() => {
+    // hardcoded for demo purposes
+    // ideally we want to maintain a list of memberships that can be associated with transaction
+    const memberContract = new ethers.Contract(
+      '0x4d69de6Ce6EdDb5F35D6549A25332Ff15D718FCB',
+      MEMBERSHIP_ABI,
+      provider
+    );
+
+    memberContract.userTier(activeAccount).then((value) => {
+      const t = value.toNumber();
+
+      console.log('tier value', value);
+      setTier(t);
+
+      memberContract.benefit(t).then((ben) => {
+        console.log('gas cost', ben);
+        setGasDiscount(ben.toNumber());
+      });
+    });
+  }, []);
 
   return (
     <Container>
@@ -83,78 +152,51 @@ const SignTransactionConfirmation = ({
       )}
       <Stack spacing={2} sx={{ position: 'relative', pt: 2, mb: 4 }}>
         <OriginInfo permission={originPermission} />
-        <Typography variant="h6" sx-={{ p: 2 }}>
-          Paymaster Info
-        </Typography>
-        {!showAddPaymasterUI && (
-          <Paper sx={{ p: 2 }}>
-            <Typography variant="body2">
-              {userOp.paymasterAndData === '0x'
-                ? 'No paymaster has been used'
-                : ';'}
+        {tier > 0 && (
+          <>
+            <Typography variant="h6" sx-={{ p: 2 }}>
+              Membership Info
             </Typography>
-            <Button onClick={() => setShowAddPaymasterUI(true)} variant="text">
-              Add custom
-            </Button>
-          </Paper>
-        )}
-        {showAddPaymasterUI && (
-          <Paper sx={{ p: 2 }}>
-            <TextField
-              value={paymasterUrl}
-              onChange={(e) => setPaymasterUrl(e.target.value)}
-              sx={{ width: '100%' }}
-              label="Paymaster URL"
-              variant="standard"
-            />
-            <Box
-              justifyContent="space-around"
-              alignItems="center"
-              display="flex"
-              sx={{ p: '16px 0px' }}
-            >
-              <Button
-                sx={{ width: 150 }}
-                variant="outlined"
-                onClick={() => setShowAddPaymasterUI(false)}
+            <Paper sx={{ p: 2 }}>
+              <Typography
+                variant="body2"
+                sx={{
+                  fontWeight: 600,
+                  mb: '0.25rem',
+                }}
               >
-                Cancel
-              </Button>
-              <Button
-                sx={{ width: 150, position: 'relative' }}
-                variant="contained"
-                onClick={addPaymaster}
+                Tier:
+              </Typography>
+              <Typography variant="subtitle2">{tier}</Typography>
+              <Typography
+                variant="body2"
+                sx={{
+                  fontWeight: 600,
+                  mb: '0.25rem',
+                }}
               >
-                Add
-                {addPaymasterLoader && (
-                  <CircularProgress
-                    size={24}
-                    sx={{
-                      position: 'absolute',
-                      top: '50%',
-                      left: '50%',
-                      marginTop: '-12px',
-                      marginLeft: '-12px',
-                    }}
-                  />
-                )}
-              </Button>
-            </Box>
-          </Paper>
+                Benefit:
+              </Typography>
+              <Typography variant="subtitle2">
+                {gasDiscount}% Gas fee discount
+              </Typography>
+            </Paper>
+          </>
         )}
+
         <Typography variant="h6" sx-={{ p: 2 }}>
           {transactions.length > 1 ? ' Transactions data' : 'Transaction data'}
         </Typography>
         <Stack spacing={2}>
           {transactions.map((transaction: EthersTransactionRequest) => (
             <Paper sx={{ p: 2 }}>
-              <Typography variant="subtitle2" sx={{ mb: 2 }}>
+              <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 2 }}>
                 To:{' '}
                 <Typography component="span" variant="body2">
                   <pre className="sign-message-pre-tag">{transaction.to}</pre>
                 </Typography>
               </Typography>
-              <Typography variant="subtitle2" sx={{ mb: 2 }}>
+              <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 2 }}>
                 Data:{' '}
                 <Typography component="span" variant="body2">
                   <pre className="sign-message-pre-tag">
@@ -162,7 +204,7 @@ const SignTransactionConfirmation = ({
                   </pre>
                 </Typography>
               </Typography>
-              <Typography variant="subtitle2" sx={{ mb: 2 }}>
+              <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 2 }}>
                 Value:{' '}
                 <Typography component="span" variant="body2">
                   <pre className="sign-message-pre-tag">
@@ -213,7 +255,7 @@ const SignTransactionConfirmation = ({
 const SignTransactionRequest = () => {
   const [stage, setStage] = useState<
     'custom-account-screen' | 'sign-transaction-confirmation'
-  >('custom-account-screen');
+  >('sign-transaction-confirmation');
 
   const [context, setContext] = useState(null);
 
@@ -253,19 +295,15 @@ const SignTransactionRequest = () => {
     [activeAccount, backgroundDispatch, context]
   );
 
-  const onComplete = useCallback(
-    async (modifiedTransaction: EthersTransactionRequest, context?: any) => {
-      if (activeAccount) {
-        backgroundDispatch(createUnsignedUserOp(activeAccount));
-        setContext(context);
-        if (Config.showTransactionConfirmationScreen === false) {
-          onSend(context);
-        }
-        setStage('sign-transaction-confirmation');
-      }
-    },
-    [setContext, setStage, activeAccount, backgroundDispatch, onSend]
-  );
+  // const onComplete = useCallback(
+  //   async (modifiedTransaction: EthersTransactionRequest, context?: any) => {
+  //     if (activeAccount) {
+  //       console.log('on sign tx complete llog check');
+  //       setStage('sign-transaction-confirmation');
+  //     }
+  //   },
+  //   [setContext, setStage, activeAccount, backgroundDispatch, onSend]
+  // );
 
   const onReject = useCallback(async () => {
     if (activeAccount)
@@ -273,32 +311,34 @@ const SignTransactionRequest = () => {
     window.close();
   }, [backgroundDispatch, activeAccount]);
 
-  if (
-    stage === 'sign-transaction-confirmation' &&
-    pendingUserOp &&
-    sendTransactionRequest.transactionRequest
-  )
-    return (
-      <SignTransactionConfirmation
-        activeNetwork={activeNetwork}
-        activeAccount={activeAccount}
-        accountInfo={accountInfo}
-        originPermission={originPermission}
-        onReject={onReject}
-        onSend={onSend}
-        transactions={[sendTransactionRequest.transactionRequest]}
-        userOp={pendingUserOp}
-      />
-    );
+  // if (
+  // stage === 'sign-transaction-confirmation' &&
+  // sendTransactionRequest.transactionRequest
+  // )
+  //   return (
 
-  return SignTransactionComponent &&
-    sendTransactionRequest.transactionRequest ? (
-    <SignTransactionComponent
+  return sendTransactionRequest.transactionRequest ? (
+    <SignTransactionConfirmation
+      activeNetwork={activeNetwork}
+      activeAccount={activeAccount}
+      accountInfo={accountInfo}
+      originPermission={originPermission}
       onReject={onReject}
-      transaction={sendTransactionRequest.transactionRequest}
-      onComplete={onComplete}
+      onSend={onSend}
+      transactions={[sendTransactionRequest.transactionRequest]}
     />
   ) : null;
+
+  // );
+
+  // return SignTransactionComponent &&
+  //   sendTransactionRequest.transactionRequest ? (
+  //   <SignTransactionComponent
+  //     onReject={onReject}
+  //     transaction={sendTransactionRequest.transactionRequest}
+  //     onComplete={onComplete}
+  //   />
+  // ) : null;
 };
 
 export default SignTransactionRequest;
