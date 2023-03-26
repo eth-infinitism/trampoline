@@ -11,7 +11,7 @@ const TransferAssetButton = ({ activeAccount }: { activeAccount: string }) => {
   const sendMoney = useCallback(async () => {
     console.log('did we come here?', window.ethereum);
     if (window.ethereum) {
-      const accounts = await window.ethereum.request({
+      const activeAccount = await window.ethereum.request({
         method: 'eth_requestAccounts',
       });
       const txHash = await window.ethereum.request({
@@ -25,6 +25,8 @@ const TransferAssetButton = ({ activeAccount }: { activeAccount: string }) => {
         ],
       });
       console.log(txHash);
+    } else {
+      console.log('no ethereum');
     }
   }, [activeAccount]);
 

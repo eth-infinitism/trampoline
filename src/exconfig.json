@@ -1,12 +1,13 @@
 {
   "enablePasswordEncryption": false,
   "showTransactionConfirmationScreen": true,
-  "factory_address": "0x09c58cf6be8E25560d479bd52B4417d15bCA2845",
+
+  "factory_address": "0xC5ad16113d1C63d4459195e0ae78e15200fb19e0",
   "network": {
     "chainID": "5",
     "family": "EVM",
-    "name": "Goerli",
-    "provider": "https://goerli.infura.io/v3/bdabe9d2f9244005af0f566398e648da",
+    "name": "ZKSync Era Testnet",
+    "provider": "'https://zksync2-testnet.zksync.dev'",
     "entryPointAddress": "0x0576a174D229E3cFA37253523E645A78A0C91B57",
     "bundler": "http://localhost:9000/rpc",
     "baseAsset": {

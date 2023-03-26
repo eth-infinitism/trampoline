@@ -58,7 +58,7 @@ export default async function showExtensionPopup(
   const popupWidth = 384;
   const popupHeight = 628;
   return browser.windows.create({
-    url: `${browser.runtime.getURL('popup.html')}/#${url}`,
+    url: `${browser.runtime.getURL('popup.html')}#${url}`,
     type: 'popup',
     left: left + width - popupWidth,
     top,

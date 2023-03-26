@@ -27,8 +27,12 @@ const AccountBalanceInfo = ({ address }: { address: string }) => {
   const backgroundDispatch = useBackgroundDispatch();
 
   useEffect(() => {
+    console.log('here bro');
+
     backgroundDispatch(getAccountData(address));
   }, [backgroundDispatch, address]);
+
+  console.log('my account data', accountData);
 
   return (
     <Stack spacing={1} justifyContent="center" alignItems="center">
@@ -50,7 +54,7 @@ const AccountBalanceInfo = ({ address }: { address: string }) => {
             {activeNetwork.baseAsset.symbol}
           </Typography>
         )}
-      <Tooltip
+      {/* <Tooltip
         title={
           walletDeployed
             ? `Wallet has been deployed on ${activeNetwork.name} chain`
@@ -72,7 +76,7 @@ const AccountBalanceInfo = ({ address }: { address: string }) => {
               : 'Not deployed'
           }
         />
-      </Tooltip>
+      </Tooltip> */}
     </Stack>
   );
 };

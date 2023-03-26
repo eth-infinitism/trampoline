@@ -2,11 +2,9 @@ import AccountApi from '../../Account/account-api';
 import { AccountImplementationType } from '../../Account/account-api/types';
 import { ActiveAccountImplementation } from '../../Account/';
 
-const AccountImplementation: AccountImplementationType = AccountApi;
+const AccountImplementation = AccountApi;
 
-const AccountImplementations: {
-  [name: string]: AccountImplementationType;
-} = {
+const AccountImplementations = {
   [ActiveAccountImplementation]: AccountImplementation,
 };
 

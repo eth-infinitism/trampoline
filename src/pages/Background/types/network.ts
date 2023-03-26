@@ -10,6 +10,8 @@ export type NetworkBaseAsset = {
   symbol: string;
   name: string;
   decimals: number;
+
+  // ZKSYNC ETH CONTRACT ADDRESS
   contractAddress?: string;
   image?: string;
 };
@@ -24,8 +26,6 @@ export type Network = {
   family: NetworkFamily;
   chainID?: string;
   provider: string;
-  bundler: string;
-  entryPointAddress: string;
 };
 
 /**

@@ -106,9 +106,11 @@ const NewAccount = () => {
   const supportedNetworks: Array<EVMNetwork> =
     useBackgroundSelector(getSupportedNetworks);
 
+  // get the newly created account
   const addingAccount: string | null = useBackgroundSelector(getAccountAdded);
 
   useEffect(() => {
+    // once the account is added to the keyring, redirect to the homepage
     if (addingAccount) {
       backgroundDispatch(resetAccountAdded());
       navigate('/');
@@ -119,6 +121,7 @@ const NewAccount = () => {
     async (context?: any) => {
       setShowLoader(true);
       await backgroundDispatch(
+        // insert account in the keyring
         createNewAccount({
           name: name,
           chainIds: supportedNetworks.map((network) => network.chainID),
@@ -184,14 +187,25 @@ const NewAccount = () => {
               nextStage={nextStage}
             />
           )}
-          {!showLoader &&
+
+          {/* Add custom account configurations here before the account gets deployed */}
+
+          {!showLoader && stage === 'account-onboarding' && (
+            <div>
+              <button onClick={() => onOnboardingComplete()}>
+                Create Account
+              </button>
+            </div>
+          )}
+
+          {/* {!showLoader &&
             stage === 'account-onboarding' &&
             AccountOnboarding && (
               <AccountOnboarding
                 accountName={name}
                 onOnboardingComplete={onOnboardingComplete}
               />
-            )}
+            )} */}
         </Box>
       </Stack>
     </Container>
