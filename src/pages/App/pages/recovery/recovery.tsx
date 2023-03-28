@@ -7,6 +7,7 @@ import axios from 'axios';
 import accountABI from './SimpleAccount.json';
 import { walletFactoryAbi } from '../service/walletFactory';
 import { Box, Button } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 
 const RecoveryPage = () => {
   const [email, setEmail] = React.useState<string>('');
@@ -21,6 +22,8 @@ const RecoveryPage = () => {
     zkSyncProvider,
     ethereumProvider
   );
+
+  const navigate = useNavigate();
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(event.target.value);
@@ -131,6 +134,9 @@ const RecoveryPage = () => {
       };
       const waitTx = await wallet1.sendTransaction(setRecovery);
       console.log(waitTx);
+      if (waitTx) {
+        navigate('/');
+      }
     } catch (e) {
       console.log(e);
     }
@@ -150,9 +156,9 @@ const RecoveryPage = () => {
       <Button variant="contained" className="button" onClick={handleCLick}>
         Recover
       </Button>
-      <Button variant="contained" className="button" onClick={handleclick2}>
+      {/* <Button variant="contained" className="button" onClick={handleclick2}>
         Recover wallet
-      </Button>
+      </Button> */}
     </Box>
   );
 };
