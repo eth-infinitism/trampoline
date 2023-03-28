@@ -40,54 +40,66 @@ const TakeNameComponent = ({
 }) => {
   return (
     <>
-      <CardContent>
-        <Typography textAlign="center" variant="h3" gutterBottom>
-          New account
-        </Typography>
-        <Typography textAlign="center" variant="body1" color="text.secondary">
-          Give a name to your account so that you can recoganise it easily.
-        </Typography>
-        <FormGroup sx={{ p: 2, pt: 4 }}>
-          <FormControl sx={{ m: 1 }} variant="outlined">
-            <InputLabel htmlFor="name">Name</InputLabel>
-            <OutlinedInput
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              autoFocus
-              id="name"
-              type="text"
-              label="Name"
-            />
-          </FormControl>
-        </FormGroup>
-      </CardContent>
-      <CardActions sx={{ width: '100%', pl: 2, pr: 2, pt: 0 }}>
-        <Stack spacing={2} sx={{ width: '100%', pl: 2, pr: 2 }}>
-          <Box sx={{ position: 'relative' }}>
-            <Button
-              sx={{ width: '100%' }}
-              disabled={name.length === 0 || showLoader}
-              size="large"
-              variant="contained"
-              onClick={nextStage}
-            >
-              Set name
-            </Button>
-            {showLoader && (
-              <CircularProgress
-                size={24}
-                sx={{
-                  position: 'absolute',
-                  top: '50%',
-                  left: '50%',
-                  marginTop: '-12px',
-                  marginLeft: '-12px',
-                }}
+      <div
+        style={{
+          fontFamily: 'Poppins',
+        }}
+      >
+        <CardContent>
+          <Typography
+            textAlign="center"
+            variant="h4"
+            gutterBottom
+            fontWeight="500"
+          >
+            New account
+          </Typography>
+          <Typography textAlign="center" variant="body1" color="text.secondary">
+            Give a name to your account so that you can recognise it easily.
+          </Typography>
+          <FormGroup>
+            <FormControl sx={{ m: 1, mt: 3 }} variant="outlined" fullWidth>
+              <InputLabel htmlFor="name">Name</InputLabel>
+              <OutlinedInput
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                autoFocus
+                id="name"
+                type="text"
+                label="Name"
               />
-            )}
-          </Box>
-        </Stack>
-      </CardActions>
+            </FormControl>
+          </FormGroup>
+        </CardContent>
+        <CardActions sx={{ width: '100%', pt: 0 }}>
+          <Stack spacing={2} sx={{ width: '100%' }}>
+            <Box sx={{ position: 'relative' }}>
+              <Button
+                color="secondary"
+                sx={{ width: '100%', borderRadius: '50px' }}
+                disabled={name.length === 0 || showLoader}
+                size="large"
+                variant="contained"
+                onClick={nextStage}
+              >
+                Set name
+              </Button>
+              {showLoader && (
+                <CircularProgress
+                  size={24}
+                  sx={{
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    marginTop: '-12px',
+                    marginLeft: '-12px',
+                  }}
+                />
+              )}
+            </Box>
+          </Stack>
+        </CardActions>
+      </div>
     </>
   );
 };
@@ -190,12 +202,7 @@ const NewAccount = () => {
 
           {/* Add custom account configurations here before the account gets deployed */}
 
-          {!showLoader && stage === 'account-onboarding' && (
-            // <div>
-            //   <button onClick={() => onOnboardingComplete()}>
-            //     Create Account
-            //   </button>
-            // </div>
+          {/* {!showLoader && stage === 'account-onboarding' && (
             <Stack spacing={2} sx={{ width: '100%' }}>
               <Button
                 size="large"
@@ -205,16 +212,16 @@ const NewAccount = () => {
                 Create account
               </Button>
             </Stack>
-          )}
+          )} */}
 
-          {/* {!showLoader &&
+          {!showLoader &&
             stage === 'account-onboarding' &&
             AccountOnboarding && (
               <AccountOnboarding
                 accountName={name}
                 onOnboardingComplete={onOnboardingComplete}
               />
-            )} */}
+            )}
         </Box>
       </Stack>
     </Container>

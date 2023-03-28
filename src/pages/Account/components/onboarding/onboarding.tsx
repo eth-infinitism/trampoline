@@ -13,35 +13,44 @@ const Onboarding: OnboardingComponent = ({
   onOnboardingComplete,
 }: OnboardingComponentProps) => {
   return (
-    <Box sx={{ padding: 2 }}>
-      <CardContent>
-        <Typography variant="h3" gutterBottom>
-          Custmisable Account Component
-        </Typography>
-        <Typography variant="body1" color="text.secondary">
-          You can show as many steps as you want in this dummy component. You
-          need to call the function <b>onOnboardingComplete</b> passed as a
-          props to this component. <br />
-          <br />
-          The function takes a context as a parameter, this context will be
-          passed to your AccountApi when creating a new account.
-          <br />
-          This Component is defined in exported in{' '}
-          <pre>trampoline/src/pages/Account/components/onboarding/index.ts</pre>
-        </Typography>
-      </CardContent>
-      <CardActions sx={{ pl: 4, pr: 4, width: '100%' }}>
-        <Stack spacing={2} sx={{ width: '100%' }}>
-          <Button
-            size="large"
-            variant="contained"
-            onClick={() => onOnboardingComplete()}
-          >
-            Continue
-          </Button>
-        </Stack>
-      </CardActions>
-    </Box>
+    <div
+      style={{
+        fontFamily: 'Poppins',
+      }}
+    >
+      <Box sx={{ padding: 2 }}>
+        <CardContent>
+          <Typography variant="h4" gutterBottom fontWeight="500">
+            Labore laborum aliquip veniam.
+          </Typography>
+          <Typography variant="body1" color="text.secondary">
+            Ea laboris mollit esse tempor eiusmod elit veniam voluptate minim
+            aliquip amet mollit officia id. Cillum minim ex incididunt ut
+            exercitation ex dolore labore. Cupidatat esse cupidatat ea proident
+            reprehenderit consequat do et non aute cillum.
+            <br />
+            Laborum aute ex dolore veniam tempor anim aute. Exercitation dolor
+            consequat nostrud eu nulla pariatur incididunt officia officia
+            incididunt irure ipsum commodo.
+          </Typography>
+        </CardContent>
+        <CardActions sx={{ width: '100%' }}>
+          <Stack spacing={2} sx={{ width: '100%' }}>
+            <Button
+              size="large"
+              color="secondary"
+              variant="contained"
+              onClick={() => onOnboardingComplete()}
+              sx={{
+                borderRadius: '50px',
+              }}
+            >
+              Create account
+            </Button>
+          </Stack>
+        </CardActions>
+      </Box>
+    </div>
   );
 };
 

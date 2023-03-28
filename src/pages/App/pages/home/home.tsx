@@ -21,7 +21,17 @@ const Home = () => {
   return (
     <Container sx={{ width: '62vw', height: '100vh' }}>
       <Header />
-      <Card sx={{ ml: 4, mr: 4, mt: 2, mb: 2 }}>
+      <Card
+        sx={{
+          boxShadow: 'none',
+          ml: 4,
+          mr: 4,
+          mt: 2,
+          mb: 2,
+          borderRadius: 5,
+          border: '1px solid #d6d9dc',
+        }}
+      >
         <CardContent>
           {activeAccount && <AccountInfo address={activeAccount} />}
           <Box

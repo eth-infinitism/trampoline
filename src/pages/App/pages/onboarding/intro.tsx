@@ -21,57 +21,63 @@ const Intro = () => {
       justifyContent="center"
       alignItems="center"
     >
-      <Box
-        component="span"
-        display="flex"
-        flexDirection="column"
-        justifyContent="center"
-        alignItems="center"
-        sx={{
-          width: 600,
-          p: 2,
-          border: '1px solid #d6d9dc',
-          borderRadius: 5,
-          background: 'white',
+      <div
+        style={{
+          fontFamily: 'Poppins',
         }}
       >
-        <CardContent>
-          <Typography textAlign="center" variant="h3" gutterBottom>
-            Begin your ZKSync Era journey
-          </Typography>
-          <Typography textAlign="center" variant="body1" color="text.secondary">
-            Your smart contract account with unlimited possibilities,{' '}
-            <Link>learn more</Link>
-          </Typography>
-          {/* <Box
-            display="flex"
-            justifyContent="center"
-            alignItems="center"
-            sx={{ p: 5 }}
-          >
-            <img height={250} src={logo} className="App-logo" alt="logo" />
-          </Box> */}
-          {/* <Typography
-            textAlign="center"
-            sx={{ fontSize: 14 }}
-            color="text.secondary"
-            gutterBottom
-          >
-            Ethereum Foundation
-          </Typography> */}
-        </CardContent>
-        <CardActions sx={{ pl: 4, pr: 4, width: '100%' }}>
-          <Stack spacing={2} sx={{ width: '100%' }}>
-            <Button
-              size="large"
-              variant="contained"
-              onClick={() => navigate('/accounts/new')}
+        <Box
+          component="span"
+          display="flex"
+          flexDirection="column"
+          justifyContent="center"
+          alignItems="center"
+          sx={{
+            width: 600,
+            p: 2,
+            border: '1px solid #d6d9dc',
+            borderRadius: 5,
+            background: 'white',
+          }}
+        >
+          <CardContent>
+            <Typography
+              textAlign="center"
+              variant="h2"
+              gutterBottom
+              fontWeight="600"
+              letterSpacing="-2.2px"
             >
-              Start
-            </Button>
-          </Stack>
-        </CardActions>
-      </Box>
+              fuchsia
+            </Typography>
+            <Typography
+              textAlign="center"
+              variant="body1"
+              color="text.secondary"
+            >
+              Your smart contract account with unlimited rewards,{' '}
+              <Link>learn more</Link>
+            </Typography>
+          </CardContent>
+          <CardActions sx={{ pl: 4, pr: 4, width: '100%' }}>
+            <Stack spacing={2} sx={{ width: '100%' }}>
+              <Button
+                color="secondary"
+                sx={{
+                  borderRadius: '50px',
+                  backgroundColor: '#C8366B',
+                  fontFamily: 'Poppins',
+                }}
+                size="large"
+                variant="contained"
+                onClick={() => navigate('/accounts/new')}
+              >
+                Start
+              </Button>
+            </Stack>
+          </CardActions>
+        </Box>
+      </div>
     </Stack>
   );
 };

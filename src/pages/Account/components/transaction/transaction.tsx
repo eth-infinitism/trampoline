@@ -88,10 +88,10 @@ const Transaction = ({
   );
 };
 
-// function getUserTier(provider: Provider) {
-//   try {
-//     const tier = provider;
-//   } catch (e) {}
-// }
+function getUserTier(provider: Provider) {
+  try {
+    const tier = provider;
+  } catch (e) {}
+}
 
 export default Transaction;

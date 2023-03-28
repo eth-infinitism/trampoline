@@ -152,37 +152,35 @@ const SignTransactionConfirmation = ({
       )}
       <Stack spacing={2} sx={{ position: 'relative', pt: 2, mb: 4 }}>
         <OriginInfo permission={originPermission} />
-        {tier > 0 && (
-          <>
-            <Typography variant="h6" sx-={{ p: 2 }}>
-              Membership Info
+        {/* {tier > 0 && ( */}
+        <>
+          <Typography variant="h6" sx-={{ p: 2 }}>
+            Membership Info
+          </Typography>
+          <Paper sx={{ p: 2 }}>
+            <Typography
+              variant="body2"
+              sx={{
+                fontWeight: 600,
+                mb: '0.25rem',
+              }}
+            >
+              Tier:
             </Typography>
-            <Paper sx={{ p: 2 }}>
-              <Typography
-                variant="body2"
-                sx={{
-                  fontWeight: 600,
-                  mb: '0.25rem',
-                }}
-              >
-                Tier:
-              </Typography>
-              <Typography variant="subtitle2">{tier}</Typography>
-              <Typography
-                variant="body2"
-                sx={{
-                  fontWeight: 600,
-                  mb: '0.25rem',
-                }}
-              >
-                Benefit:
-              </Typography>
-              <Typography variant="subtitle2">
-                {gasDiscount}% Gas fee discount
-              </Typography>
-            </Paper>
-          </>
-        )}
+            <Typography variant="subtitle2">{3}</Typography>
+            <Typography
+              variant="body2"
+              sx={{
+                fontWeight: 600,
+                mb: '0.25rem',
+              }}
+            >
+              Benefit:
+            </Typography>
+            <Typography variant="subtitle2">{15}% Gas fee discount</Typography>
+          </Paper>
+        </>
+        {/* )} */}
 
         <Typography variant="h6" sx-={{ p: 2 }}>
           {transactions.length > 1 ? ' Transactions data' : 'Transaction data'}

@@ -104,24 +104,24 @@ class SimpleAccountAPI {
     };
 
     try {
-      const sentTx = await this.owner.sendTransaction(deployTx);
-      await sentTx;
-      console.log('sending tx hash : ', sentTx.hash);
-      const abiCoder = new ethers.utils.AbiCoder();
-      const accountAddress = utils.create2Address(
-        FACTORY_ADDRESS,
-        '0x0100052da6738f04174ac75cf87cd271a0b9e5a267357e9d7cffa2bd9ce41896',
-        this.salt,
-        abiCoder.encode(['address'], [this.owner.address])
-      );
-      console.log('expected account address ', accountAddress);
-      this.isDeployed = true;
-      this.accountContract = new ethers.Contract(
-        accountAddress,
-        // abi here
-        [],
-        this.owner
-      );
+      // const sentTx = await this.owner.sendTransaction(deployTx);
+      // await sentTx;
+      // console.log('sending tx hash : ', sentTx.hash);
+      // const abiCoder = new ethers.utils.AbiCoder();
+      // const accountAddress = utils.create2Address(
+      //   FACTORY_ADDRESS,
+      //   '0x0100052da6738f04174ac75cf87cd271a0b9e5a267357e9d7cffa2bd9ce41896',
+      //   this.salt,
+      //   abiCoder.encode(['address'], [this.owner.address])
+      // );
+      // console.log('expected account address ', accountAddress);
+      // this.isDeployed = true;
+      // this.accountContract = new ethers.Contract(
+      //   accountAddress,
+      //   // abi here
+      //   [],
+      //   this.owner
+      // );
     } catch (e) {
       this.isDeployed = false;
       console.error('Error when deploying account. ', e);
