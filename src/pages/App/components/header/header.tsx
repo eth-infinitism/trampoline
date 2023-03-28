@@ -47,7 +47,14 @@ const Header = () => {
         onClick={() => navigate('/')}
       >
         <img height={30} src={logo} className="App-logo" alt="logo" />
-        <Typography variant="h6">TRAMPOLINE</Typography>
+        <Typography
+          variant="h6"
+          fontFamily="Poppins"
+          fontStyle="600"
+          letterSpacing="-2px"
+        >
+          fuchsia
+        </Typography>
       </Stack>
       <Stack
         direction="row"

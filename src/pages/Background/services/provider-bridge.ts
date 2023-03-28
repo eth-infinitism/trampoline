@@ -259,6 +259,8 @@ export default class ProviderBridgeService extends BaseService<Events> {
         );
         await blockUntilUserAction;
 
+        console.log('hi i am kari desu');
+
         // Fetch the latest permission
         const persistedPermission = await this.checkPermission(origin);
         if (typeof persistedPermission !== 'undefined') {

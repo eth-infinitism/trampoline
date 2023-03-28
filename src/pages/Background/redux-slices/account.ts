@@ -146,18 +146,26 @@ export const getAccountData = createBackgroundAsyncThunk(
     ) as KeyringService;
     const activeNetwork = (mainServiceManager.store.getState() as RootState)
       .network.activeNetwork;
-    keyringService.getAccountData(address, activeNetwork).then((accountData) =>
-      dispatch(
-        setAccountData({
-          minimumRequiredFunds: accountData.minimumRequiredFunds,
-          address: address,
-          network: activeNetwork,
-          accountDeployed: accountData.accountDeployed,
-          balances: accountData.balances,
-          ens: accountData.ens,
-        })
-      )
-    );
+
+    console.log('hi waashi no name');
+
+    keyringService
+      .getAccountData(address, activeNetwork)
+      .then((accountData) => {
+        console.log('bruh data', accountData);
+
+        dispatch(
+          setAccountData({
+            minimumRequiredFunds: accountData.minimumRequiredFunds,
+            address: address,
+            network: activeNetwork,
+            accountDeployed: accountData.accountDeployed,
+            balances: accountData.balances,
+            ens: accountData.ens,
+          })
+        );
+      })
+      .catch((e) => console.log('getAccountData error ', e));
   }
 );
 
