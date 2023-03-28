@@ -17,6 +17,7 @@ import '../Content/index';
 
 import { WalletConnectConnector } from 'wagmi/connectors/walletConnect';
 import Config from '../../exconfig.json';
+import RecoveryPage from './pages/recovery/recovery';
 console.debug('---- LAUNCHING WITH CONFIG ----', Config);
 
 const App = () => {
@@ -81,6 +82,7 @@ const App = () => {
         />
         <Route path="/keyring/initialize" element={<InitializeKeyring />} />
         <Route path="/onboarding/intro" element={<Onboarding />} />
+        <Route path="/recovery" element={<RecoveryPage />} />
       </Routes>
     </WagmiConfig>
   );

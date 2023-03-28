@@ -1,5 +1,6 @@
 import {
   Box,
+  Button,
   Card,
   CardActions,
   CardContent,
@@ -14,9 +15,15 @@ import AccountInfo from '../../components/account-info';
 import Header from '../../components/header';
 import TransferAssetButton from '../../components/transfer-asset-button';
 import { useBackgroundSelector } from '../../hooks';
+import { useNavigate } from 'react-router-dom';
 
 const Home = () => {
   const activeAccount = useBackgroundSelector(getActiveAccount);
+  const navigate = useNavigate();
+
+  const handleRecovery = () => {
+    navigate('/recovery');
+  };
 
   return (
     <Container sx={{ width: '62vw', height: '100vh' }}>
@@ -43,6 +50,16 @@ const Home = () => {
             sx={{ m: 2 }}
           >
             <AccountBalanceInfo address={activeAccount as string} />
+          </Box>
+          <Box
+            component="div"
+            display="flex"
+            flexDirection="column"
+            justifyContent="center"
+            alignItems="center"
+            sx={{ m: 2 }}
+          >
+            <Button onClick={handleRecovery}>Set Recovery</Button>
           </Box>
           <Box
             component="div"
