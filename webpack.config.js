@@ -9,7 +9,7 @@ var { CleanWebpackPlugin } = require('clean-webpack-plugin');
 // var ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
 // var ReactRefreshTypeScript = require('react-refresh-typescript');
 const NodePolyfillPlugin = require('node-polyfill-webpack-plugin');
-// const LiveReloadPlugin = require('webpack-livereload-plugin');
+const LiveReloadPlugin = require('webpack-livereload-plugin');
 
 const ASSET_PATH = process.env.ASSET_PATH || '/';
 
@@ -47,10 +47,17 @@ var options = {
     contentScript: path.join(__dirname, 'src', 'pages', 'Content', 'index.ts'),
     injectScript: path.join(__dirname, 'src', 'pages', 'Content', 'inject.ts'),
   },
-  chromeExtensionBoilerplate: {
-    notHotReload: ['background', 'contentScript', 'injectScript'],
-    enableBackgroundAutoReload: true,
-  },
+  //   chromeExtensionBoilerplate: {
+  //     notHotReload: [
+  //       'background',
+  //       'contentScript',
+  //       'injectScript',
+  //       'options',
+  //       'popup',
+  //       'app',
+  //     ],
+  //     enableBackgroundAutoReload: true,
+  //   },
   output: {
     filename: 'ex_[name].bundle.js',
     path: path.resolve(__dirname, 'build'),
@@ -130,7 +137,7 @@ var options = {
       .concat(['.js', '.jsx', '.ts', '.tsx', '.css']),
   },
   plugins: [
-    // new LiveReloadPlugin({}),
+    new LiveReloadPlugin({}),
     new NodePolyfillPlugin(),
     new webpack.ProvidePlugin({
       Buffer: ['buffer', 'Buffer'],
