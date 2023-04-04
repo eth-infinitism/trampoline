@@ -4,8 +4,8 @@ import startMain from './main';
  * background script is a service worker window is not available anymore.
  * Below is a quick but dirty fix for now.
  */
-global.window = {
-  crypto: crypto,
-};
+// global.window = {
+//   crypto: crypto,
+// };
 
 startMain();
