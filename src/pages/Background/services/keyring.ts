@@ -243,6 +243,7 @@ export default class KeyringService extends BaseService<Events> {
     });
     const address = await account.getAccountAddress();
     this.keyrings[address] = account;
+    await this.persistAllKeyrings();
     return account.getAccountAddress();
   };
 
