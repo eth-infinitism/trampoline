@@ -16,7 +16,7 @@ const Onboarding: OnboardingComponent = ({
     <Box sx={{ padding: 2 }}>
       <CardContent>
         <Typography variant="h3" gutterBottom>
-          Custmisable Account Component
+          Customisable Account Component
         </Typography>
         <Typography variant="body1" color="text.secondary">
           You can show as many steps as you want in this dummy component. You
