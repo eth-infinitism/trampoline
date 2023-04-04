@@ -9,7 +9,7 @@
   },
   "scripts": {
     "server": "npx hardhat clean && npx hardhat compile && node utils/webserver.js",
-    "start": "QUIET=false NODE_ENV=development run-p devtools \"server {@}\" --",
+    "start": "QUIET=false NODE_ENV=development run-p devtools \"dev {@}\" --",
     "dev": "webpack --config webpack.config.js --watch",
     "devtools": "npx redux-devtools --hostname=localhost --port=8000 --open",
     "build": "npx hardhat clean && npx hardhat compile && node utils/build.js",
@@ -48,7 +48,6 @@
     "react-router-dom": "^6.8.0",
     "redux-devtools": "^3.7.0",
     "siwe": "^1.1.6",
-    "ssestream": "^1.1.0",
     "uuid": "^9.0.0",
     "wagmi": "^0.11.3",
     "webext-redux": "^2.1.9",
