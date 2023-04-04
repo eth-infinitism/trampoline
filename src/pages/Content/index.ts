@@ -34,7 +34,7 @@ export function connectProviderBridge(): void {
       }
 
       console.log(
-        `%c content: inpage > background: ${JSON.stringify(event.data)}`,
+        `%c content: inpage >>> background: ${JSON.stringify(event.data)}`,
         'background: #bada55; color: #222'
       );
 
@@ -44,7 +44,7 @@ export function connectProviderBridge(): void {
 
   port.onMessage.addListener((data) => {
     console.log(
-      `%c content: background > inpage: ${JSON.stringify(data)}`,
+      `%c content: background >>> inpage: ${JSON.stringify(data)}`,
       'background: #222; color: #bada55'
     );
     window.postMessage(

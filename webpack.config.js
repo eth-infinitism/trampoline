@@ -6,9 +6,10 @@ var webpack = require('webpack'),
   HtmlWebpackPlugin = require('html-webpack-plugin'),
   TerserPlugin = require('terser-webpack-plugin');
 var { CleanWebpackPlugin } = require('clean-webpack-plugin');
-var ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
-var ReactRefreshTypeScript = require('react-refresh-typescript');
+// var ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
+// var ReactRefreshTypeScript = require('react-refresh-typescript');
 const NodePolyfillPlugin = require('node-polyfill-webpack-plugin');
+// const LiveReloadPlugin = require('webpack-livereload-plugin');
 
 const ASSET_PATH = process.env.ASSET_PATH || '/';
 
@@ -56,6 +57,7 @@ var options = {
   },
   chromeExtensionBoilerplate: {
     notHotReload: ['background', 'contentScript', 'injectScript'],
+    enableBackgroundAutoReload: true,
   },
   output: {
     filename: 'ex_[name].bundle.js',
@@ -105,11 +107,6 @@ var options = {
           {
             loader: require.resolve('ts-loader'),
             options: {
-              getCustomTransformers: () => ({
-                before: [isDevelopment && ReactRefreshTypeScript()].filter(
-                  Boolean
-                ),
-              }),
               transpileOnly: isDevelopment,
             },
           },
@@ -123,11 +120,6 @@ var options = {
           },
           {
             loader: require.resolve('babel-loader'),
-            options: {
-              plugins: [
-                isDevelopment && require.resolve('react-refresh/babel'),
-              ].filter(Boolean),
-            },
           },
         ],
         exclude: /node_modules/,
@@ -146,11 +138,11 @@ var options = {
       .concat(['.js', '.jsx', '.ts', '.tsx', '.css']),
   },
   plugins: [
+    // new LiveReloadPlugin({}),
     new NodePolyfillPlugin(),
     new webpack.ProvidePlugin({
       Buffer: ['buffer', 'Buffer'],
     }),
-    isDevelopment && new ReactRefreshWebpackPlugin(),
     new CleanWebpackPlugin({ verbose: false }),
     new webpack.ProgressPlugin(),
     // expose and write the allowed env vars on the compiled bundle
