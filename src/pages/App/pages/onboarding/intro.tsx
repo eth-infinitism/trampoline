@@ -41,7 +41,9 @@ const Intro = () => {
           </Typography>
           <Typography textAlign="center" variant="body1" color="text.secondary">
             Your smart contract account with unlimited possibilities,{' '}
-            <Link>learn more</Link>
+            <Link href="https://github.com/eth-infinitism/trampoline">
+              learn more
+            </Link>
           </Typography>
           <Box
             display="flex"
