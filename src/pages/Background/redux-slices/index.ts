@@ -10,8 +10,6 @@ import transactions from './transactions';
 import dappPermissions from './permissions';
 import signing from './signing';
 import { allAliases } from './utils';
-import { persistReducer, createTransform } from 'redux-persist';
-import storage from 'redux-persist/lib/storage';
 
 const rootReducer = combineReducers({
   account,
@@ -44,30 +42,9 @@ const devToolsSanitizer = (input: unknown) => {
   }
 };
 
-const CustomJSONTransform = createTransform(
-  // transform state on its way to being serialized and persisted.
-  (inboundState: RootState) => {
-    // convert mySet to an Array.
-    return JSON.parse(encodeJSON(inboundState));
-  },
-  // transform state being rehydrated
-  (outboundState: RootState) => {
-    // convert mySet back to a Set.
-    return decodeJSON(JSON.stringify(outboundState)) as RootState;
-  }
-);
-
-const persistConfig = {
-  key: 'root',
-  storage,
-  transforms: [CustomJSONTransform],
-};
-
-const persistedReducer = persistReducer(persistConfig, rootReducer);
-
 export const initializeStore = (mainServiceManager: MainServiceManager) =>
   configureStore({
-    reducer: persistedReducer,
+    reducer: rootReducer,
     devTools: false,
     middleware: (getDefaultMiddleware) => {
       const middleware = getDefaultMiddleware({

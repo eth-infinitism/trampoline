@@ -61,7 +61,18 @@ export default class KeyringService extends BaseService<Events> {
     this.provider
       .getNetwork()
       .then((net) => net.chainId)
-      .then((chainId) => {
+      .then(async (chainId) => {
+        const userOpBundler = new ethers.providers.JsonRpcProvider(bundler, {
+          name: 'Connected bundler network',
+          chainId,
+        });
+
+        try {
+          await userOpBundler.send('eth_chainId', []);
+        } catch (e) {
+          throw new Error(`Bundler network is not connected on url ${bundler}`);
+        }
+
         this.bundler = new HttpRpcClient(bundler, entryPointAddress, chainId);
       });
 
