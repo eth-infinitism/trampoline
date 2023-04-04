@@ -30,11 +30,10 @@ import {
   selectCurrentPendingSendTransactionUserOp,
 } from '../../../Background/redux-slices/selectors/transactionsSelectors';
 import {
-  clearTransactionState,
   createUnsignedUserOp,
-  modifyTransactionsRequest,
   rejectTransaction,
   sendTransaction,
+  setUnsignedUserOperation,
 } from '../../../Background/redux-slices/transactions';
 import { EthersTransactionRequest } from '../../../Background/services/types';
 import AccountInfo from '../../components/account-info';
@@ -65,11 +64,37 @@ const SignTransactionConfirmation = ({
 }) => {
   const [showAddPaymasterUI, setShowAddPaymasterUI] = useState<boolean>(false);
   const [addPaymasterLoader, setAddPaymasterLoader] = useState<boolean>(false);
+  const [paymasterError, setPaymasterError] = useState<string>('');
   const [paymasterUrl, setPaymasterUrl] = useState<string>('');
+  const backgroundDispatch = useBackgroundDispatch();
 
-  const addPaymaster = () => {
+  const addPaymaster = useCallback(async () => {
+    console.log(paymasterUrl);
     setAddPaymasterLoader(true);
-  };
+    if (paymasterUrl) {
+      const paymasterRPC = new ethers.providers.JsonRpcProvider(paymasterUrl, {
+        name: 'Paymaster',
+        chainId: parseInt(activeNetwork.chainID),
+      });
+      try {
+        const paymasterResp = await paymasterRPC.send(
+          'eth_getPaymasterAndDataSize',
+          [userOp]
+        );
+        backgroundDispatch(
+          setUnsignedUserOperation({
+            ...userOp,
+            paymasterAndData: paymasterResp,
+            verificationGasLimit: paymasterResp.verificationGasLimit,
+          })
+        );
+      } catch (e) {
+        console.log(e);
+        setPaymasterError('Paymaster url returned error');
+      }
+      setAddPaymasterLoader(false);
+    }
+  }, [activeNetwork.chainID, backgroundDispatch, paymasterUrl, userOp]);
 
   return (
     <Container>
@@ -107,6 +132,7 @@ const SignTransactionConfirmation = ({
               label="Paymaster URL"
               variant="standard"
             />
+            {paymasterError}
             <Box
               justifyContent="space-around"
               alignItems="center"
@@ -116,11 +142,15 @@ const SignTransactionConfirmation = ({
               <Button
                 sx={{ width: 150 }}
                 variant="outlined"
-                onClick={() => setShowAddPaymasterUI(false)}
+                onClick={() => {
+                  setShowAddPaymasterUI(false);
+                  setAddPaymasterLoader(false);
+                }}
               >
                 Cancel
               </Button>
               <Button
+                disabled={addPaymasterLoader}
                 sx={{ width: 150, position: 'relative' }}
                 variant="contained"
                 onClick={addPaymaster}
@@ -146,8 +176,8 @@ const SignTransactionConfirmation = ({
           {transactions.length > 1 ? ' Transactions data' : 'Transaction data'}
         </Typography>
         <Stack spacing={2}>
-          {transactions.map((transaction: EthersTransactionRequest) => (
-            <Paper sx={{ p: 2 }}>
+          {transactions.map((transaction: EthersTransactionRequest, index) => (
+            <Paper key={index} sx={{ p: 2 }}>
               <Typography variant="subtitle2" sx={{ mb: 2 }}>
                 To:{' '}
                 <Typography component="span" variant="body2">

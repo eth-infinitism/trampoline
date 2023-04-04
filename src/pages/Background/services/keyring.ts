@@ -62,13 +62,8 @@ export default class KeyringService extends BaseService<Events> {
       .getNetwork()
       .then((net) => net.chainId)
       .then(async (chainId) => {
-        const userOpBundler = new ethers.providers.JsonRpcProvider(bundler, {
-          name: 'Connected bundler network',
-          chainId,
-        });
-
         try {
-          await userOpBundler.send('eth_chainId', []);
+          new ethers.providers.JsonRpcProvider(bundler);
         } catch (e) {
           throw new Error(`Bundler network is not connected on url ${bundler}`);
         }
@@ -331,23 +326,6 @@ export default class KeyringService extends BaseService<Events> {
     return args ? keyring[functionName](...args) : keyring[functionName]();
   };
 
-  sendTransaction = async (
-    address: string,
-    transaction: EthersTransactionRequest
-  ) => {
-    const keyring = this.keyrings[address];
-    const userOperation = await keyring.createUnsignedUserOp({
-      target: transaction.to,
-      data: transaction.data
-        ? ethers.utils.hexConcat([transaction.data])
-        : '0x',
-      value: transaction.value,
-      gasLimit: transaction.gasLimit,
-      maxFeePerGas: transaction.maxFeePerGas,
-      maxPriorityFeePerGas: transaction.maxPriorityFeePerGas,
-    });
-  };
-
   signUserOpWithContext = async (
     address: string,
     userOp: UserOperationStruct,
@@ -368,25 +346,6 @@ export default class KeyringService extends BaseService<Events> {
       return await keyring.getUserOpReceipt(userOpHash);
     }
     return null;
-  };
-
-  createUnsignedUserOpForTransactions = async (
-    address: string,
-    transactions: EthersTransactionRequest[]
-  ): Promise<UserOperationStruct> => {
-    const keyring = this.keyrings[address];
-    return keyring.createUnsignedUserOpForTransactions(
-      transactions.map((transaction) => ({
-        target: transaction.to,
-        data: transaction.data
-          ? ethers.utils.hexConcat([transaction.data])
-          : '0x',
-        value: transaction.value,
-        gasLimit: transaction.gasLimit,
-        maxFeePerGas: transaction.maxFeePerGas,
-        maxPriorityFeePerGas: transaction.maxPriorityFeePerGas,
-      }))
-    );
   };
 
   createUnsignedUserOp = async (
