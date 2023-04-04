@@ -32,6 +32,15 @@ export const EIP1193_ERROR_CODES = {
     code: 4901,
     message: 'The Provider is not connected to the requested chain.',
   },
+  rpcErrorNotParsed: {
+    code: 5000,
+    message:
+      "The budler RPC response coudn't be parsed properly, check bundler logs",
+  },
+  methodNotSupported: {
+    code: 4004,
+    message: 'The method is not supported',
+  },
 } as const;
 
 export type EIP1193ErrorPayload =
