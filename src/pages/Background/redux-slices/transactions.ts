@@ -203,42 +203,6 @@ export const createUnsignedUserOp = createBackgroundAsyncThunk(
   }
 );
 
-export const modifyTransactionsRequest = createBackgroundAsyncThunk(
-  'transactions/modifyTransactionsRequest',
-  async (
-    {
-      address,
-      modifiedTransactions,
-    }: {
-      address: string;
-      modifiedTransactions: EthersTransactionRequest[];
-    },
-    { dispatch, extra: { mainServiceManager } }
-  ) => {
-    dispatch(setModifyTransactionsRequest(modifiedTransactions));
-
-    const state = mainServiceManager.store.getState() as RootState;
-    const modifiedTransactionsRequest =
-      state.transactions.modifiedTransactionsRequest;
-    const transactionsRequest = state.transactions.transactionsRequest;
-
-    const transactions =
-      modifiedTransactionsRequest || transactionsRequest || [];
-
-    const keyringService = mainServiceManager.getService(
-      KeyringService.name
-    ) as KeyringService;
-
-    const unsignedUserOperation =
-      await keyringService.createUnsignedUserOpForTransactions(
-        address,
-        transactions
-      );
-
-    dispatch(setUnsignedUserOperation(unsignedUserOperation));
-  }
-);
-
 export const rejectTransaction = createBackgroundAsyncThunk(
   'transactions/rejectTransaction',
   async (address: string, { dispatch, extra: { mainServiceManager } }) => {
