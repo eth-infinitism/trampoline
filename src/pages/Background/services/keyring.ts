@@ -62,10 +62,23 @@ export default class KeyringService extends BaseService<Events> {
       .getNetwork()
       .then((net) => net.chainId)
       .then(async (chainId) => {
+        let bundlerRPC;
         try {
-          new ethers.providers.JsonRpcProvider(bundler);
+          bundlerRPC = new ethers.providers.JsonRpcProvider(bundler);
         } catch (e) {
           throw new Error(`Bundler network is not connected on url ${bundler}`);
+        }
+
+        if (bundlerRPC) {
+          const supportedEntryPoint = await bundlerRPC.send(
+            'eth_supportedEntryPoints',
+            []
+          );
+          if (!supportedEntryPoint.includes(entryPointAddress)) {
+            throw new Error(
+              `Bundler network doesn't support entryPoint ${entryPointAddress}`
+            );
+          }
         }
 
         this.bundler = new HttpRpcClient(bundler, entryPointAddress, chainId);
