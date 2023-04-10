@@ -8,7 +8,7 @@
     "name": "Goerli",
     "provider": "https://goerli.infura.io/v3/bdabe9d2f9244005af0f566398e648da",
     "entryPointAddress": "0x0576a174D229E3cFA37253523E645A78A0C91B57",
-    "bundler": "http://localhost:9000/rpc",
+    "bundler": "https://node.stackup.sh/v1/rpc/3fa985c937aea29ea8871903e9ad29fdd4947b4e6f568259616b59a3c310af26",
     "baseAsset": {
       "symbol": "ETH",
       "name": "ETH",
