@@ -1,7 +1,7 @@
 {
-  "name": "chrome-extension-boilerplate-react",
+  "name": "trampoline",
   "version": "5.0.4",
-  "description": "A chrome extension boilerplate built with React 18, Webpack 5, and Webpack Dev Server 4",
+  "description": "Trampoline is a chrome extension boilerplate code to showcase your own Smart Contract Wallets",
   "license": "MIT",
   "repository": {
     "type": "git",
