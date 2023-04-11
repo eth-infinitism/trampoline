@@ -20,13 +20,9 @@ export default class MainServiceManager extends BaseService<never> {
     super();
     let state = {};
     const version = localStorage.getItem('version');
-    console.log(version, Config.stateVersion);
     if (version === Config.stateVersion) {
-      console.log(localStorage.getItem('state'));
-
       state = decodeJSON(localStorage.getItem('state') || '') as {};
     }
-    console.log(state);
     this.store = initializeStore(state, this);
     wrapStore(this.store);
   }
