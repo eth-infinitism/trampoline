@@ -10,7 +10,7 @@ import transactions from './transactions';
 import dappPermissions from './permissions';
 import signing from './signing';
 import { allAliases } from './utils';
-import Config from '../../../exconfig.json';
+import Config from '../../../exconfig';
 import { debounce } from '@mui/material';
 
 const rootReducer = combineReducers({

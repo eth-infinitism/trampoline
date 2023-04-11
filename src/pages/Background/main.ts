@@ -4,7 +4,7 @@ import MainServiceManager, {
   MainServiceManagerServicesMap,
 } from './services/main';
 import ProviderBridgeService from './services/provider-bridge';
-import Config from '../../exconfig.json';
+import Config from '../../exconfig';
 console.debug('---- LAUNCHING WITH CONFIG ----', Config);
 
 chrome.runtime.onInstalled.addListener((e) => {
