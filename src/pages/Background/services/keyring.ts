@@ -81,6 +81,10 @@ export default class KeyringService extends BaseService<Events> {
           }
         }
 
+        const code = await this.provider.getCode(entryPointAddress);
+        if (code === '0x')
+          throw new Error(`Entrypoint not deployed at ${entryPointAddress}`);
+
         this.bundler = new HttpRpcClient(bundler, entryPointAddress, chainId);
       });
 
@@ -250,6 +254,8 @@ export default class KeyringService extends BaseService<Events> {
       paymasterAPI: this.paymasterAPI,
     });
     const address = await account.getAccountAddress();
+    if (address === ethers.constants.AddressZero)
+      throw new Error('EntryPoint getAccountAddress returned error');
     this.keyrings[address] = account;
     await this.persistAllKeyrings();
     return account.getAccountAddress();
@@ -371,21 +377,29 @@ export default class KeyringService extends BaseService<Events> {
       data: transaction.data
         ? ethers.utils.hexConcat([transaction.data])
         : '0x',
-      value: transaction.value,
+      value: ethers.BigNumber.from(transaction.value),
       gasLimit: transaction.gasLimit,
       maxFeePerGas: transaction.maxFeePerGas,
       maxPriorityFeePerGas: transaction.maxPriorityFeePerGas,
     });
 
     userOp.sender = await userOp.sender;
-    userOp.nonce = await userOp.nonce;
+    userOp.nonce = ethers.BigNumber.from(await userOp.nonce).toHexString();
     userOp.initCode = await userOp.initCode;
     userOp.callData = await userOp.callData;
-    userOp.callGasLimit = await userOp.callGasLimit;
-    userOp.verificationGasLimit = await userOp.verificationGasLimit;
+    userOp.callGasLimit = ethers.BigNumber.from(
+      await userOp.callGasLimit
+    ).toHexString();
+    userOp.verificationGasLimit = ethers.BigNumber.from(
+      await userOp.verificationGasLimit
+    ).toHexString();
     userOp.preVerificationGas = await userOp.preVerificationGas;
-    userOp.maxFeePerGas = await userOp.maxFeePerGas;
-    userOp.maxPriorityFeePerGas = await userOp.maxPriorityFeePerGas;
+    userOp.maxFeePerGas = ethers.BigNumber.from(
+      await userOp.maxFeePerGas
+    ).toHexString();
+    userOp.maxPriorityFeePerGas = ethers.BigNumber.from(
+      await userOp.maxPriorityFeePerGas
+    ).toHexString();
     userOp.paymasterAndData = await userOp.paymasterAndData;
     userOp.signature = await userOp.signature;
 

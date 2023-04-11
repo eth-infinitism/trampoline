@@ -19,7 +19,7 @@ async function main() {
   //   });
 
   signer.sendTransaction({
-    to: '0xD244f82cf788aBD37214730395dE6D8D267fd3cB',
+    to: '0x0A77cEdFB8459084aB81CF6786EadDaCf7974146',
     value: ethers.utils.parseEther('1'),
   });
 

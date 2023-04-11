@@ -67,7 +67,7 @@ const persistedReducer = persistReducer(persistConfig, rootReducer);
 
 export const initializeStore = (mainServiceManager: MainServiceManager) =>
   configureStore({
-    reducer: persistedReducer,
+    reducer: rootReducer,
     devTools: false,
     middleware: (getDefaultMiddleware) => {
       const middleware = getDefaultMiddleware({
