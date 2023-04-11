@@ -377,7 +377,9 @@ export default class KeyringService extends BaseService<Events> {
       data: transaction.data
         ? ethers.utils.hexConcat([transaction.data])
         : '0x',
-      value: ethers.BigNumber.from(transaction.value),
+      value: transaction.value
+        ? ethers.BigNumber.from(transaction.value)
+        : undefined,
       gasLimit: transaction.gasLimit,
       maxFeePerGas: transaction.maxFeePerGas,
       maxPriorityFeePerGas: transaction.maxPriorityFeePerGas,

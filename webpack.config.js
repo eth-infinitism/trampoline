@@ -56,10 +56,10 @@ var options = {
       'index.jsx'
     ),
   },
-  chromeExtensionBoilerplate: {
-    notHotReload: ['background', 'contentScript', 'injectScript'],
-    enableBackgroundAutoReload: true,
-  },
+  //   chromeExtensionBoilerplate: {
+  //     notHotReload: ['background', 'contentScript', 'injectScript'],
+  //     enableBackgroundAutoReload: true,
+  //   },
   output: {
     filename: 'ex_[name].bundle.js',
     path: path.resolve(__dirname, 'build'),
