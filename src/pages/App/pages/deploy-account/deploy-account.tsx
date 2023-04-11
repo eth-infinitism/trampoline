@@ -48,6 +48,18 @@ const DeployAccount = () => {
     })
   );
 
+  const walletDeployed: boolean = useMemo(
+    () => (accountData === 'loading' ? false : accountData.accountDeployed),
+    [accountData]
+  );
+
+  useEffect(() => {
+    if (walletDeployed) {
+      alert('Account already deployed');
+      navigate('/');
+    }
+  }, [navigate, walletDeployed]);
+
   const backgroundDispatch = useBackgroundDispatch();
 
   const [minimumRequiredFundsPrice, setMinimumRequiredFundsPrice] =
@@ -125,7 +137,7 @@ const DeployAccount = () => {
     }
 
     // await backgroundDispatch(sendTransaction(activeAccount));
-  }, [backgroundDispatch, activeAccount]);
+  }, [activeAccount, navigate]);
 
   return (
     <Container sx={{ width: '62vw', height: '100vh' }}>

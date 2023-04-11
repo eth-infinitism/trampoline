@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { EVMNetwork } from '../types/network';
-import Config from '../../../exconfig.json';
+import Config from '../../../exconfig';
 
 export type Vault = {
   vault: string;
