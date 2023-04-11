@@ -8,7 +8,7 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
-import logo from '../../../../assets/img/logo.png';
+import logo from '../../../../assets/img/logo.svg';
 import { useNavigate } from 'react-router-dom';
 
 const Intro = () => {

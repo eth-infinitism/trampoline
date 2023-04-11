@@ -48,10 +48,10 @@ var options = {
     contentScript: path.join(__dirname, 'src', 'pages', 'Content', 'index.ts'),
     injectScript: path.join(__dirname, 'src', 'pages', 'Content', 'inject.ts'),
   },
-  chromeExtensionBoilerplate: {
-    notHotReload: ['background', 'contentScript', 'injectScript'],
-    enableBackgroundAutoReload: true,
-  },
+  //   chromeExtensionBoilerplate: {
+  //     notHotReload: ['background', 'contentScript', 'injectScript'],
+  //     enableBackgroundAutoReload: true,
+  //   },
   output: {
     filename: 'ex_[name].bundle.js',
     path: path.resolve(__dirname, 'build'),
