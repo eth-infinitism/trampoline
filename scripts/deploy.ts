@@ -5,7 +5,7 @@
 // will compile your contracts, add the Hardhat Runtime Environment's members to the
 // global scope, and execute the script.
 import { ethers } from 'hardhat';
-import Config from '../src/exconfig.json';
+import Config from '../src/exconfig';
 import {
   TwoOwnerAccountFactory__factory,
   TwoOwnerAccount__factory,
