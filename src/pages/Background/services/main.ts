@@ -3,7 +3,8 @@ import { initializeStore, ReduxStoreType } from '../redux-slices';
 import BaseService from './base';
 import Config from '../../../exconfig.json';
 import { decodeJSON } from '../utils';
-import { initialState } from '../redux-slices/network';
+import { initialState as initialNetworkState } from '../redux-slices/network';
+import { initialState as initialTransactionsState } from '../redux-slices/transactions';
 
 export interface MainServiceManagerServicesMap {
   [key: string]: BaseService<any>;
@@ -24,7 +25,8 @@ export default class MainServiceManager extends BaseService<never> {
     if (version === Config.stateVersion) {
       state = decodeJSON(localStorage.getItem('state') || '') as {};
     }
-    state.network = initialState;
+    state.network = initialNetworkState;
+    state.transactions = initialTransactionsState;
     this.store = initializeStore(state, this);
     wrapStore(this.store);
   }
