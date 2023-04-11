@@ -33,9 +33,9 @@ const Transaction = ({
           account. While modifiedTransactions will be agreed upon by the user.
           <br />
           This Component is defined in exported in{' '}
-          <pre>
-            trampoline/src/pages/Account/components/transaction/index.ts
-          </pre>
+        </Typography>
+        <Typography variant="caption">
+          trampoline/src/pages/Account/components/transaction/index.ts
         </Typography>
       </CardContent>
       <CardActions sx={{ pl: 4, pr: 4, width: '100%' }}>

@@ -27,7 +27,9 @@ const Onboarding: OnboardingComponent = ({
           passed to your AccountApi when creating a new account.
           <br />
           This Component is defined in exported in{' '}
-          <pre>trampoline/src/pages/Account/components/onboarding/index.ts</pre>
+        </Typography>
+        <Typography variant="caption">
+          trampoline/src/pages/Account/components/onboarding/index.ts
         </Typography>
       </CardContent>
       <CardActions sx={{ pl: 4, pr: 4, width: '100%' }}>
