@@ -19,8 +19,8 @@ async function main() {
   //   });
 
   signer.sendTransaction({
-    to: '0xBFD2aE84CbE1e732aB05e6dB4a6cF56a6c7a286e',
-    value: ethers.utils.parseEther('0.1'),
+    to: '0x0A77cEdFB8459084aB81CF6786EadDaCf7974146',
+    value: ethers.utils.parseEther('1'),
   });
 
   //   console.log(
