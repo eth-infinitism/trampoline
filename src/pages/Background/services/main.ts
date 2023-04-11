@@ -1,6 +1,8 @@
 import { wrapStore } from 'webext-redux';
 import { initializeStore, ReduxStoreType } from '../redux-slices';
 import BaseService from './base';
+import Config from '../../../exconfig.json';
+import { decodeJSON } from '../utils';
 
 export interface MainServiceManagerServicesMap {
   [key: string]: BaseService<any>;
@@ -16,7 +18,16 @@ export default class MainServiceManager extends BaseService<never> {
 
   constructor(readonly name: string) {
     super();
-    this.store = initializeStore(this);
+    let state = {};
+    const version = localStorage.getItem('version');
+    console.log(version, Config.stateVersion);
+    if (version === Config.stateVersion) {
+      console.log(localStorage.getItem('state'));
+
+      state = decodeJSON(localStorage.getItem('state') || '') as {};
+    }
+    console.log(state);
+    this.store = initializeStore(state, this);
     wrapStore(this.store);
   }
 
