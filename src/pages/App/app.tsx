@@ -17,6 +17,7 @@ import '../Content/index';
 
 import { WalletConnectConnector } from 'wagmi/connectors/walletConnect';
 import Config from '../../exconfig.json';
+import TransferAsset from './pages/transfer-asset';
 console.debug('---- LAUNCHING WITH CONFIG ----', Config);
 
 const App = () => {
@@ -57,6 +58,16 @@ const App = () => {
             <ProtectedRouteHasAccounts>
               <ProtectedRouteKeyringUnlocked>
                 <Home />
+              </ProtectedRouteKeyringUnlocked>
+            </ProtectedRouteHasAccounts>
+          }
+        />
+        <Route
+          path="/transfer-assets"
+          element={
+            <ProtectedRouteHasAccounts>
+              <ProtectedRouteKeyringUnlocked>
+                <TransferAsset />
               </ProtectedRouteKeyringUnlocked>
             </ProtectedRouteHasAccounts>
           }
