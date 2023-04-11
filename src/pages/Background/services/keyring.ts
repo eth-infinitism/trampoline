@@ -255,7 +255,9 @@ export default class KeyringService extends BaseService<Events> {
     });
     const address = await account.getAccountAddress();
     if (address === ethers.constants.AddressZero)
-      throw new Error('EntryPoint getAccountAddress returned error');
+      throw new Error(
+        `EntryPoint getAccountAddress returned error and returned address ${ethers.constants.AddressZero}, check factory contract is properly deployed.`
+      );
     this.keyrings[address] = account;
     await this.persistAllKeyrings();
     return account.getAccountAddress();
