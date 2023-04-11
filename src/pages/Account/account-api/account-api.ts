@@ -11,7 +11,7 @@ import { arrayify, hexConcat } from 'ethers/lib/utils';
 import { AccountApiParamsType, AccountApiType } from './types';
 import { MessageSigningRequest } from '../../Background/redux-slices/signing';
 import { TransactionDetailsForUserOp } from '@account-abstraction/sdk/dist/src/TransactionDetailsForUserOp';
-import config from '../../../exconfig.json';
+import config from '../../../exconfig';
 
 const FACTORY_ADDRESS =
   config.factory_address || '0x6C583EE7f3a80cB53dDc4789B0Af1aaFf90e55F3';
