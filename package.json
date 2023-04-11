@@ -8,7 +8,7 @@
     "url": "https://github.com/lxieyang/chrome-extension-boilerplate-react.git"
   },
   "scripts": {
-    "server": "npx hardhat clean && npx hardhat compile && node utils/webserver.js",
+    "server": "node utils/webserver.js",
     "start": "QUIET=false NODE_ENV=development run-p hardhat-clean-comile \"dev {@}\" --",
     "dev": "webpack --config webpack.config.js --watch",
     "hardhat-clean-comile": "npx hardhat clean && npx hardhat compile",

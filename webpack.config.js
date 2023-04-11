@@ -36,7 +36,7 @@ if (fileSystem.existsSync(secretsPath)) {
 }
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
-const enableAutoReload = true;
+const enableAutoReload = false;
 
 var options = {
   mode: process.env.NODE_ENV || 'development',
