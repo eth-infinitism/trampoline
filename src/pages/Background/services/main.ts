@@ -1,7 +1,7 @@
 import { wrapStore } from 'webext-redux';
 import { initializeStore, ReduxStoreType } from '../redux-slices';
 import BaseService from './base';
-import Config from '../../../exconfig.json';
+import Config from '../../../exconfig';
 import { decodeJSON } from '../utils';
 import { initialState as initialNetworkState } from '../redux-slices/network';
 import { initialState as initialTransactionsState } from '../redux-slices/transactions';

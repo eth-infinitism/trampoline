@@ -38,7 +38,7 @@ import {
 import { EthersTransactionRequest } from '../../../Background/services/types';
 import AccountInfo from '../../components/account-info';
 import OriginInfo from '../../components/origin-info';
-import Config from '../../../../exconfig.json';
+import Config from '../../../../exconfig';
 
 const SignTransactionComponent =
   AccountImplementations[ActiveAccountImplementation].Transaction;

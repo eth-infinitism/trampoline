@@ -10,7 +10,7 @@ Trampoline is a chrome extension boilerplate code to showcase your own Smart Con
 
 1. Verify that your [Node.js](https://nodejs.org/) version is >= **18.12.0**.
 2. Clone this repository.
-3. Make sure you configure the `provider` in `src/exconfig.json` to the `Goerli` network.
+3. Make sure you configure the `provider` in `src/exconfig.js` to the `Goerli` network.
 4. Edit the `bundler` URL pointing to `Goerli` network and accepting EntryPoint=`0x0576a174D229E3cFA37253523E645A78A0C91B57`
 5. Run `yarn install` to install the dependencies.
 6. Run `yarn start`
@@ -26,22 +26,22 @@ Trampoline is a chrome extension boilerplate code to showcase your own Smart Con
 ### Custom Network
 
 1. Make sure EntryPoint is deployed on the target network.
-2. Edit the `entryPointAddress` in `src/exconfig.json`.
-3. Add your network details in `hardhat.config.ts`.
-4. Deploy the factory using `ETHERSCAN_API_KEY=<optional> INFURA_ID=<required> npx hardhat deploy --network <network>`.
-5. Edit the `factory_address` in `src/exconfig.json`
-6. Edit the `bundler` url in `src/exconfig.json` that points to your network and accepts requests for your EntryPoint.
+2. Edit the `entryPointAddress` in `src/exconfig.js`.
+3. Add your network details in `hardhat.condig.ts`.
+4. Deploy the factory using `INFURA_ID=<required> npx hardhat deploy --network <network>`.
+5. Edit the `factory_address` in `src/exconfig.js`
+6. Edit the `bundler` url in `src/exconfig.js` that points to your network and accepts requests for your EntryPoint.
 7. Run `yarn start`
 
 ### Local Network
 
 1. Run a local hardhat node with `npx hardhat node` or use the node inside the bundler repo.
 2. Deploy EntryPoint from [the infinitism repo](https://github.com/eth-infinitism/account-abstraction), you can find the instructions [below](#how-to-deploy-entrypoint-locally).
-3. Edit the `entryPointAddress` in `src/exconfig.json`.
+3. Edit the `entryPointAddress` in `src/exconfig.js`.
 4. Deploy the factory using `npx hardhat deploy --network localhost`.
-5. Edit the `factory_address` in `src/exconfig.json`
+5. Edit the `factory_address` in `src/exconfig.js`
 6. Start a local bunder from [the infinitism repo](https://github.com/eth-infinitism/bundler) at port `9000`, you can find the instructions [below](#how-to-run-bundler-locally).
-7. Edit the `bundler` to `http://localhost:9000/rpc` url in `src/exconfig.json` that points to your network and accepts requests for your EntryPoint.
+7. Edit the `bundler` to `http://localhost:9000/rpc` url in `src/exconfig.js` that points to your network and accepts requests for your EntryPoint.
 8. Run `yarn start`
 
 ### How to deploy EntryPoint Locally
@@ -246,7 +246,7 @@ Config of the extension can be set in `excnfig.json` file.
 
 ### Is the password screen mandatory?
 
-No you can disable that by setting `enablePasswordEncryption` flag to `false` in `exconfig.json`.
+No you can disable that by setting `enablePasswordEncryption` flag to `false` in `exconfig.js`.
 
 > **Warning:** the local storage will be unencrypted and your wallet must return an encrypted state when `serialize` function of `account-api` willo be called or else the user's fund will be at risk.
 
