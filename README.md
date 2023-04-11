@@ -1,6 +1,6 @@
 # Trampoline Example
 
-<img src="src/assets/img/icon-128.png" width="64"/>
+<img src="src/assets/img/lopo.png" width="64"/>
 
 Trampoline is a chrome extension boilerplate code to showcase your own Smart Contract Wallets with React 18 and Webpack 5 support.
 
@@ -20,6 +20,8 @@ Trampoline is a chrome extension boilerplate code to showcase your own Smart Con
    3. Click on `Load unpacked extension`
    4. Select the `build` folder.
 8. Happy hacking.
+
+> **Warning**
 
 ### Custom Network
 
@@ -261,3 +263,7 @@ You must return the paymaster information in the `userOp` constructed by the fun
 ## Webpack auto-reload and HRM Errors
 
 This repository is based on the boilerplate code found at [lxieyang/chrome-extension-boilerplate-react](https://github.com/lxieyang/chrome-extension-boilerplate-react). To understand how hot-reloading and content scripts work, refer to its README.
+
+### LOGO Attributions
+
+Designed by Tomo Saito, a designer and artist at the Ethereum Foundation. [@tomosaito](https://twitter.com/tomosaito)
