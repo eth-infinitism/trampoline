@@ -8,9 +8,10 @@ export default {
     chainID: '5',
     family: 'EVM',
     name: 'Goerli',
-    provider: 'http://127.0.0.1:8545',
+    provider: 'https://goerli.infura.io/v3/bdabe9d2f9244005af0f566398e648da',
     entryPointAddress: '0x0576a174D229E3cFA37253523E645A78A0C91B57',
-    bundler: 'http://localhost:9000/rpc',
+    bundler:
+      'https://node.stackup.sh/v1/rpc/420c8ba682cabe5ab405980e35c9b218af18f4702c46aaec4627ba9050fcc4ee',
     baseAsset: {
       symbol: 'ETH',
       name: 'ETH',
