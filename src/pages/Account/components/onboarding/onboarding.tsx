@@ -47,7 +47,9 @@ const Onboarding: OnboardingComponent = ({
           passed to your AccountApi when creating a new account.
           <br />
           This Component is defined in exported in{' '}
-          <pre>trampoline/src/pages/Account/components/onboarding/index.ts</pre>
+        </Typography>
+        <Typography variant="caption">
+          trampoline/src/pages/Account/components/onboarding/index.ts
         </Typography>
         <CircularProgress
           size={24}

@@ -181,26 +181,22 @@ const SignTransactionConfirmation = ({
               <Typography variant="subtitle2" sx={{ mb: 2 }}>
                 To:{' '}
                 <Typography component="span" variant="body2">
-                  <pre className="sign-message-pre-tag">{transaction.to}</pre>
+                  {transaction.to}
                 </Typography>
               </Typography>
               <Typography variant="subtitle2" sx={{ mb: 2 }}>
                 Data:{' '}
                 <Typography component="span" variant="body2">
-                  <pre className="sign-message-pre-tag">
-                    {transaction.data?.toString()}
-                  </pre>
+                  {transaction.data?.toString()}
                 </Typography>
               </Typography>
               <Typography variant="subtitle2" sx={{ mb: 2 }}>
                 Value:{' '}
                 <Typography component="span" variant="body2">
-                  <pre className="sign-message-pre-tag">
-                    {transaction.value
-                      ? ethers.utils.formatEther(transaction.value)
-                      : 0}{' '}
-                    {activeNetwork.baseAsset.symbol}
-                  </pre>
+                  {transaction.value
+                    ? ethers.utils.formatEther(transaction.value)
+                    : 0}{' '}
+                  {activeNetwork.baseAsset.symbol}
                 </Typography>
               </Typography>
             </Paper>
