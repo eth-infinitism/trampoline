@@ -13,7 +13,7 @@ export type NetworkState = {
   supportedNetworks: Array<EVMNetwork>;
 };
 
-const GoerliNetwork: EVMNetwork = Config.network || {
+const GoerliNetwork: EVMNetwork = Config.networks[0] || {
   chainID: '5',
   family: 'EVM',
   name: 'Goerli',
@@ -32,15 +32,25 @@ const GoerliNetwork: EVMNetwork = Config.network || {
 
 export const initialState: NetworkState = {
   activeNetwork: GoerliNetwork,
-  supportedNetworks: [GoerliNetwork],
+  supportedNetworks: Config.networks,
 };
 
-type NetworkReducers = {};
+type NetworkReducers = {
+  setActiveNetwork: (
+    state: NetworkState,
+    { payload }: { payload: EVMNetwork }
+  ) => void;
+};
 
 const networkSlice = createSlice<NetworkState, NetworkReducers, 'network'>({
   name: 'network',
   initialState,
-  reducers: {},
+  reducers: {
+    setActiveNetwork: (state, { payload }) => {
+      state.activeNetwork = payload;
+    },
+  },
 });
 
+export const { setActiveNetwork } = networkSlice.actions;
 export default networkSlice.reducer;
