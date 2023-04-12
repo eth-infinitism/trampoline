@@ -22,6 +22,49 @@ Trampoline is a chrome extension boilerplate code to showcase your own Smart Con
 8. Happy hacking.
 
 > **Warning**
+> Auto refresh is disabled by default, so you will have to manually refresh the page.
+> If you make changes in background script or account-api, you will also have to refresh the background page. Check instructions on how to do that below.
+
+> **Warning**
+> Logs of all the blockchain interactions are shown in the background script. Do keep it open for faster debugging.
+
+### How to see and refresh background page
+
+1. Open extension's page: `chrome://extensions/`
+2. Find the Trampoline extension, and click Details.
+3. Check the `Inspect views` area and click on `background page` to inspect it's logs
+4. To refresh click `cmd + r` or `ctrl + r` in the background inspect page to refresh the background script.
+5. You can reload the extension completely too, the state is always kept in localstorage so nothing will be lost.
+
+## Config
+
+Config of the extension can be set in `excnfig.json` file.
+
+```json
+{
+  // Enable or disable password for the user.
+  "enablePasswordEncryption": true,
+  // Show default transaction screen
+  "showTransactionConfirmationScreen": true,
+  // stateVersion is the version of state stored in localstorage of your browser. If you want to reset your extension, change this number to a new version and that will invalidate the older state.
+  stateVersion: '0.1',
+  // Network that your SCW supports. Currently this app only supports a single network, we will soon have support for multiple networks in future
+  "network": {
+    "chainID": "5",
+    "family": "EVM",
+    "name": "Goerli",
+    "provider": "https://goerli.infura.io/v3/bdabe9d2f9244005af0f566398e648da",
+    "entryPointAddress": "0x0F46c65C17AA6b4102046935F33301f0510B163A",
+    "bundler": "https://app.stackup.sh/api/v1/bundler/96771b1b09e802669c33a3fc50f517f0f514a40da6448e24640ecfd83263d336",
+    "baseAsset": {
+      "symbol": "ETH",
+      "name": "ETH",
+      "decimals": 18,
+      "image": "https://ethereum.org/static/6b935ac0e6194247347855dc3d328e83/6ed5f/eth-diamond-black.webp"
+    }
+  }
+}
+```
 
 ### Custom Network
 
@@ -212,34 +255,6 @@ The signature of the `createUnsignedUserOp` is as follows, which shows how the `
 ```
 
 If you want you can also attach a paymaster here if your wallet wants to sponsor the transaction as well. The paymaster information will be displayed to the user.
-
-## Config
-
-Config of the extension can be set in `excnfig.json` file.
-
-```json
-{
-  // Enable or disable password for the user.
-  "enablePasswordEncryption": true,
-  // Show default transaction screen
-  "showTransactionConfirmationScreen": true,
-  // Network that your SCW supports. Currently this app only supports a single network, we will soon have support for multiple networks in future
-  "network": {
-    "chainID": "5",
-    "family": "EVM",
-    "name": "Goerli",
-    "provider": "https://goerli.infura.io/v3/bdabe9d2f9244005af0f566398e648da",
-    "entryPointAddress": "0x0F46c65C17AA6b4102046935F33301f0510B163A",
-    "bundler": "https://app.stackup.sh/api/v1/bundler/96771b1b09e802669c33a3fc50f517f0f514a40da6448e24640ecfd83263d336",
-    "baseAsset": {
-      "symbol": "ETH",
-      "name": "ETH",
-      "decimals": 18,
-      "image": "https://ethereum.org/static/6b935ac0e6194247347855dc3d328e83/6ed5f/eth-diamond-black.webp"
-    }
-  }
-}
-```
 
 ## FAQ
 
