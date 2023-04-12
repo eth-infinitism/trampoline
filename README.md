@@ -81,7 +81,7 @@ Config of the extension can be set in `excnfig.json` file.
 3. Edit the `entryPointAddress` in `src/exconfig.ts`.
 4. Deploy the factory using `npx hardhat deploy --network localhost`.
 5. Edit the `factory_address` in `src/exconfig.ts`
-6. Start a local bunder from [the infinitism repo](https://github.com/eth-infinitism/bundler) at port `9000`, you can find the instructions [below](#how-to-run-bundler-locally).
+6. Start a local bunder from [the infinitism repo](https://github.com/eth-infinitism/bundler), you can find the instructions [below](#how-to-run-bundler-locally).
 7. Edit the `bundler` to `http://localhost:9000/rpc` url in `src/exconfig.ts` that points to your network and accepts requests for your EntryPoint.
 8. Run `yarn start`
 
@@ -99,9 +99,8 @@ Config of the extension can be set in `excnfig.json` file.
 4. Edit `bundler.config.json` at `packages/bundler/localconfig`:
    a. Edit `network` to your local hardhat node
    b. Edit the `entryPoint` address that you got while deploying it using instructions above.
-   c. Change port to `9000`.
-   d. Make sure your mnemonic & beneficiary are setup correctly.
-5. Run the bunder using `yarn bundler --unsafe --port 9000 --auto`
+   c. Make sure your mnemonic & beneficiary are setup correctly.
+5. Run the bunder using `yarn bundler --unsafe --auto`
 
 ---
 
