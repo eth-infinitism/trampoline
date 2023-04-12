@@ -1,6 +1,4 @@
-# Trampoline Example
-
-<img src="src/assets/img/lopo.png" width="64"/>
+<img src="src/assets/img/logo.png" width="260"/>
 
 Trampoline is a chrome extension boilerplate code to showcase your own Smart Contract Wallets with React 18 and Webpack 5 support.
 
