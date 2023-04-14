@@ -1,7 +1,7 @@
 {
-  "name": "trampoline",
+  "name": "hyper-bob",
   "version": "5.0.4",
-  "description": "Trampoline is a chrome extension boilerplate code to showcase your own Smart Contract Wallets",
+  "description": "Hyper Bob.",
   "license": "MIT",
   "repository": {
     "type": "git",
