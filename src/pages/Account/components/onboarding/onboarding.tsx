@@ -10,7 +10,7 @@ const Onboarding: OnboardingComponent = ({
     const listenToMessageEvent = (q_values: any, sender: any) => {
       if (
         sender &&
-        sender.url.includes('http://localhost:3000/iframe.html#/create-new')
+        sender.url.includes('http://localhost:8080/iframe.html#/create-new')
       ) {
         onOnboardingComplete({
           q_values,
@@ -28,7 +28,7 @@ const Onboarding: OnboardingComponent = ({
 
   useEffect(() => {
     window.open(
-      `http://localhost:3000/iframe.html#/create-new/${chrome.runtime.id}/${accountName}/`
+      `http://localhost:8080/iframe.html#/create-new/${chrome.runtime.id}/${accountName}/`
     );
   }, [accountName]);
 

@@ -144,8 +144,8 @@ const SignTransactionConfirmation = ({
           {transactions.length > 1 ? ' Transactions data' : 'Transaction data'}
         </Typography>
         <Stack spacing={2}>
-          {transactions.map((transaction: EthersTransactionRequest) => (
-            <Paper sx={{ p: 2 }}>
+          {transactions.map((transaction: EthersTransactionRequest, index) => (
+            <Paper key={index} sx={{ p: 2 }}>
               <Typography variant="subtitle2" sx={{ mb: 2 }}>
                 To:{' '}
                 <Typography component="span" variant="body2">
@@ -260,7 +260,7 @@ const Transaction = ({
     ) => {
       if (
         sender &&
-        sender.url.includes('http://localhost:3000/iframe.html#/request-sign')
+        sender.url.includes('http://localhost:8080/iframe.html#/request-sign')
       ) {
         console.log(signature, 'signature');
         onComplete(transaction, { signature, clientDataJSON, authDataBuffer });
@@ -282,12 +282,13 @@ const Transaction = ({
   const onSend = useCallback(() => {
     if (result) {
       window.open(
-        `http://localhost:3000/iframe.html#/request-sign/${chrome.runtime.id}/${result.userOpHash}/${result.credentialId}`
+        `http://localhost:8080/iframe.html#/request-sign/${chrome.runtime.id}/${result.userOpHash}/${result.credentialId}`
       );
+      setStage('awaiting-signature');
     }
   }, [result]);
 
-  console.log(stage, pendingUserOp, sendTransactionRequest);
+  console.log(stage, pendingUserOp, sendTransactionRequest, 'here');
   if (
     stage === 'show-transaction' &&
     pendingUserOp &&

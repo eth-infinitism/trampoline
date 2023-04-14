@@ -27,6 +27,7 @@ const AccountBalanceInfo = ({ address }: { address: string }) => {
   const backgroundDispatch = useBackgroundDispatch();
 
   useEffect(() => {
+    console.log('get balance');
     backgroundDispatch(getAccountData(address));
   }, [backgroundDispatch, address]);
 
