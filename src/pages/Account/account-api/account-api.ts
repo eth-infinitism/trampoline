@@ -1,20 +1,30 @@
-import { BigNumber, BigNumberish, ethers, Wallet } from 'ethers';
-import {
-  SimpleAccount,
-  SimpleAccount__factory,
-  SimpleAccountFactory,
-  SimpleAccountFactory__factory,
-  UserOperationStruct,
-} from '@account-abstraction/contracts';
-import { arrayify, hexConcat } from 'ethers/lib/utils';
+import { BigNumber, BigNumberish, ethers } from 'ethers';
+import { UserOperationStruct } from '@account-abstraction/contracts';
+import { hexConcat } from 'ethers/lib/utils';
 
 import { AccountApiParamsType, AccountApiType } from './types';
 import { MessageSigningRequest } from '../../Background/redux-slices/signing';
 import { TransactionDetailsForUserOp } from '@account-abstraction/sdk/dist/src/TransactionDetailsForUserOp';
 import config from '../../../exconfig';
+import { EthersTransactionRequest } from '../../Background/services/types';
+import {
+  WebauthnAccount,
+  WebauthnAccountFactory,
+  WebauthnAccountFactory__factory,
+  WebauthnAccount__factory,
+} from './typechain-types';
+
+import Config from '../../../exconfig.json';
 
 const FACTORY_ADDRESS =
-  config.factory_address || '0x6C583EE7f3a80cB53dDc4789B0Af1aaFf90e55F3';
+  Config.factory_address || '0xc8994CCc4F09524E6996648cb43622D9B82C5192';
+
+export type QValues = {
+  credentialId: string;
+  authDataBuffer: string;
+  q0: string;
+  q1: string;
+};
 
 /**
  * An implementation of the BaseAccountAPI using the SimpleAccount contract.
@@ -23,40 +33,48 @@ const FACTORY_ADDRESS =
  * - nonce method is "nonce()"
  * - execute method is "execFromEntryPoint()"
  */
-class SimpleAccountAPI extends AccountApiType {
+class WebAuthnAccountAPI extends AccountApiType {
   name: string;
   factoryAddress?: string;
-  owner: Wallet;
+  ec: string;
+  q_values: QValues;
   index: number;
 
   /**
    * our account contract.
    * should support the "execFromEntryPoint" and "nonce" methods
    */
-  accountContract?: SimpleAccount;
+  accountContract?: WebauthnAccount;
 
-  factory?: SimpleAccountFactory;
+  factory?: WebauthnAccountFactory;
 
-  constructor(params: AccountApiParamsType<{}>) {
+  constructor(
+    params: AccountApiParamsType<{
+      q_values: QValues | 'Denied';
+    }>
+  ) {
     super(params);
     this.factoryAddress = FACTORY_ADDRESS;
 
-    this.owner = params.deserializeState?.privateKey
-      ? new ethers.Wallet(params.deserializeState?.privateKey)
-      : ethers.Wallet.createRandom();
+    if (!params.context?.q_values || params.context?.q_values === 'Denied')
+      throw new Error('Need q_values');
+
+    this.ec = Config.eleptic_curve;
+    this.q_values = params.context?.q_values;
+
     this.index = 0;
     this.name = 'SimpleAccountAPI';
   }
 
   serialize = async (): Promise<object> => {
     return {
-      privateKey: this.owner.privateKey,
+      q_values: this.q_values,
     };
   };
 
-  async _getAccountContract(): Promise<SimpleAccount> {
+  async _getAccountContract(): Promise<WebauthnAccount> {
     if (this.accountContract == null) {
-      this.accountContract = SimpleAccount__factory.connect(
+      this.accountContract = WebauthnAccount__factory.connect(
         await this.getAccountAddress(),
         this.provider
       );
@@ -71,7 +89,7 @@ class SimpleAccountAPI extends AccountApiType {
   async getAccountInitCode(): Promise<string> {
     if (this.factory == null) {
       if (this.factoryAddress != null && this.factoryAddress !== '') {
-        this.factory = SimpleAccountFactory__factory.connect(
+        this.factory = WebauthnAccountFactory__factory.connect(
           this.factoryAddress,
           this.provider
         );
@@ -82,11 +100,43 @@ class SimpleAccountAPI extends AccountApiType {
     return hexConcat([
       this.factory.address,
       this.factory.interface.encodeFunctionData('createAccount', [
-        await this.owner.getAddress(),
+        this.ec,
+        [this.q_values.q0, this.q_values.q1],
+        this.q_values.authDataBuffer,
         this.index,
       ]),
     ]);
   }
+
+  getUserOpHashToSign = async (transaction: EthersTransactionRequest) => {
+    const userOp = await this.createUnsignedUserOp({
+      target: transaction.to,
+      data: transaction.data
+        ? ethers.utils.hexConcat([transaction.data])
+        : '0x',
+      value: transaction.value,
+      gasLimit: transaction.gasLimit,
+      maxFeePerGas: transaction.maxFeePerGas,
+      maxPriorityFeePerGas: transaction.maxPriorityFeePerGas,
+    });
+    await userOp.preVerificationGas;
+    await userOp.verificationGasLimit;
+    console.log(userOp);
+    return this.getUserOpHash({
+      ...userOp,
+      verificationGasLimit: Number(userOp.verificationGasLimit) * 4,
+      preVerificationGas: 466360,
+    });
+  };
+
+  getUserOpHashToSignAndCredentialId = async (
+    transaction: EthersTransactionRequest
+  ) => {
+    return {
+      credentialId: this.q_values.credentialId,
+      userOpHash: await this.getUserOpHashToSign(transaction),
+    };
+  };
 
   async getNonce(): Promise<BigNumber> {
     if (await this.checkAccountPhantom()) {
@@ -116,25 +166,36 @@ class SimpleAccountAPI extends AccountApiType {
   }
 
   async signUserOpHash(userOpHash: string): Promise<string> {
-    return await this.owner.signMessage(arrayify(userOpHash));
+    throw new Error("Shoudn't be called");
+  }
+
+  async signUserOpWithContext(
+    userOp: UserOperationStruct,
+    context: any
+  ): Promise<UserOperationStruct> {
+    await userOp.verificationGasLimit;
+    return {
+      ...userOp,
+      verificationGasLimit: Number(userOp.verificationGasLimit) * 4,
+      preVerificationGas: 466360,
+      signature: ethers.utils.defaultAbiCoder.encode(
+        ['bytes', 'bytes'],
+        [
+          ethers.utils.hexConcat(context.signature),
+          context.clientDataJSON,
+          //   context.authDataBuffer,
+        ]
+      ),
+    };
   }
 
   signMessage = async (
     context: any,
     request?: MessageSigningRequest
   ): Promise<string> => {
-    return this.owner.signMessage(request?.rawSigningData || '');
-  };
-
-  signUserOpWithContext = async (
-    userOp: UserOperationStruct,
-    context: any
-  ): Promise<UserOperationStruct> => {
-    return {
-      ...userOp,
-      signature: await this.signUserOpHash(await this.getUserOpHash(userOp)),
-    };
+    // return this.ownerOne.signMessage(request?.rawSigningData || '');
+    return '';
   };
 }
 
-export default SimpleAccountAPI;
+export default WebAuthnAccountAPI;

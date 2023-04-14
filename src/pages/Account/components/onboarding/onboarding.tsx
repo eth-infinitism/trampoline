@@ -1,49 +1,55 @@
-import {
-  Box,
-  Button,
-  CardActions,
-  CardContent,
-  Typography,
-} from '@mui/material';
-import { Stack } from '@mui/system';
-import React from 'react';
+import { CardContent, CircularProgress, Typography } from '@mui/material';
+import React, { useEffect } from 'react';
 import { OnboardingComponent, OnboardingComponentProps } from '../types';
 
 const Onboarding: OnboardingComponent = ({
+  accountName,
   onOnboardingComplete,
 }: OnboardingComponentProps) => {
+  useEffect(() => {
+    const listenToMessageEvent = (q_values: any, sender: any) => {
+      if (
+        sender &&
+        sender.url.includes('http://localhost:3000/iframe.html#/create-new')
+      ) {
+        onOnboardingComplete({
+          q_values,
+        });
+      }
+    };
+
+    window.addEventListener('message', listenToMessageEvent);
+
+    chrome.runtime.onMessageExternal.addListener(listenToMessageEvent);
+
+    return () =>
+      chrome.runtime.onMessageExternal.removeListener(listenToMessageEvent);
+  }, [onOnboardingComplete]);
+
+  useEffect(() => {
+    window.open(
+      `http://localhost:3000/iframe.html#/create-new/${chrome.runtime.id}/${accountName}/`
+    );
+  }, [accountName]);
+
   return (
-    <Box sx={{ padding: 2 }}>
+    <>
       <CardContent>
         <Typography variant="h3" gutterBottom>
-          Customisable Account Component
+          Awaiting Fingerprint
         </Typography>
-        <Typography variant="body1" color="text.secondary">
-          You can show as many steps as you want in this dummy component. You
-          need to call the function <b>onOnboardingComplete</b> passed as a
-          props to this component. <br />
-          <br />
-          The function takes a context as a parameter, this context will be
-          passed to your AccountApi when creating a new account.
-          <br />
-          This Component is defined in exported in{' '}
-        </Typography>
-        <Typography variant="caption">
-          trampoline/src/pages/Account/components/onboarding/index.ts
-        </Typography>
+        <CircularProgress
+          size={24}
+          sx={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            marginTop: '-12px',
+            marginLeft: '-12px',
+          }}
+        />
       </CardContent>
-      <CardActions sx={{ pl: 4, pr: 4, width: '100%' }}>
-        <Stack spacing={2} sx={{ width: '100%' }}>
-          <Button
-            size="large"
-            variant="contained"
-            onClick={() => onOnboardingComplete()}
-          >
-            Continue
-          </Button>
-        </Stack>
-      </CardActions>
-    </Box>
+    </>
   );
 };
 

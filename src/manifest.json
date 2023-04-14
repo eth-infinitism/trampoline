@@ -21,5 +21,8 @@
       "js": ["ex_contentScript.bundle.js"]
     }
   ],
-  "web_accessible_resources": ["*.js", "*.json"]
+  "web_accessible_resources": ["*.js", "*.json"],
+  "externally_connectable": {
+    "matches": ["http://localhost:3000/*"]
+  }
 }

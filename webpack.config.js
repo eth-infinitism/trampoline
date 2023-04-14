@@ -47,6 +47,14 @@ var options = {
     background: path.join(__dirname, 'src', 'pages', 'Background', 'index.ts'),
     contentScript: path.join(__dirname, 'src', 'pages', 'Content', 'index.ts'),
     injectScript: path.join(__dirname, 'src', 'pages', 'Content', 'inject.ts'),
+    iframe: path.join(
+      __dirname,
+      'src',
+      'pages',
+      'Account',
+      'fingerprint-iframe',
+      'index.jsx'
+    ),
   },
   //   chromeExtensionBoilerplate: {
   //     notHotReload: ['background', 'contentScript', 'injectScript'],
@@ -209,6 +217,19 @@ var options = {
       ],
     }),
     new HtmlWebpackPlugin({
+      template: path.join(
+        __dirname,
+        'src',
+        'pages',
+        'Account',
+        'fingerprint-iframe',
+        'index.html'
+      ),
+      filename: 'iframe.html',
+      chunks: ['iframe'],
+      cache: false,
+    }),
+    new HtmlWebpackPlugin({
       template: path.join(__dirname, 'src', 'pages', 'App', 'index.html'),
       filename: 'app.html',
       chunks: ['app'],
@@ -228,7 +249,8 @@ var options = {
     }),
   ].filter(Boolean),
   infrastructureLogging: {
-    level: 'info',
+    colors: true,
+    level: 'verbose',
   },
 };
 
