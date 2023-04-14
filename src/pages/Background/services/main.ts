@@ -23,7 +23,17 @@ export default class MainServiceManager extends BaseService<never> {
     let state = {};
     const version = localStorage.getItem('version');
     if (version === Config.stateVersion) {
-      state = decodeJSON(localStorage.getItem('state') || '') as {};
+      const stateFromStorage = decodeJSON(
+        localStorage.getItem('state') || ''
+      ) as {};
+      if (
+        stateFromStorage &&
+        stateFromStorage.network &&
+        stateFromStorage.network.activeNetwork.chainID ===
+          initialNetworkState.activeNetwork.chainID
+      ) {
+        state = stateFromStorage;
+      }
     }
     state.network = initialNetworkState;
     state.transactions = initialTransactionsState;
