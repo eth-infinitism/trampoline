@@ -1,9 +1,10 @@
 // eslint-disable-next-line import/no-anonymous-default-export
 export default {
   enablePasswordEncryption: false,
-  showTransactionConfirmationScreen: true,
-  factory_address: '0x09c58cf6be8E25560d479bd52B4417d15bCA2845',
-  stateVersion: '0.1',
+  showTransactionConfirmationScreen: false,
+  factory_address: '0xACDd53f8a09B8EB5A7E2FC9e28838995661897d2',
+  eleptic_curve: '0x7AFF58f6c2005123Ea4C7809b7E88E89AE8d23d9',
+  stateVersion: '0.2',
   network: {
     chainID: '5',
     family: 'EVM',

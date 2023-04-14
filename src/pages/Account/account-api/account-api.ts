@@ -5,7 +5,6 @@ import { hexConcat } from 'ethers/lib/utils';
 import { AccountApiParamsType, AccountApiType } from './types';
 import { MessageSigningRequest } from '../../Background/redux-slices/signing';
 import { TransactionDetailsForUserOp } from '@account-abstraction/sdk/dist/src/TransactionDetailsForUserOp';
-import config from '../../../exconfig';
 import { EthersTransactionRequest } from '../../Background/services/types';
 import {
   WebauthnAccount,
@@ -14,7 +13,7 @@ import {
   WebauthnAccount__factory,
 } from './typechain-types';
 
-import Config from '../../../exconfig.json';
+import Config from '../../../exconfig';
 
 const FACTORY_ADDRESS =
   Config.factory_address || '0xc8994CCc4F09524E6996648cb43622D9B82C5192';
@@ -56,11 +55,15 @@ class WebAuthnAccountAPI extends AccountApiType {
     super(params);
     this.factoryAddress = FACTORY_ADDRESS;
 
-    if (!params.context?.q_values || params.context?.q_values === 'Denied')
+    if (
+      !params.deserializeState.q_values &&
+      (!params.context?.q_values || params.context?.q_values === 'Denied')
+    )
       throw new Error('Need q_values');
 
     this.ec = Config.eleptic_curve;
-    this.q_values = params.context?.q_values;
+    this.q_values =
+      params.context?.q_values || params.deserializeState.q_values;
 
     this.index = 0;
     this.name = 'SimpleAccountAPI';
