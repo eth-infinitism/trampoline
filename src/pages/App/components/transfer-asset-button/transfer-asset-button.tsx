@@ -1,9 +1,17 @@
-import React from 'react';
+import React, { FC } from 'react';
+import { ButtonProps, Stack } from '@mui/material';
+import WalletIcon from '@mui/icons-material/Wallet';
 import SendRoundedIcon from '@mui/icons-material/SendRounded';
-import { Button, Typography } from '@mui/material';
+import ChangeCircleIcon from '@mui/icons-material/ChangeCircle';
 import { useNavigate } from 'react-router-dom';
+import { MainButton } from '../../../../components/MainButton';
+import { colors } from '../../../../config/const';
 
-const TransferAssetButton = ({ activeAccount }: { activeAccount: string }) => {
+type Props = ButtonProps & {
+  activeAccount: string;
+};
+
+const TransferAssetButton: FC<Props> = ({ activeAccount }) => {
   const navigate = useNavigate();
 
   // const sendToBob = useCallback(async () => {
@@ -27,17 +35,22 @@ const TransferAssetButton = ({ activeAccount }: { activeAccount: string }) => {
   // }, [activeAccount]);
 
   return (
-    // <Button size="large" variant="contained" onClick={sendToBob}>
-    <Button
-      size="large"
-      variant="contained"
-      onClick={() => navigate('/transfer-assets')}
-    >
-      <Typography mr={1} p={1} variant="h6" color="white">
-        Send to bob
-      </Typography>
-      <SendRoundedIcon sx={{ color: 'white' }} />
-    </Button>
+    <Stack direction="row" spacing={2} width="100%">
+      <MainButton
+        title="Buy Crypt"
+        icon={<WalletIcon sx={{ color: colors.dark }} />}
+      />
+      <MainButton
+        title="Send"
+        onClick={() => navigate('/transfer-assets')}
+        icon={<SendRoundedIcon sx={{ color: colors.dark }} />}
+        // onClick={sendToBob}
+      />
+      <MainButton
+        title="Swap"
+        icon={<ChangeCircleIcon sx={{ color: colors.dark }} />}
+      />
+    </Stack>
   );
 };
 

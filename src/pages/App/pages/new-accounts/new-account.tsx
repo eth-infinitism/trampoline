@@ -1,14 +1,11 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { FC, useCallback, useEffect, useState } from 'react';
 import {
-  Box,
-  CardActions,
-  CardContent,
+  BoxProps,
   CircularProgress,
   FormControl,
   FormGroup,
   InputLabel,
   OutlinedInput,
-  Stack,
   Typography,
 } from '@mui/material';
 import {
@@ -27,61 +24,44 @@ import { Button } from '../../../../components/Button';
 import { BorderBox } from '../../../../components/BorderBox';
 import { Center } from '../../../../components/Center';
 
-const TakeNameComponent = ({
-  name,
-  setName,
-  showLoader,
-  nextStage,
-}: {
+type TakeNameComponentProps = BoxProps & {
   name: string;
   setName: (name: string) => void;
   showLoader: boolean;
   nextStage: () => void;
+};
+
+const TakeNameComponent: FC<TakeNameComponentProps> = ({
+  name,
+  setName,
+  showLoader,
+  nextStage,
 }) => {
   return (
     <>
-      <CardContent>
-        <HeadTitle title="New account" />
-        <Typography textAlign="center" variant="body1" color="text.secondary">
-          Give a name to your account so that you can recoganise it easily.
-        </Typography>
-        <FormGroup sx={{ p: 2, pt: 4 }}>
-          <FormControl sx={{ m: 1 }} variant="outlined">
-            <InputLabel htmlFor="name">Name</InputLabel>
-            <OutlinedInput
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              autoFocus
-              id="name"
-              type="text"
-              label="Name"
-            />
-          </FormControl>
-        </FormGroup>
-      </CardContent>
-      <CardActions sx={{ width: '100%', pl: 2, pr: 2, pt: 0 }}>
-        <Stack spacing={2} sx={{ width: '100%', pl: 2, pr: 2 }}>
-          <Box sx={{ position: 'relative' }}>
-            <Button
-              title="Set name"
-              onClick={nextStage}
-              disabled={name.length === 0 || showLoader}
-            />
-            {showLoader && (
-              <CircularProgress
-                size={24}
-                sx={{
-                  position: 'absolute',
-                  top: '50%',
-                  left: '50%',
-                  marginTop: '-12px',
-                  marginLeft: '-12px',
-                }}
-              />
-            )}
-          </Box>
-        </Stack>
-      </CardActions>
+      <HeadTitle title="Create Account" />
+      <Typography marginBottom={4} width="100%" variant="body1" color="white">
+        Give a name to your account so that you can recoganise it easily.
+      </Typography>
+      <FormGroup sx={{ width: '100%' }}>
+        <FormControl sx={{ m: 1 }} variant="outlined">
+          <InputLabel htmlFor="name">Name</InputLabel>
+          <OutlinedInput
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            autoFocus
+            id="name"
+            type="text"
+            label="Name"
+          />
+        </FormControl>
+      </FormGroup>
+      <Button
+        sx={{ marginLeft: 'auto', marginTop: 8 }}
+        title="Create"
+        onClick={nextStage}
+        disabled={name.length === 0 || showLoader}
+      />
     </>
   );
 };
@@ -137,7 +117,7 @@ const NewAccount = () => {
   }, [stage, setStage, onOnboardingComplete]);
 
   return (
-    <Center minHeight="100vh" height="100%">
+    <Center minHeight="100vh" height="100%" width="60%" marginX="auto">
       <BorderBox>
         {showLoader && (
           <CircularProgress

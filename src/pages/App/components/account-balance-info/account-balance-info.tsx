@@ -1,5 +1,5 @@
-import { Typography, Chip, Tooltip } from '@mui/material';
-import React, { useEffect, useMemo } from 'react';
+import { Typography, Chip, Tooltip, BoxProps } from '@mui/material';
+import React, { FC, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CancelIcon from '@mui/icons-material/Cancel';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
@@ -10,21 +10,25 @@ import {
 } from '../../../Background/redux-slices/account';
 import { getActiveNetwork } from '../../../Background/redux-slices/selectors/networkSelectors';
 import { getAccountEVMData } from '../../../Background/redux-slices/selectors/accountSelectors';
-import { Center } from '../../../../components/Center';
+import { BorderBox } from '../../../../components/BorderBox';
+import { Row } from '../../../../components/Row';
 
-const AccountBalanceInfo = ({ address }: { address: string }) => {
+type Props = BoxProps & {
+  address: string;
+};
+
+const AccountBalanceInfo: FC<Props> = ({ address, ...props }) => {
   const navigate = useNavigate();
+  const backgroundDispatch = useBackgroundDispatch();
+  //
   const activeNetwork = useBackgroundSelector(getActiveNetwork);
   const accountData: AccountData | 'loading' = useBackgroundSelector((state) =>
     getAccountEVMData(state, { address, chainId: activeNetwork.chainID })
   );
-
   const walletDeployed: boolean = useMemo(
     () => (accountData === 'loading' ? false : accountData.accountDeployed),
     [accountData]
   );
-
-  const backgroundDispatch = useBackgroundDispatch();
 
   useEffect(() => {
     backgroundDispatch(getAccountData(address));
@@ -36,25 +40,19 @@ const AccountBalanceInfo = ({ address }: { address: string }) => {
   }
 
   return (
-    <Center>
-      {activeNetwork.baseAsset.image && (
+    <BorderBox py={2} {...props}>
+      <Typography marginBottom={6} fontSize="32px" variant="h6">
+        Balance
+      </Typography>
+      {/* ETH image */}
+      {/* {activeNetwork.baseAsset.image && (
         <img
           height={60}
           src={activeNetwork.baseAsset.image}
           alt={`${activeNetwork.baseAsset.name} asset logo`}
         />
-      )}
-      {accountData !== 'loading' &&
-        accountData.balances &&
-        accountData.balances[activeNetwork.baseAsset.symbol] && (
-          <Typography marginY={2} variant="h3" noWrap>
-            {
-              accountData.balances[activeNetwork.baseAsset.symbol].assetAmount
-                .amount
-            }{' '}
-            {activeNetwork.baseAsset.symbol}
-          </Typography>
-        )}
+      )} */}
+      {/* deploy */}
       <Tooltip
         title={
           walletDeployed
@@ -78,7 +76,30 @@ const AccountBalanceInfo = ({ address }: { address: string }) => {
           }
         />
       </Tooltip>
-    </Center>
+      {/* ETH */}
+      {accountData !== 'loading' &&
+        accountData.balances &&
+        accountData.balances[activeNetwork.baseAsset.symbol] && (
+          <Row>
+            <Typography
+              marginY={0}
+              marginRight={1}
+              fontSize="42px"
+              fontWeight="bold"
+              variant="h6"
+              noWrap
+            >
+              {
+                accountData.balances[activeNetwork.baseAsset.symbol].assetAmount
+                  .amount
+              }
+            </Typography>
+            <Typography marginY={0} fontSize="36px" variant="h6">
+              {activeNetwork.baseAsset.symbol}
+            </Typography>
+          </Row>
+        )}
+    </BorderBox>
   );
 };
 

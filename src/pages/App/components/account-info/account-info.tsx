@@ -1,17 +1,19 @@
-import { Box, Tooltip, Typography } from '@mui/material';
-import React, { useCallback, useState } from 'react';
+import { Box, BoxProps, Tooltip, Typography } from '@mui/material';
+import React, { FC, useCallback, useState } from 'react';
 import { getAccountInfo } from '../../../Background/redux-slices/selectors/accountSelectors';
 import { useBackgroundSelector } from '../../hooks';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
+// import MoreVertIcon from '@mui/icons-material/MoreVert';
+import SettingsIcon from '@mui/icons-material/Settings';
+import { Row } from '../../../../components/Row';
+import { BorderBox } from '../../../../components/BorderBox';
 
-const AccountInfo = ({
-  address,
-  showOptions = true,
-}: {
+type Props = BoxProps & {
   address: string;
   showOptions: boolean;
-}) => {
+};
+
+const AccountInfo: FC<Props> = ({ address, showOptions = true, ...props }) => {
   const [tooltipMessage, setTooltipMessage] = useState<string>('Copy address');
 
   const accountInfo = useBackgroundSelector((state) =>
@@ -24,62 +26,36 @@ const AccountInfo = ({
   }, [address]);
 
   return (
-    <Box
-      component="div"
-      display="flex"
-      flexDirection="row"
-      justifyContent="center"
-      alignItems="center"
-      sx={{
-        borderBottom: '1px solid rgba(0, 0, 0, 0.20)',
-        position: 'relative',
-      }}
-    >
-      <Box
-        component="div"
-        display="flex"
-        flexDirection="column"
-        justifyContent="center"
-        alignItems="center"
-        flexGrow={1}
-      >
-        <Tooltip title={tooltipMessage} enterDelay={0}>
-          <Box
-            onClick={copyAddress}
-            component="div"
-            display="flex"
-            flexDirection="column"
-            justifyContent="center"
-            alignItems="center"
-            sx={{
-              minWidth: 300,
-              borderRadius: 4,
-              cursor: 'pointer',
-              '&:hover': {
-                background: '#f2f4f6',
-              },
-            }}
-          >
-            <Typography variant="h6">{accountInfo.name}</Typography>
-
-            <Box
-              component="div"
-              display="flex"
-              flexDirection="row"
-              justifyContent="center"
-              alignItems="center"
+    <BorderBox py={2} {...props}>
+      <Row justifyContent="space-between">
+        <Box>
+          {/* Name */}
+          <Typography variant="h6" lineHeight="28px">
+            {accountInfo.name}
+          </Typography>
+          {/* Address */}
+          <Tooltip title={tooltipMessage} enterDelay={0}>
+            {/* TODO:display tool tip */}
+            <Row
+              onClick={copyAddress}
+              sx={{
+                minWidth: 300,
+                borderRadius: 4,
+                cursor: 'pointer',
+                '&:hover': { opacity: 0.8 },
+              }}
             >
-              <Typography variant="overline">
+              <span>
                 {address.substring(0, 5)}...
                 {address.substring(address.length - 5)}
-              </Typography>
-              <ContentCopyIcon sx={{ height: 16, cursor: 'pointer' }} />
-            </Box>
-          </Box>
-        </Tooltip>
-      </Box>
-      {showOptions && <MoreVertIcon sx={{ position: 'absolute', right: 0 }} />}
-    </Box>
+              </span>
+              <ContentCopyIcon sx={{ height: 12, cursor: 'pointer' }} />
+            </Row>
+          </Tooltip>
+        </Box>
+        <SettingsIcon fontSize="large" />
+      </Row>
+    </BorderBox>
   );
 };
 
