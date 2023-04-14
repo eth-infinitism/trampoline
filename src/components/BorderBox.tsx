@@ -7,6 +7,7 @@ export const BorderBox: FC<Props> = ({ children, sx, ...props }) => {
   return (
     <Box
       sx={{
+        boxSizing: 'border-box',
         width: '100%',
         borderRadius: 4,
         backdropFilter: 'blur(9px)',

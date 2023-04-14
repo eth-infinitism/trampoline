@@ -1,15 +1,15 @@
-import React from 'react';
-import { Paper, Stack, Typography } from '@mui/material';
+import React, { FC } from 'react';
+import { BoxProps, Paper, Stack, Typography } from '@mui/material';
+import { colors } from '../../../../config/const';
 
-const AccountInfo = ({
-  activeAccount,
-  accountInfo,
-}: {
+type Props = BoxProps & {
   activeAccount: string;
   accountInfo: { name: string };
-}) => {
+};
+
+const AccountInfo: FC<Props> = ({ activeAccount, accountInfo }) => {
   return (
-    <Paper sx={{ bgcolor: 'primary.light' }}>
+    <Paper sx={{ background: colors.purple, color: colors.white }}>
       <Stack
         p={2}
         direction="row"
@@ -17,18 +17,12 @@ const AccountInfo = ({
         alignItems="center"
       >
         <Stack>
-          <Typography variant="overline" color="primary.contrastText">
-            Account Name
-          </Typography>
-          <Typography color="primary.contrastText" variant="body1">
-            {accountInfo.name}{' '}
-          </Typography>
+          <Typography fontSize="14px">Account Name</Typography>
+          <Typography fontWeight="bold">{accountInfo.name} </Typography>
         </Stack>
         <Stack>
-          <Typography variant="overline" color="primary.contrastText">
-            Address
-          </Typography>
-          <Typography variant="subtitle1" color="primary.contrastText">
+          <Typography fontSize="14px">Address</Typography>
+          <Typography fontWeight="bold">
             ({activeAccount?.substring(0, 5)}...
             {activeAccount?.substring(activeAccount.length - 5)})
           </Typography>

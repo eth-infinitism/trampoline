@@ -1,16 +1,7 @@
 import { UserOperationStruct } from '@account-abstraction/contracts';
-import {
-  Box,
-  Button,
-  CircularProgress,
-  Container,
-  Paper,
-  Stack,
-  TextField,
-  Typography,
-} from '@mui/material';
+import { Box, Stack, Typography } from '@mui/material';
 import { ethers } from 'ethers';
-import React, { useCallback, useState } from 'react';
+import React, { FC, useCallback, useState } from 'react';
 import {
   AccountImplementations,
   ActiveAccountImplementation,
@@ -38,22 +29,14 @@ import {
 } from '../../../Background/redux-slices/transactions';
 import { EthersTransactionRequest } from '../../../Background/services/types';
 import AccountInfo from '../../components/account-info';
-import OriginInfo from '../../components/origin-info';
 import Config from '../../../../exconfig';
+import { Button } from '../../../../components/Button';
+import { BorderBox } from '../../../../components/BorderBox';
 
 const SignTransactionComponent =
   AccountImplementations[ActiveAccountImplementation].Transaction;
 
-const SignTransactionConfirmation = ({
-  activeNetwork,
-  activeAccount,
-  accountInfo,
-  originPermission,
-  transactions,
-  userOp,
-  onReject,
-  onSend,
-}: {
+type Props = {
   activeNetwork: any;
   activeAccount: any;
   accountInfo: any;
@@ -62,12 +45,23 @@ const SignTransactionConfirmation = ({
   userOp: UserOperationStruct;
   onReject: any;
   onSend: any;
+};
+
+const SignTransactionConfirmation: FC<Props> = ({
+  activeNetwork,
+  activeAccount,
+  accountInfo,
+  originPermission,
+  transactions,
+  userOp,
+  onReject,
+  onSend,
 }) => {
+  const backgroundDispatch = useBackgroundDispatch();
   const [showAddPaymasterUI, setShowAddPaymasterUI] = useState<boolean>(false);
   const [addPaymasterLoader, setAddPaymasterLoader] = useState<boolean>(false);
   const [paymasterError, setPaymasterError] = useState<string>('');
   const [paymasterUrl, setPaymasterUrl] = useState<string>('');
-  const backgroundDispatch = useBackgroundDispatch();
 
   const addPaymaster = useCallback(async () => {
     console.log(paymasterUrl);
@@ -98,18 +92,21 @@ const SignTransactionConfirmation = ({
   }, [activeNetwork.chainID, backgroundDispatch, paymasterUrl, userOp]);
 
   return (
-    <Container>
-      <Box sx={{ p: 2 }}>
-        <Typography textAlign="center" variant="h6">
-          Send transaction request
-        </Typography>
-      </Box>
+    <Box px={2} color="white">
+      <Typography
+        my={4}
+        fontSize="28px"
+        fontWeight="bold"
+        children="Send transaction request"
+      />
       {activeAccount && (
         <AccountInfo activeAccount={activeAccount} accountInfo={accountInfo} />
       )}
       <Stack spacing={2} sx={{ position: 'relative', pt: 2, mb: 4 }}>
-        <OriginInfo permission={originPermission} />
-        <Typography variant="h6" sx-={{ p: 2 }}>
+        {/* TODO: Original Info */}
+        {/* <OriginInfo permission={originPermission} /> */}
+        {/* TODO: Paymaster Info */}
+        {/* <Typography variant="h6" sx-={{ p: 2 }}>
           Paymaster Info
         </Typography>
         {!showAddPaymasterUI && (
@@ -172,68 +169,56 @@ const SignTransactionConfirmation = ({
               </Button>
             </Box>
           </Paper>
-        )}
-        <Typography variant="h6" sx-={{ p: 2 }}>
-          {transactions.length > 1 ? ' Transactions data' : 'Transaction data'}
-        </Typography>
+        )} */}
+        {/* Transactions Data */}
+        <Typography
+          mt={2}
+          fontSize="24px"
+          fontWeight="bold"
+          children={
+            transactions.length > 1 ? ' Transactions data' : 'Transaction data'
+          }
+        />
         <Stack spacing={2}>
           {transactions.map((transaction: EthersTransactionRequest, index) => (
-            <Paper key={index} sx={{ p: 2 }}>
-              <Typography variant="subtitle2" sx={{ mb: 2 }}>
-                To:{' '}
-                <Typography component="span" variant="body2">
+            <BorderBox p={2} key={index}>
+              <Typography mb={1} fontSize="14px">
+                To{' '}
+                <Typography fontWeight="bold" noWrap>
                   {transaction.to}
                 </Typography>
               </Typography>
-              <Typography variant="subtitle2" sx={{ mb: 2 }}>
-                Data:{' '}
-                <Typography component="span" variant="body2">
+              <Typography mb={1} fontSize="14px">
+                Data{' '}
+                <Typography fontWeight="bold">
                   {transaction.data?.toString()}
                 </Typography>
               </Typography>
-              <Typography variant="subtitle2" sx={{ mb: 2 }}>
-                Value:{' '}
-                <Typography component="span" variant="body2">
+              <Typography mb={1} fontSize="14px">
+                Value{' '}
+                <Typography fontWeight="bold">
                   {transaction.value
                     ? ethers.utils.formatEther(transaction.value)
                     : 0}{' '}
                   {activeNetwork.baseAsset.symbol}
                 </Typography>
               </Typography>
-            </Paper>
+            </BorderBox>
           ))}
         </Stack>
       </Stack>
       {!showAddPaymasterUI && (
-        <Paper
-          elevation={3}
-          sx={{
-            position: 'sticky',
-            bottom: 0,
-            left: 0,
-            width: '100%',
-          }}
+        <Stack
+          display="flex"
+          flexDirection="row"
+          alignItems="center"
+          justifyContent="space-between"
         >
-          <Box
-            justifyContent="space-around"
-            alignItems="center"
-            display="flex"
-            sx={{ p: 2 }}
-          >
-            <Button sx={{ width: 150 }} variant="outlined" onClick={onReject}>
-              Reject
-            </Button>
-            <Button
-              sx={{ width: 150 }}
-              variant="contained"
-              onClick={() => onSend()}
-            >
-              Send
-            </Button>
-          </Box>
-        </Paper>
+          <Button title="Reject" onClick={onReject} />
+          <Button title="Send" onClick={onSend} />
+        </Stack>
       )}
-    </Container>
+    </Box>
   );
 };
 
@@ -308,7 +293,8 @@ const SignTransactionRequest = () => {
   if (
     stage === 'sign-transaction-confirmation' &&
     pendingUserOp &&
-    sendTransactionRequest.transactionRequest
+    sendTransactionsRequest.transactionsRequest
+    // sendTransactionRequest.transactionRequest
   )
     return (
       <SignTransactionConfirmation
