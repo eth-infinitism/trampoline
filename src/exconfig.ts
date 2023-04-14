@@ -2,17 +2,16 @@
 export default {
   enablePasswordEncryption: false,
   showTransactionConfirmationScreen: false,
-  factory_address: '0xACDd53f8a09B8EB5A7E2FC9e28838995661897d2',
-  eleptic_curve: '0x7AFF58f6c2005123Ea4C7809b7E88E89AE8d23d9',
-  stateVersion: '0.2',
+  factory_address: '0x6c0ec05Ad55C8B8427119ce50b6087E7B0C9c23e',
+  eleptic_curve: '0x07A4E372cB55d243131182e8468F1eF5eB78347E',
+  stateVersion: '0.3',
   network: {
-    chainID: '5',
+    chainID: '11155111',
     family: 'EVM',
-    name: 'Goerli',
-    provider: 'https://goerli.infura.io/v3/bdabe9d2f9244005af0f566398e648da',
+    name: 'Sepolia',
+    provider: 'https://sepolia.infura.io/v3/bdabe9d2f9244005af0f566398e648da',
     entryPointAddress: '0x0576a174D229E3cFA37253523E645A78A0C91B57',
-    bundler:
-      'https://node.stackup.sh/v1/rpc/420c8ba682cabe5ab405980e35c9b218af18f4702c46aaec4627ba9050fcc4ee',
+    bundler: 'http://localhost:3000/rpc',
     baseAsset: {
       symbol: 'ETH',
       name: 'ETH',

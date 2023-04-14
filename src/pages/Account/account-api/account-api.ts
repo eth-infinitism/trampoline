@@ -55,10 +55,11 @@ class WebAuthnAccountAPI extends AccountApiType {
     super(params);
     this.factoryAddress = FACTORY_ADDRESS;
 
-    if (
-      !params.deserializeState.q_values &&
-      (!params.context?.q_values || params.context?.q_values === 'Denied')
-    )
+    const foundQValuesInDeserializedState = params.deserializeState?.q_values;
+    const foundQValuesInContext =
+      params.context?.q_values && params.context?.q_values !== 'Denied';
+
+    if (!foundQValuesInDeserializedState && !foundQValuesInContext)
       throw new Error('Need q_values');
 
     this.ec = Config.eleptic_curve;
