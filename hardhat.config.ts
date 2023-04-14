@@ -2,46 +2,32 @@
 import '@nomiclabs/hardhat-ethers';
 import 'hardhat-deploy';
 import '@typechain/hardhat';
-import { HardhatUserConfig } from 'hardhat/types';
-import * as fs from 'fs';
+import { HardhatUserConfig, HttpNetworkUserConfig } from 'hardhat/types';
 import '@nomiclabs/hardhat-etherscan';
+import './tasks/sendEth';
+import Config from './src/exconfig';
 
-const mnemonicFileName =
-  process.env.MNEMONIC_FILE ??
-  `${process.env.HOME}/.secret/testnet-mnemonic.txt`;
-let mnemonic = 'test '.repeat(11) + 'junk';
-if (fs.existsSync(mnemonicFileName)) {
-  mnemonic = fs.readFileSync(mnemonicFileName, 'ascii');
-}
+const networks: { [networkName: string]: HttpNetworkUserConfig } = {};
+Config.networks.map(({ name, provider }) => {
+  networks[name] = {};
+  return (networks[name].url = provider);
+});
 
-function getNetwork1(url: string): {
-  url: string;
-  accounts: { mnemonic: string };
-} {
-  return {
-    url,
-    accounts: { mnemonic },
-  };
-}
-
-function getNetwork(name: string): {
-  url: string;
-  accounts: { mnemonic: string };
-} {
-  return getNetwork1(`https://${name}.infura.io/v3/${process.env.INFURA_ID}`);
-  // return getNetwork1(`wss://${name}.infura.io/ws/v3/${process.env.INFURA_ID}`)
-}
+// const mnemonicFileName = process.env.MNEMONIC_FILE ?? `${process.env.HOME}/.secret/testnet-mnemonic.txt`;
+// let mnemonic = 'test '.repeat(11) + 'junk';
+// if (fs.existsSync(mnemonicFileName)) {
+//   mnemonic = fs.readFileSync(mnemonicFileName, 'ascii');
+// }
 
 const config: HardhatUserConfig = {
-  defaultNetwork: 'hardhat',
+  networks,
+  defaultNetwork: 'LocalGoerli',
   solidity: {
     compilers: [{ version: '0.8.12', settings: {} }, { version: '0.5.0' }],
   },
   typechain: {
     outDir: 'src/pages/Account/account-api/typechain-types',
-  },
-  networks: {
-    goerli: getNetwork('goerli'),
+    target: 'ethers-v5',
   },
   etherscan: {
     apiKey: process.env.ETHERSCAN_API_KEY,

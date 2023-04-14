@@ -1,0 +1,53 @@
+version: '3.9'
+
+x-node: &x-node
+  image: ghcr.io/foundry-rs/foundry:nightly
+  entrypoint: ['anvil']
+  healthcheck:
+    test: "wget --post-data '' --no-verbose --tries=1 --spider localhost:8545 || exit 1"
+    interval: 1s
+    timeout: 10s
+    retries: 10
+
+x-bundler: &x-bundler
+  image: figboy9/stackup-bundler:0.4.5-no-tracecall
+  command: start --mode private
+
+services:
+  goerli:
+    <<: *x-node
+    command: --host=0.0.0.0 -f=https://eth-goerli.g.alchemy.com/v2/-GlnUSi8Q2ADFXvSTgCvIHMEo8sbb0s6
+    ports:
+      - 8545:8545
+
+  sepolia:
+    <<: *x-node
+    command: --host=0.0.0.0 -f=https://eth-sepolia.g.alchemy.com/v2/qdvznjUd_QIyIDOI0e5rBDy2-18r--C8
+    ports:
+      - 9545:8545
+
+  goerli-bundler:
+    <<: *x-bundler
+    environment:
+      ERC4337_BUNDLER_ETH_CLIENT_URL: http://goerli:8545
+      # Address: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266" (10000 ETH)
+      ERC4337_BUNDLER_PRIVATE_KEY: ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
+      ERC4337_BUNDLER_SUPPORTED_ENTRY_POINTS: '0x0576a174D229E3cFA37253523E645A78A0C91B57'
+    ports:
+      - 4337:4337
+    depends_on:
+      goerli:
+        condition: service_healthy
+
+  sepolia-bundler:
+    <<: *x-bundler
+    environment:
+      ERC4337_BUNDLER_ETH_CLIENT_URL: http://sepolia:8545
+      # Address: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266" (10000 ETH)
+      ERC4337_BUNDLER_PRIVATE_KEY: ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
+      ERC4337_BUNDLER_SUPPORTED_ENTRY_POINTS: '0x0576a174D229E3cFA37253523E645A78A0C91B57'
+    ports:
+      - 5337:4337
+    depends_on:
+      sepolia:
+        condition: service_healthy
