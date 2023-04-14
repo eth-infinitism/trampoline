@@ -27,6 +27,7 @@ import { selectCurrentOriginPermission } from '../../../Background/redux-slices/
 import { getActiveNetwork } from '../../../Background/redux-slices/selectors/networkSelectors';
 import {
   selectCurrentPendingSendTransactionRequest,
+  selectCurrentPendingSendTransactionsRequest,
   selectCurrentPendingSendTransactionUserOp,
 } from '../../../Background/redux-slices/selectors/transactionsSelectors';
 import {
@@ -254,6 +255,10 @@ const SignTransactionRequest = () => {
     selectCurrentPendingSendTransactionRequest
   );
 
+  const sendTransactionsRequest = useBackgroundSelector(
+    selectCurrentPendingSendTransactionsRequest
+  );
+
   const pendingUserOp = useBackgroundSelector(
     selectCurrentPendingSendTransactionUserOp
   );
@@ -313,7 +318,7 @@ const SignTransactionRequest = () => {
         originPermission={originPermission}
         onReject={onReject}
         onSend={onSend}
-        transactions={[sendTransactionRequest.transactionRequest]}
+        transactions={sendTransactionsRequest.transactionsRequest || []}
         userOp={pendingUserOp}
       />
     );

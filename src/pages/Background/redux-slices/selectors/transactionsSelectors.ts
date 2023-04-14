@@ -11,6 +11,15 @@ export const selectCurrentPendingSendTransactionRequest = createSelector(
   })
 );
 
+// NOTE: Add for our application
+export const selectCurrentPendingSendTransactionsRequest = createSelector(
+  getTransactionsState,
+  (transactions) => ({
+    transactionsRequest: transactions.transactionsRequest,
+    origin: transactions.requestOrigin,
+  })
+);
+
 export const selectCurrentPendingSendTransactionUserOp = createSelector(
   getTransactionsState,
   (transactions) => transactions.unsignedUserOperation
