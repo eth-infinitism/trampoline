@@ -6,19 +6,18 @@ import {
   Select,
   SelectChangeEvent,
   Stack,
-  Typography,
 } from '@mui/material';
 import React from 'react';
-import logo from '../../../../assets/img/logo.svg';
+import SettingsIcon from '@mui/icons-material/Settings';
+import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 import {
   getActiveNetwork,
   getSupportedNetworks,
 } from '../../../Background/redux-slices/selectors/networkSelectors';
 import { useBackgroundSelector } from '../../hooks';
-import SettingsIcon from '@mui/icons-material/Settings';
-import { useNavigate } from 'react-router-dom';
 import { setActiveNetwork } from '../../../Background/redux-slices/network';
-import { useDispatch } from 'react-redux';
+import logo from '../../../../assets/img/logo.svg';
 
 const Header = () => {
   const navigate = useNavigate();
@@ -52,7 +51,6 @@ const Header = () => {
         onClick={() => navigate('/')}
       >
         <img height={30} src={logo} className="App-logo" alt="logo" />
-        <Typography variant="h6">HyperBob</Typography>
       </Stack>
       <Stack
         direction="row"
