@@ -3,20 +3,20 @@ import { Box, BoxProps } from '@mui/material';
 
 type Props = BoxProps & {};
 
-export const BorderBox: FC<Props> = ({ children, ...props }) => {
+export const BorderBox: FC<Props> = ({ children, sx, ...props }) => {
   return (
     <Box
-      display="flex"
-      flexDirection="column"
-      justifyContent="center"
-      alignItems="center"
       sx={{
-        width: 600,
-        minHeight: 300,
-        border: '1px solid black',
+        width: '100%',
         borderRadius: 4,
+        backdropFilter: 'blur(9px)',
+        background: 'rgba(30, 30, 30, 0.38)',
+        boxShadow:
+          '0px 32px 32px -8px rgba(0, 0, 0, 0.08), 0px 0px 32px -8px rgba(0, 0, 0, 0.12),',
+        ...sx,
       }}
       p={4}
+      color="white"
       {...props}
     >
       {children}
