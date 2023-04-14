@@ -1,16 +1,16 @@
-import { Stack, Typography, Chip, Tooltip } from '@mui/material';
-import React, { useEffect } from 'react';
-import { getActiveNetwork } from '../../../Background/redux-slices/selectors/networkSelectors';
-import { useBackgroundDispatch, useBackgroundSelector } from '../../hooks';
+import { Typography, Chip, Tooltip } from '@mui/material';
+import React, { useEffect, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import CancelIcon from '@mui/icons-material/Cancel';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import { useBackgroundDispatch, useBackgroundSelector } from '../../hooks';
 import {
   AccountData,
   getAccountData,
 } from '../../../Background/redux-slices/account';
+import { getActiveNetwork } from '../../../Background/redux-slices/selectors/networkSelectors';
 import { getAccountEVMData } from '../../../Background/redux-slices/selectors/accountSelectors';
-import { useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Center } from '../../../../components/Center';
 
 const AccountBalanceInfo = ({ address }: { address: string }) => {
   const navigate = useNavigate();
@@ -28,13 +28,18 @@ const AccountBalanceInfo = ({ address }: { address: string }) => {
 
   useEffect(() => {
     backgroundDispatch(getAccountData(address));
+    // console.log({ activeNetwork });
   }, [backgroundDispatch, address]);
 
+  if (!activeNetwork) {
+    return <></>;
+  }
+
   return (
-    <Stack spacing={1} justifyContent="center" alignItems="center">
+    <Center>
       {activeNetwork.baseAsset.image && (
         <img
-          height={40}
+          height={60}
           src={activeNetwork.baseAsset.image}
           alt={`${activeNetwork.baseAsset.name} asset logo`}
         />
@@ -42,7 +47,7 @@ const AccountBalanceInfo = ({ address }: { address: string }) => {
       {accountData !== 'loading' &&
         accountData.balances &&
         accountData.balances[activeNetwork.baseAsset.symbol] && (
-          <Typography variant="h3">
+          <Typography marginY={2} variant="h3" noWrap>
             {
               accountData.balances[activeNetwork.baseAsset.symbol].assetAmount
                 .amount
@@ -73,7 +78,7 @@ const AccountBalanceInfo = ({ address }: { address: string }) => {
           }
         />
       </Tooltip>
-    </Stack>
+    </Center>
   );
 };
 

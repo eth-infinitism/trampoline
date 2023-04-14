@@ -1,5 +1,4 @@
 import {
-  Box,
   Button,
   Card,
   CardContent,
@@ -10,15 +9,16 @@ import {
   InputAdornment,
   InputLabel,
   OutlinedInput,
-  Stack,
   Typography,
 } from '@mui/material';
+import SendRoundedIcon from '@mui/icons-material/SendRounded';
 import React, { useCallback } from 'react';
-import Header from '../../components/header';
+import { useNavigate } from 'react-router-dom';
 import { ethers } from 'ethers';
+import Header from '../../components/header';
 import { useBackgroundSelector } from '../../hooks';
 import { getActiveAccount } from '../../../Background/redux-slices/selectors/accountSelectors';
-import { useNavigate } from 'react-router-dom';
+import { Center } from '../../../../components/Center';
 
 const TransferAsset = () => {
   const navigate = useNavigate();
@@ -62,29 +62,15 @@ const TransferAsset = () => {
       <Header />
       <Card sx={{ ml: 4, mr: 4, mt: 2, mb: 2 }}>
         <CardContent>
-          <Box
-            component="div"
-            display="flex"
-            flexDirection="row"
-            justifyContent="center"
-            alignItems="center"
-            sx={{
-              borderBottom: '1px solid rgba(0, 0, 0, 0.20)',
-              position: 'relative',
-            }}
-          >
-            <Typography variant="h6">Transfer Eth</Typography>
-          </Box>
-          <Box
-            component="div"
-            display="flex"
-            flexDirection="column"
-            justifyContent="center"
-            alignItems="center"
-            sx={{ mt: 4 }}
-          >
-            <FormGroup sx={{ p: 2, pt: 4 }}>
-              <FormControl sx={{ m: 1, width: 300 }} variant="outlined">
+          <Center sx={{ borderBottom: '1px solid rgba(0, 0, 0, 0.20)' }}>
+            <Typography variant="h6">Transfer ETH</Typography>
+          </Center>
+          <Center sx={{ marginY: 8 }}>
+            <FormGroup>
+              <FormControl
+                sx={{ marginBottom: 2, width: 300 }}
+                variant="outlined"
+              >
                 <InputLabel htmlFor="password">Send to</InputLabel>
                 <OutlinedInput
                   value={toAddress}
@@ -93,7 +79,10 @@ const TransferAsset = () => {
                   label="Send to"
                 />
               </FormControl>
-              <FormControl sx={{ m: 1, width: 300 }} variant="outlined">
+              <FormControl
+                sx={{ marginBottom: 2, width: 300 }}
+                variant="outlined"
+              >
                 <InputLabel htmlFor="password">Value</InputLabel>
                 <OutlinedInput
                   endAdornment={
@@ -107,14 +96,15 @@ const TransferAsset = () => {
               <Typography variant="body1" color="error">
                 {error}
               </Typography>
+
               <Button
                 disabled={loader}
                 onClick={sendEth}
-                sx={{ mt: 4 }}
                 size="large"
                 variant="contained"
               >
                 Send
+                <SendRoundedIcon sx={{ marginLeft: 2, color: 'white' }} />
                 {loader && (
                   <CircularProgress
                     size={24}
@@ -129,7 +119,7 @@ const TransferAsset = () => {
                 )}
               </Button>
             </FormGroup>
-          </Box>
+          </Center>
         </CardContent>
       </Card>
     </Container>
