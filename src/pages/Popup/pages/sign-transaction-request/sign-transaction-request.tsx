@@ -9,7 +9,7 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import { BigNumber, ethers } from 'ethers';
+import { ethers } from 'ethers';
 import React, { useCallback, useState } from 'react';
 import {
   AccountImplementations,
@@ -282,6 +282,7 @@ const SignTransactionRequest = () => {
   const onComplete = useCallback(
     async (modifiedTransaction: EthersTransactionRequest, context?: any) => {
       if (activeAccount) {
+        // NOTE: bundlerに送るユーザーオペレーションを作成している
         backgroundDispatch(createUnsignedUserOp(activeAccount));
         setContext(context);
         if (Config.showTransactionConfirmationScreen === false) {

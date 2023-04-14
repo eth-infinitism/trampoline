@@ -1,77 +1,40 @@
 import React, { useCallback } from 'react';
 import SendRoundedIcon from '@mui/icons-material/SendRounded';
-import StoreIcon from '@mui/icons-material/Store';
-import { Avatar, Stack, Tooltip, Typography, useTheme } from '@mui/material';
-import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
+import { Button, Typography } from '@mui/material';
 import { ethers } from 'ethers';
-import { useNavigate } from 'react-router-dom';
 
 const TransferAssetButton = ({ activeAccount }: { activeAccount: string }) => {
-  const theme = useTheme();
-  const navigate = useNavigate();
+  // const theme = useTheme();
+  // const navigate = useNavigate();
 
-  const sendMoney = useCallback(async () => {
-    // if (window.ethereum) {
-    //   const accounts = await window.ethereum.request({
-    //     method: 'eth_requestAccounts',
-    //   });
-    //   const txHash = await window.ethereum.request({
-    //     method: 'eth_sendTransaction',
-    //     params: [
-    //       {
-    //         from: activeAccount,
-    //         to: ethers.constants.AddressZero,
-    //         data: '0x',
-    //       },
-    //     ],
-    //   });
-    //   console.log(txHash);
-    // }
+  const sendToBob = useCallback(async () => {
+    console.log('did we come here?', window.ethereum);
+    if (window.ethereum) {
+      // ポップアップ起動のため'eth_requestAccounts'のメッセージイベントでポップアップ起動している
+      await window.ethereum.request({ method: 'eth_requestAccounts' });
+      // 初期Transactionを作成
+      const txHash = await window.ethereum.request({
+        method: 'eth_sendTransaction',
+        params: [
+          {
+            from: activeAccount,
+            to: ethers.constants.AddressZero,
+            data: '0x',
+          },
+        ],
+      });
+      console.log(txHash);
+    }
   }, [activeAccount]);
 
   return (
-    <Stack direction={'row'} spacing={4}>
-      <Tooltip title="Coming soon">
-        <Stack
-          justifyContent="center"
-          alignItems="center"
-          spacing={'4px'}
-          sx={{ cursor: 'not-allowed', opacity: 0.5 }}
-        >
-          <Avatar sx={{ bgcolor: theme.palette.primary.main }}>
-            <StoreIcon />
-          </Avatar>
-          <Typography variant="button">Buy</Typography>
-        </Stack>
-      </Tooltip>
-      <Stack
-        justifyContent="center"
-        alignItems="center"
-        spacing={'4px'}
-        sx={{ cursor: 'pointer' }}
-      >
-        <Avatar sx={{ bgcolor: theme.palette.primary.main }}>
-          <SendRoundedIcon
-            onClick={() => navigate('/transfer-assets')}
-            sx={{ transform: 'rotate(-45deg)', ml: '4px', mb: '6px' }}
-          />
-        </Avatar>
-        <Typography variant="button">Send</Typography>
-      </Stack>
-      <Tooltip title="Coming soon">
-        <Stack
-          justifyContent="center"
-          alignItems="center"
-          spacing={'4px'}
-          sx={{ cursor: 'not-allowed', opacity: 0.5 }}
-        >
-          <Avatar sx={{ bgcolor: theme.palette.primary.main }}>
-            <SwapHorizIcon />
-          </Avatar>
-          <Typography variant="button">Swap</Typography>
-        </Stack>
-      </Tooltip>
-    </Stack>
+    // onClick={() => navigate('/transfer-assets')}
+    <Button size="large" variant="contained" onClick={sendToBob}>
+      <Typography mr={1} p={1} variant="h6" color="white">
+        Send to bob
+      </Typography>
+      <SendRoundedIcon sx={{ color: 'white' }} />
+    </Button>
   );
 };
 
