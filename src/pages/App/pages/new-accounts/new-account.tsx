@@ -23,6 +23,7 @@ import { HeadTitle } from '../../../../components/HeadTitle';
 import { Button } from '../../../../components/Button';
 import { BorderBox } from '../../../../components/BorderBox';
 import { Center } from '../../../../components/Center';
+import { Row } from '../../../../components/Row';
 
 type TakeNameComponentProps = BoxProps & {
   name: string;
@@ -56,12 +57,14 @@ const TakeNameComponent: FC<TakeNameComponentProps> = ({
           />
         </FormControl>
       </FormGroup>
-      <Button
-        sx={{ marginLeft: 'auto', marginTop: 8 }}
-        title="Create"
-        onClick={nextStage}
-        disabled={name.length === 0 || showLoader}
-      />
+      <Row textAlign="right">
+        <Button
+          sx={{ marginLeft: 'auto', marginTop: 8 }}
+          title="Create"
+          onClick={nextStage}
+          disabled={name.length === 0 || showLoader}
+        />
+      </Row>
     </>
   );
 };

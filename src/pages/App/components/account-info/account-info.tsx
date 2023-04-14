@@ -1,5 +1,5 @@
-import { Box, BoxProps, Tooltip, Typography } from '@mui/material';
-import React, { FC, useCallback, useState } from 'react';
+import { Box, BoxProps, Typography } from '@mui/material';
+import React, { FC, useCallback } from 'react';
 import { getAccountInfo } from '../../../Background/redux-slices/selectors/accountSelectors';
 import { useBackgroundSelector } from '../../hooks';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
@@ -14,7 +14,8 @@ type Props = BoxProps & {
 };
 
 const AccountInfo: FC<Props> = ({ address, showOptions = true, ...props }) => {
-  const [tooltipMessage, setTooltipMessage] = useState<string>('Copy address');
+  // TODO: ツールチップを出したい
+  // const [tooltipMessage, setTooltipMessage] = useState<string>('Copy address');
 
   const accountInfo = useBackgroundSelector((state) =>
     getAccountInfo(state, address)
@@ -22,7 +23,7 @@ const AccountInfo: FC<Props> = ({ address, showOptions = true, ...props }) => {
 
   const copyAddress = useCallback(async () => {
     await navigator.clipboard.writeText(address);
-    setTooltipMessage('Address copied');
+    // setTooltipMessage('Address copied');
   }, [address]);
 
   return (
@@ -34,24 +35,21 @@ const AccountInfo: FC<Props> = ({ address, showOptions = true, ...props }) => {
             {accountInfo.name}
           </Typography>
           {/* Address */}
-          <Tooltip title={tooltipMessage} enterDelay={0}>
-            {/* TODO:display tool tip */}
-            <Row
-              onClick={copyAddress}
-              sx={{
-                minWidth: 300,
-                borderRadius: 4,
-                cursor: 'pointer',
-                '&:hover': { opacity: 0.8 },
-              }}
-            >
-              <span>
-                {address.substring(0, 5)}...
-                {address.substring(address.length - 5)}
-              </span>
-              <ContentCopyIcon sx={{ height: 12, cursor: 'pointer' }} />
-            </Row>
-          </Tooltip>
+          <Row
+            onClick={copyAddress}
+            sx={{
+              minWidth: 300,
+              borderRadius: 4,
+              cursor: 'pointer',
+              '&:hover': { opacity: 0.8 },
+            }}
+          >
+            <span>
+              {address.substring(0, 5)}...
+              {address.substring(address.length - 5)}
+            </span>
+            <ContentCopyIcon sx={{ height: 12, cursor: 'pointer' }} />
+          </Row>
         </Box>
         <SettingsIcon fontSize="large" />
       </Row>
