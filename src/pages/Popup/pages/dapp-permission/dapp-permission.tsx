@@ -1,12 +1,4 @@
-import {
-  Box,
-  Button,
-  CardMedia,
-  Container,
-  Paper,
-  Stack,
-  Typography,
-} from '@mui/material';
+import { Box, Stack, Typography } from '@mui/material';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -14,8 +6,6 @@ import {
   useBackgroundSelector,
 } from '../../../App/hooks';
 import { selectCurrentPendingPermission } from '../../../Background/redux-slices/selectors/dappPermissionSelectors';
-import logo from '../../../../assets/img/dapp_favicon_default@2x.png';
-import BoltIcon from '@mui/icons-material/Bolt';
 import {
   getAccountInfo,
   getActiveAccount,
@@ -25,7 +15,9 @@ import {
   grantPermission,
 } from '../../../Background/redux-slices/permissions';
 import AccountInfo from '../../components/account-info';
-import OriginInfo from '../../components/origin-info';
+import { BorderBox } from '../../../../components/BorderBox';
+import { RejectButton } from '../../../../components/RejectButton';
+import { Button } from '../../../../components/Button';
 
 const DappPermission = () => {
   const permission = useBackgroundSelector(selectCurrentPendingPermission);
@@ -76,59 +68,44 @@ const DappPermission = () => {
   }, [backgroundDispatch, permission, activeAccount]);
 
   return (
-    <Container>
-      <Box sx={{ p: 2 }}>
-        <Typography textAlign="center" variant="h6">
-          Connection Request
-        </Typography>
-      </Box>
-      <AccountInfo
-        accountInfo={accountInfo}
-        activeAccount={activeAccount || ''}
+    <Box px={2} color="white">
+      <Typography
+        my={4}
+        fontSize="28px"
+        fontWeight="bold"
+        children="Connection Request"
       />
-      <Stack spacing={2} sx={{ position: 'relative', pt: 2, mb: 4 }}>
-        <OriginInfo permission={permission} />
-        <Paper sx={{ p: 2 }}>
-          <Typography variant="subtitle2" sx={{ mb: 2 }}>
-            Requesting permissions
+      {activeAccount && (
+        <AccountInfo activeAccount={activeAccount} accountInfo={accountInfo} />
+      )}
+      <Typography
+        mt={6}
+        fontSize="24px"
+        fontWeight="bold"
+        children="Requesting permissions"
+      />
+      <BorderBox mb={4} p={2}>
+        <Stack spacing={1}>
+          <Typography variant="body2">• See address</Typography>
+          <Typography variant="body2">• Account Balance</Typography>
+          <Typography variant="body2">• Past transactions activity</Typography>
+          <Typography variant="body2">
+            • Suggest new transactions for approvals
           </Typography>
-          <Stack spacing={1}>
-            <Typography variant="body2">• See address</Typography>
-            <Typography variant="body2">• Account Balance</Typography>
-            <Typography variant="body2">
-              • Past transactions activity
-            </Typography>
-            <Typography variant="body2">
-              • Suggest new transactions for approvals
-            </Typography>
-            <Typography variant="body2">• Request signatures</Typography>
-          </Stack>
-        </Paper>
-      </Stack>
-      <Paper
-        elevation={3}
-        sx={{
-          position: 'sticky',
-          bottom: 0,
-          left: 0,
-          width: '100%',
-        }}
+          <Typography variant="body2">• Request signatures</Typography>
+        </Stack>
+      </BorderBox>
+      <Stack
+        display="flex"
+        flexDirection="row"
+        alignItems="center"
+        justifyContent="space-between"
       >
-        <Box
-          justifyContent="space-around"
-          alignItems="center"
-          display="flex"
-          sx={{ p: 2 }}
-        >
-          <Button sx={{ width: 150 }} variant="outlined" onClick={deny}>
-            Reject
-          </Button>
-          <Button sx={{ width: 150 }} variant="contained" onClick={grant}>
-            Connect
-          </Button>
-        </Box>
-      </Paper>
-    </Container>
+        <RejectButton fullWidth title="Reject" onClick={deny} />
+        <Box width="32px" />
+        <Button fullWidth title="Connect" onClick={grant} />
+      </Stack>
+    </Box>
   );
 };
 

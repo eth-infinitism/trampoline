@@ -98,7 +98,7 @@ const SignTransactionConfirmation: FC<Props> = ({
         my={4}
         fontSize="28px"
         fontWeight="bold"
-        children="Send transaction request"
+        children="Send Transaction Request"
       />
       {activeAccount && (
         <AccountInfo activeAccount={activeAccount} accountInfo={accountInfo} />
@@ -177,7 +177,7 @@ const SignTransactionConfirmation: FC<Props> = ({
           fontSize="24px"
           fontWeight="bold"
           children={
-            transactions.length > 1 ? ' Transactions data' : 'Transaction data'
+            transactions.length > 1 ? ' Transactions Data' : 'Transaction Data'
           }
         />
         <Stack spacing={2}>
