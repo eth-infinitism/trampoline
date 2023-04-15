@@ -25,7 +25,7 @@ import {
   createUnsignedUserOp,
   rejectTransaction,
   sendTransaction,
-  setUnsignedUserOperation,
+  // setUnsignedUserOperation,
 } from '../../../Background/redux-slices/transactions';
 import { EthersTransactionRequest } from '../../../Background/services/types';
 import AccountInfo from '../../components/account-info';
@@ -48,6 +48,7 @@ type Props = {
   onSend: any;
 };
 
+/** 送金内容の確認コンポーネント */
 const SignTransactionConfirmation: FC<Props> = ({
   activeNetwork,
   activeAccount,
@@ -58,39 +59,39 @@ const SignTransactionConfirmation: FC<Props> = ({
   onReject,
   onSend,
 }) => {
-  const backgroundDispatch = useBackgroundDispatch();
-  const [showAddPaymasterUI, setShowAddPaymasterUI] = useState<boolean>(false);
-  const [addPaymasterLoader, setAddPaymasterLoader] = useState<boolean>(false);
-  const [paymasterError, setPaymasterError] = useState<string>('');
-  const [paymasterUrl, setPaymasterUrl] = useState<string>('');
+  // const backgroundDispatch = useBackgroundDispatch();
+  const [showAddPaymasterUI] = useState<boolean>(false);
+  // const [addPaymasterLoader, setAddPaymasterLoader] = useState<boolean>(false);
+  // const [paymasterError, setPaymasterError] = useState<string>('');
+  // const [paymasterUrl, setPaymasterUrl] = useState<string>('');
 
-  const addPaymaster = useCallback(async () => {
-    console.log(paymasterUrl);
-    setAddPaymasterLoader(true);
-    if (paymasterUrl) {
-      const paymasterRPC = new ethers.providers.JsonRpcProvider(paymasterUrl, {
-        name: 'Paymaster',
-        chainId: parseInt(activeNetwork.chainID),
-      });
-      try {
-        const paymasterResp = await paymasterRPC.send(
-          'eth_getPaymasterAndDataSize',
-          [userOp]
-        );
-        backgroundDispatch(
-          setUnsignedUserOperation({
-            ...userOp,
-            paymasterAndData: paymasterResp,
-            verificationGasLimit: paymasterResp.verificationGasLimit,
-          })
-        );
-      } catch (e) {
-        console.log(e);
-        setPaymasterError('Paymaster url returned error');
-      }
-      setAddPaymasterLoader(false);
-    }
-  }, [activeNetwork.chainID, backgroundDispatch, paymasterUrl, userOp]);
+  // const addPaymaster = useCallback(async () => {
+  //   console.log(paymasterUrl);
+  //   setAddPaymasterLoader(true);
+  //   if (paymasterUrl) {
+  //     const paymasterRPC = new ethers.providers.JsonRpcProvider(paymasterUrl, {
+  //       name: 'Paymaster',
+  //       chainId: parseInt(activeNetwork.chainID),
+  //     });
+  //     try {
+  //       const paymasterResp = await paymasterRPC.send(
+  //         'eth_getPaymasterAndDataSize',
+  //         [userOp]
+  //       );
+  //       backgroundDispatch(
+  //         setUnsignedUserOperation({
+  //           ...userOp,
+  //           paymasterAndData: paymasterResp,
+  //           verificationGasLimit: paymasterResp.verificationGasLimit,
+  //         })
+  //       );
+  //     } catch (e) {
+  //       console.log(e);
+  //       setPaymasterError('Paymaster url returned error');
+  //     }
+  //     setAddPaymasterLoader(false);
+  //   }
+  // }, [activeNetwork.chainID, backgroundDispatch, paymasterUrl, userOp]);
 
   return (
     <Box px={2} color="white">
@@ -104,9 +105,9 @@ const SignTransactionConfirmation: FC<Props> = ({
         <AccountInfo activeAccount={activeAccount} accountInfo={accountInfo} />
       )}
       <Stack spacing={2} sx={{ position: 'relative', pt: 2, mb: 4 }}>
-        {/* TODO: Original Info */}
+        {/* NOTE: Original Info */}
         {/* <OriginInfo permission={originPermission} /> */}
-        {/* TODO: Paymaster Info */}
+        {/* NOTE: Paymaster Info */}
         {/* <Typography variant="h6" sx-={{ p: 2 }}>
           Paymaster Info
         </Typography>
@@ -259,11 +260,16 @@ const SignTransactionRequest = () => {
 
   const onSend = useCallback(
     async (_context?: any) => {
+      // TODO: _contextのオブジェクトをJSONパースしてもエラーとなる
+      // nverting circular structure to JSON
+      console.log({ activeAccount });
+      console.log({ _context });
+      console.log({ context });
       if (activeAccount)
         await backgroundDispatch(
           sendTransaction({
             address: activeAccount,
-            context: _context || context,
+            context: JSON.parse(JSON.stringify(_context)) || context,
           })
         );
       window.close();

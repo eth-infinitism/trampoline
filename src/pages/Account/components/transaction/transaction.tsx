@@ -6,7 +6,7 @@ import { TransactionComponentProps } from '../types';
 
 type Props = TransactionComponentProps & {};
 
-// NOTE: ここでTransactionsを変更する処理(HyperBobTransactionでやっていた処理)を実装する
+// TODO: ここでTransactionsを変更する処理(HyperBobTransactionでやっていた処理)を実装する
 const Transaction: FC<Props> = ({ transaction, onComplete }) => {
   const backgroundDispatch = useBackgroundDispatch();
   // // transactionRequestのstateを変更する
