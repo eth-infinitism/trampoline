@@ -18,6 +18,7 @@ import { useBackgroundSelector } from '../../hooks';
 import { setActiveNetwork } from '../../../Background/redux-slices/network';
 import { Row } from '../../../../components/Row';
 import logo from '../../../../assets/img/logo.svg';
+import { colors } from '../../../../config/const';
 
 type Props = BoxProps & {};
 
@@ -42,11 +43,11 @@ const Header: FC<Props> = ({ ...props }) => {
         <img height={48} src={logo} className="App-logo" alt="logo" />
       </Box>
       {/* Switch Chain */}
-      <FormControl sx={{ minWidth: 80, color: 'white' }}>
+      <FormControl sx={{ minWidth: 80, color: colors.white }}>
         <InputLabel
           id="chain-selector"
           children="Chain"
-          sx={{ color: 'white' }}
+          sx={{ color: colors.gray }}
         />
         <Select
           labelId="chain-selector"
@@ -54,7 +55,15 @@ const Header: FC<Props> = ({ ...props }) => {
           value={activeNetwork.chainID}
           label="Chain"
           onChange={switchActiveNetwork}
-          sx={{ color: 'white' }}
+          sx={{
+            color: colors.white,
+            '& fieldset': {
+              borderColor: colors.gray,
+            },
+            '& svg': {
+              color: colors.white,
+            },
+          }}
         >
           {supportedNetworks.map((network) => (
             <MenuItem key={network.chainID} value={network.chainID}>

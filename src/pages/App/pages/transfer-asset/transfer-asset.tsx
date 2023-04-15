@@ -63,7 +63,7 @@ const TransferAsset: FC<Props> = ({ ...props }) => {
       marginX="auto"
       {...props}
     >
-      <Header />
+      <Header mb={2} />
       <BorderBox>
         <HeadTitle marginBottom={4} title="Transfer ETH" />
         <FormGroup sx={{ width: '100%' }}>
