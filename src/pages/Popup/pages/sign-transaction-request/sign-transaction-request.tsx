@@ -32,6 +32,7 @@ import AccountInfo from '../../components/account-info';
 import Config from '../../../../exconfig';
 import { Button } from '../../../../components/Button';
 import { BorderBox } from '../../../../components/BorderBox';
+import { RejectButton } from '../../../../components/RejectButton';
 
 const SignTransactionComponent =
   AccountImplementations[ActiveAccountImplementation].Transaction;
@@ -214,8 +215,9 @@ const SignTransactionConfirmation: FC<Props> = ({
           alignItems="center"
           justifyContent="space-between"
         >
-          <Button title="Reject" onClick={onReject} />
-          <Button title="Send" onClick={onSend} />
+          <RejectButton fullWidth title="Reject" onClick={onReject} />
+          <Box width="32px" />
+          <Button fullWidth title="Send" onClick={onSend} />
         </Stack>
       )}
     </Box>

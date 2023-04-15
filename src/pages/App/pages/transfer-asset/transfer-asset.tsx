@@ -3,13 +3,12 @@ import {
   FormControl,
   FormGroup,
   InputAdornment,
-  InputLabel,
-  OutlinedInput,
   Typography,
 } from '@mui/material';
 import React, { FC, useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ethers } from 'ethers';
+import SendRoundedIcon from '@mui/icons-material/SendRounded';
 import Header from '../../components/header';
 import { useBackgroundSelector } from '../../hooks';
 import { getActiveAccount } from '../../../Background/redux-slices/selectors/accountSelectors';
@@ -17,6 +16,8 @@ import { Center } from '../../../../components/Center';
 import { BorderBox } from '../../../../components/BorderBox';
 import { HeadTitle } from '../../../../components/HeadTitle';
 import { Button } from '../../../../components/Button';
+import { FormInput } from '../../../../components/FormInput';
+import { colors } from '../../../../config/const';
 
 type Props = BoxProps & {};
 
@@ -71,15 +72,10 @@ const TransferAsset: FC<Props> = ({ ...props }) => {
             sx={{ marginBottom: 2, width: '100%' }}
             variant="outlined"
           >
-            <InputLabel htmlFor="password" sx={{ color: 'white' }}>
-              Send to
-            </InputLabel>
-            <OutlinedInput
+            <FormInput
               value={toAddress}
               onChange={(e) => setToAddress(e.target.value)}
-              autoFocus
-              label="Send to"
-              sx={{ color: 'white', width: '100%' }}
+              placeholder="Send to"
             />
           </FormControl>
           {/* Value */}
@@ -87,12 +83,7 @@ const TransferAsset: FC<Props> = ({ ...props }) => {
             sx={{ marginBottom: 2, width: '100%' }}
             variant="outlined"
           >
-            <InputLabel
-              htmlFor="password"
-              sx={{ color: 'white' }}
-              children="Value"
-            />
-            <OutlinedInput
+            <FormInput
               endAdornment={
                 <InputAdornment
                   position="end"
@@ -102,8 +93,7 @@ const TransferAsset: FC<Props> = ({ ...props }) => {
               }
               value={value}
               onChange={(e) => setValue(e.target.value)}
-              label="Value"
-              sx={{ width: '100%' }}
+              placeholder="Value"
             />
           </FormControl>
           {/* Error */}
@@ -116,6 +106,11 @@ const TransferAsset: FC<Props> = ({ ...props }) => {
             title="Send"
             onClick={sendEth}
             disabled={!toAddress}
+            icon={
+              <SendRoundedIcon
+                sx={{ color: !toAddress ? colors.disabled : colors.white }}
+              />
+            }
           ></Button>
         </FormGroup>
       </BorderBox>

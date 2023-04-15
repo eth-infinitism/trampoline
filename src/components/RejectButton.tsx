@@ -6,7 +6,7 @@ type Props = ButtonProps & {
   icon?: ReactNode;
 };
 
-export const Button: FC<Props> = ({
+export const RejectButton: FC<Props> = ({
   children,
   title,
   disabled,
@@ -15,15 +15,13 @@ export const Button: FC<Props> = ({
   ...props
 }) => {
   const enabledStyle = {
-    color: colors.white,
-    background: colors.purple,
+    color: colors.error,
+    background: 'rgba(142, 142, 142, 0.16)',
     ':hover': { opacity: 0.8 },
   };
   const disabledStyle = {};
   return (
     <MuiButton
-      // size="large"
-      // variant="contained"
       sx={{
         paddingX: '40px',
         lineHeight: '42px',
@@ -40,7 +38,7 @@ export const Button: FC<Props> = ({
       <Typography
         mr={1}
         variant="h6"
-        sx={{ color: disabled ? colors.disabled : colors.white }}
+        sx={{ color: disabled ? colors.disabled : colors.error }}
       >
         {title}
       </Typography>

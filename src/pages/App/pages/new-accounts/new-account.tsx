@@ -4,8 +4,6 @@ import {
   CircularProgress,
   FormControl,
   FormGroup,
-  InputLabel,
-  OutlinedInput,
   Typography,
 } from '@mui/material';
 import {
@@ -24,6 +22,7 @@ import { Button } from '../../../../components/Button';
 import { BorderBox } from '../../../../components/BorderBox';
 import { Center } from '../../../../components/Center';
 import { Row } from '../../../../components/Row';
+import { FormInput } from '../../../../components/FormInput';
 
 type TakeNameComponentProps = BoxProps & {
   name: string;
@@ -45,15 +44,14 @@ const TakeNameComponent: FC<TakeNameComponentProps> = ({
         Give a name to your account so that you can recoganise it easily.
       </Typography>
       <FormGroup sx={{ width: '100%' }}>
-        <FormControl sx={{ m: 1 }} variant="outlined">
-          <InputLabel htmlFor="name">Name</InputLabel>
-          <OutlinedInput
+        <FormControl sx={{ m: 1 }}>
+          {/* <InputLabel htmlFor="name">Account Name</InputLabel> */}
+          <FormInput
             value={name}
             onChange={(e) => setName(e.target.value)}
-            autoFocus
-            id="name"
-            type="text"
-            label="Name"
+            placeholder="Account Name"
+            // id="name"
+            // label="Account Name"
           />
         </FormControl>
       </FormGroup>
