@@ -6,6 +6,8 @@ import {
   FormGroup,
   Typography,
 } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+import EastIcon from '@mui/icons-material/East';
 import {
   ActiveAccountImplementation,
   AccountImplementations,
@@ -14,7 +16,6 @@ import { useBackgroundDispatch, useBackgroundSelector } from '../../hooks';
 import { createNewAccount } from '../../../Background/redux-slices/keyrings';
 import { getSupportedNetworks } from '../../../Background/redux-slices/selectors/networkSelectors';
 import { EVMNetwork } from '../../../Background/types/network';
-import { useNavigate } from 'react-router-dom';
 import { getAccountAdded } from '../../../Background/redux-slices/selectors/accountSelectors';
 import { resetAccountAdded } from '../../../Background/redux-slices/account';
 import { HeadTitle } from '../../../../components/HeadTitle';
@@ -23,6 +24,7 @@ import { BorderBox } from '../../../../components/BorderBox';
 import { Center } from '../../../../components/Center';
 import { Row } from '../../../../components/Row';
 import { FormInput } from '../../../../components/FormInput';
+import { colors } from '../../../../config/const';
 
 type TakeNameComponentProps = BoxProps & {
   name: string;
@@ -61,6 +63,16 @@ const TakeNameComponent: FC<TakeNameComponentProps> = ({
           title="Create"
           onClick={nextStage}
           disabled={name.length === 0 || showLoader}
+          icon={
+            <EastIcon
+              sx={{
+                color:
+                  name.length === 0 || showLoader
+                    ? colors.disabled
+                    : colors.white,
+              }}
+            />
+          }
         />
       </Row>
     </>
