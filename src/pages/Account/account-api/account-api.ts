@@ -37,7 +37,7 @@ class SimpleAccountAPI extends AccountApiType {
 
   factory?: SimpleAccountFactory;
 
-  constructor(params: AccountApiParamsType<{}>) {
+  constructor(params: AccountApiParamsType<{}, { privateKey: string }>) {
     super(params);
     this.factoryAddress = FACTORY_ADDRESS;
 
@@ -48,7 +48,7 @@ class SimpleAccountAPI extends AccountApiType {
     this.name = 'SimpleAccountAPI';
   }
 
-  serialize = async (): Promise<object> => {
+  serialize = async (): Promise<{ privateKey: string }> => {
     return {
       privateKey: this.owner.privateKey,
     };
