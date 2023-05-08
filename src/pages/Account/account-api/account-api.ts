@@ -7,14 +7,19 @@ import {
   UserOperationStruct,
 } from '@account-abstraction/contracts';
 import { arrayify, hexConcat } from 'ethers/lib/utils';
-
+import Config from '../../../exconfig.json';
 import { AccountApiParamsType, AccountApiType } from './types';
 import { MessageSigningRequest } from '../../Background/redux-slices/signing';
 import { TransactionDetailsForUserOp } from '@account-abstraction/sdk/dist/src/TransactionDetailsForUserOp';
-import config from '../../../exconfig';
+import {
+  TwoOwnerAccount,
+  TwoOwnerAccountFactory,
+  TwoOwnerAccountFactory__factory,
+  TwoOwnerAccount__factory,
+} from './typechain-types';
 
 const FACTORY_ADDRESS =
-  config.factory_address || '0x6C583EE7f3a80cB53dDc4789B0Af1aaFf90e55F3';
+  Config.factory_address || '0x6c0ec05Ad55C8B8427119ce50b6087E7B0C9c23e';
 
 /**
  * An implementation of the BaseAccountAPI using the SimpleAccount contract.
@@ -23,40 +28,51 @@ const FACTORY_ADDRESS =
  * - nonce method is "nonce()"
  * - execute method is "execFromEntryPoint()"
  */
-class SimpleAccountAPI extends AccountApiType {
+class TwoOwnerAccountAPI extends AccountApiType {
   name: string;
   factoryAddress?: string;
-  owner: Wallet;
+  ownerOne: Wallet;
+  ownerTwo: string;
   index: number;
 
   /**
    * our account contract.
    * should support the "execFromEntryPoint" and "nonce" methods
    */
-  accountContract?: SimpleAccount;
+  accountContract?: TwoOwnerAccount;
 
-  factory?: SimpleAccountFactory;
+  factory?: TwoOwnerAccountFactory;
 
-  constructor(params: AccountApiParamsType<{}, { privateKey: string }>) {
+  constructor(
+    params: AccountApiParamsType<
+      { address: string },
+      { privateKey: string; ownerTwo: string }
+    >
+  ) {
     super(params);
     this.factoryAddress = FACTORY_ADDRESS;
 
-    this.owner = params.deserializeState?.privateKey
+    this.ownerOne = params.deserializeState?.privateKey
       ? new ethers.Wallet(params.deserializeState?.privateKey)
       : ethers.Wallet.createRandom();
+
+    this.ownerTwo = params.deserializeState?.ownerTwo
+      ? params.deserializeState?.ownerTwo
+      : params.context?.address || '';
     this.index = 0;
     this.name = 'SimpleAccountAPI';
   }
 
-  serialize = async (): Promise<{ privateKey: string }> => {
+  serialize = async (): Promise<{ privateKey: string; ownerTwo: string }> => {
     return {
-      privateKey: this.owner.privateKey,
+      privateKey: this.ownerOne.privateKey,
+      ownerTwo: this.ownerTwo,
     };
   };
 
-  async _getAccountContract(): Promise<SimpleAccount> {
+  async _getAccountContract(): Promise<TwoOwnerAccount> {
     if (this.accountContract == null) {
-      this.accountContract = SimpleAccount__factory.connect(
+      this.accountContract = TwoOwnerAccount__factory.connect(
         await this.getAccountAddress(),
         this.provider
       );
@@ -71,7 +87,7 @@ class SimpleAccountAPI extends AccountApiType {
   async getAccountInitCode(): Promise<string> {
     if (this.factory == null) {
       if (this.factoryAddress != null && this.factoryAddress !== '') {
-        this.factory = SimpleAccountFactory__factory.connect(
+        this.factory = TwoOwnerAccountFactory__factory.connect(
           this.factoryAddress,
           this.provider
         );
@@ -82,7 +98,8 @@ class SimpleAccountAPI extends AccountApiType {
     return hexConcat([
       this.factory.address,
       this.factory.interface.encodeFunctionData('createAccount', [
-        await this.owner.getAddress(),
+        await this.ownerOne.getAddress(),
+        this.ownerTwo,
         this.index,
       ]),
     ]);
@@ -115,26 +132,45 @@ class SimpleAccountAPI extends AccountApiType {
     ]);
   }
 
-  async signUserOpHash(userOpHash: string): Promise<string> {
-    return await this.owner.signMessage(arrayify(userOpHash));
+  async signOwnerOne(userOpHash: string): Promise<string> {
+    return await this.ownerOne.signMessage(arrayify(userOpHash));
   }
 
   signMessage = async (
     context: any,
     request?: MessageSigningRequest
   ): Promise<string> => {
-    return this.owner.signMessage(request?.rawSigningData || '');
+    return this.ownerOne.signMessage(request?.rawSigningData || '');
   };
 
   signUserOpWithContext = async (
     userOp: UserOperationStruct,
-    context: any
+    context: { signedMessage: string }
   ): Promise<UserOperationStruct> => {
     return {
       ...userOp,
-      signature: await this.signUserOpHash(await this.getUserOpHash(userOp)),
+      signature: ethers.utils.defaultAbiCoder.encode(
+        ['bytes', 'bytes'],
+        [
+          await this.signOwnerOne(await this.getUserOpHash(userOp)),
+          context.signedMessage,
+        ]
+      ),
     };
+  };
+
+  async createUnsignedUserOp(
+    info: TransactionDetailsForUserOp
+  ): Promise<UserOperationStruct> {
+    const userOp = await super.createUnsignedUserOp(info);
+    await userOp.preVerificationGas;
+    userOp.preVerificationGas = Number(await userOp.preVerificationGas) * 2.5;
+    return userOp;
+  }
+
+  getUserOpHashToSign = async (userOp: UserOperationStruct) => {
+    return this.getUserOpHash(userOp);
   };
 }
 
-export default SimpleAccountAPI;
+export default TwoOwnerAccountAPI;
