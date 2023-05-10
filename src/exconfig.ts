@@ -8,9 +8,11 @@ export default {
     chainID: '80001',
     family: 'EVM',
     name: 'Mumbai',
-    provider: 'https://matic-mumbai.chainstacklabs.com',
+    provider:
+      'https://polygon-mumbai.infura.io/v3/bdabe9d2f9244005af0f566398e648da',
     entryPointAddress: '0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789',
-    bundler: 'http://localhost:3000/rpc',
+    bundler:
+      'https://api.stackup.sh/v1/node/0d657a1f41a1d905fba1226a057b50bd2634137f732251cd24472cf3eb15535f',
     baseAsset: {
       symbol: 'MATIC',
       name: 'MATIC',
