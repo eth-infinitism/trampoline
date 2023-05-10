@@ -407,6 +407,20 @@ export default class KeyringService extends BaseService<Events> {
     userOp.paymasterAndData = await userOp.paymasterAndData;
     userOp.signature = await userOp.signature;
 
+    const gasParameters = await this.bundler?.estimateUserOpGas(
+      await keyring.signUserOp(userOp)
+    );
+
+    userOp.callGasLimit = ethers.BigNumber.from(
+      gasParameters?.callGasLimit || userOp.callGasLimit
+    ).toHexString();
+    userOp.verificationGasLimit = ethers.BigNumber.from(
+      gasParameters?.verificationGas || userOp.verificationGasLimit
+    ).toHexString();
+    userOp.preVerificationGas = ethers.BigNumber.from(
+      gasParameters?.preVerificationGas || userOp.preVerificationGas
+    ).toHexString();
+
     return userOp;
   };
 
