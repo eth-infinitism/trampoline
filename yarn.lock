@@ -2,18 +2,18 @@
 # yarn lockfile v1
 
 
-"@account-abstraction/contracts@^0.5.0":
-  version "0.5.0"
-  resolved "https://registry.yarnpkg.com/@account-abstraction/contracts/-/contracts-0.5.0.tgz#a089aee7b4c446251fbbce7df315bbf8f659e37f"
-  integrity sha512-CKyS9Zh5rcYUM+4B6TlaB9+THHzJ+6TY3tWF5QofqvFpqGNvIhF8ddy6wyCmqZw6TB74/yYv7cYD/RarVudfDg==
+"@account-abstraction/contracts@^0.6.0":
+  version "0.6.0"
+  resolved "https://registry.yarnpkg.com/@account-abstraction/contracts/-/contracts-0.6.0.tgz#7188a01839999226e6b2796328af338329543b76"
+  integrity sha512-8ooRJuR7XzohMDM4MV34I12Ci2bmxfE9+cixakRL7lA4BAwJKQ3ahvd8FbJa9kiwkUPCUNtj+/zxDQWYYalLMQ==
 
-"@account-abstraction/sdk@^0.5.0":
-  version "0.5.0"
-  resolved "https://registry.yarnpkg.com/@account-abstraction/sdk/-/sdk-0.5.0.tgz#fb306ecb1dba82e10a0277ab716890acf1d2d1ed"
-  integrity sha512-KuEG9UVl2kEhamevFmPJfqY5AQH4fRLnFhfWAdoqwxIZIuSyA8wfyzM9WKnDPSCaiApLvSzckjRwbs4dVoOp2Q==
+"@account-abstraction/sdk@^0.6.0":
+  version "0.6.0"
+  resolved "https://registry.yarnpkg.com/@account-abstraction/sdk/-/sdk-0.6.0.tgz#a9257e872ba54e6312d322af0802b40002e745b5"
+  integrity sha512-zZNOhMCNUTi8UkCks5x5GKAbuc7pjbsZzbCivfqlPRoldulG7ieauyVwQfnDxR3Qe0jsop7WWnShMmObe4sw/A==
   dependencies:
-    "@account-abstraction/contracts" "^0.5.0"
-    "@account-abstraction/utils" "^0.5.0"
+    "@account-abstraction/contracts" "^0.6.0"
+    "@account-abstraction/utils" "^0.6.0"
     "@ethersproject/abstract-provider" "^5.7.0"
     "@ethersproject/abstract-signer" "^5.7.0"
     "@ethersproject/networks" "^5.7.0"
@@ -23,12 +23,12 @@
     debug "^4.3.4"
     ethers "^5.7.0"
 
-"@account-abstraction/utils@^0.5.0":
-  version "0.5.0"
-  resolved "https://registry.yarnpkg.com/@account-abstraction/utils/-/utils-0.5.0.tgz#aa7925741048b1657a71d7f98ccaf3c187f99b4a"
-  integrity sha512-dgXguTn5WgFMmr3wQMdLGEoIMDcIJgzAv74YlHeb2D3Nyy1pByPArSb3eLOOcgxCJSJeqTscpO9P57uhNkkC4A==
+"@account-abstraction/utils@^0.6.0":
+  version "0.6.0"
+  resolved "https://registry.yarnpkg.com/@account-abstraction/utils/-/utils-0.6.0.tgz#78682b3e2c0adf64668ae23ba7aeae0d31e79022"
+  integrity sha512-K99c3TNrKjxXDkLLAYOP6DCg0v0FGqQmSQh+NCC9R44k8OOzQ7aOrfOxAqhRYWvhZnNiI4+BVdSrkvyzAXaLJw==
   dependencies:
-    "@account-abstraction/contracts" "^0.5.0"
+    "@account-abstraction/contracts" "^0.6.0"
     "@ethersproject/abi" "^5.7.0"
     "@ethersproject/providers" "^5.7.0"
     "@openzeppelin/contracts" "^4.7.3"

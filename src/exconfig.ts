@@ -2,22 +2,20 @@
 export default {
   enablePasswordEncryption: false,
   showTransactionConfirmationScreen: true,
-  factory_address: '0x09c58cf6be8E25560d479bd52B4417d15bCA2845',
+  factory_address: '0x9406Cc6185a346906296840746125a0E44976454',
   stateVersion: '0.1',
   network: {
-    chainID: '5',
+    chainID: '80001',
     family: 'EVM',
-    name: 'Goerli',
-    provider: 'https://goerli.infura.io/v3/bdabe9d2f9244005af0f566398e648da',
-    entryPointAddress: '0x0576a174D229E3cFA37253523E645A78A0C91B57',
-    bundler:
-      'https://node.stackup.sh/v1/rpc/420c8ba682cabe5ab405980e35c9b218af18f4702c46aaec4627ba9050fcc4ee',
+    name: 'Mumbai',
+    provider: 'https://matic-mumbai.chainstacklabs.com',
+    entryPointAddress: '0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789',
+    bundler: 'http://localhost:3000/rpc',
     baseAsset: {
-      symbol: 'ETH',
-      name: 'ETH',
+      symbol: 'MATIC',
+      name: 'MATIC',
       decimals: 18,
-      image:
-        'https://ethereum.org/static/6b935ac0e6194247347855dc3d328e83/6ed5f/eth-diamond-black.webp',
+      image: 'https://cryptologos.cc/logos/polygon-matic-logo.png?v=025',
     },
   },
 };
