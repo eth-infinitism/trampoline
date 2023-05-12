@@ -9,13 +9,12 @@
   },
   "scripts": {
     "server": "node utils/webserver.js",
-    "start": "QUIET=false NODE_ENV=development run-p hardhat-clean-comile devtools \"dev {@}\" --",
-    "dev": "webpack --config webpack.config.js --watch",
+    "start": "QUIET=false NODE_ENV=development run-p devtools \"dev {@}\" --",
+    "dev": "npx hardhat clean && npx hardhat compile && webpack --config webpack.config.js --watch",
     "hardhat-clean-comile": "npx hardhat clean && npx hardhat compile",
     "devtools": "npx redux-devtools --hostname=localhost --port=8000 --open",
     "build": "npx hardhat clean && npx hardhat compile && node utils/build.js",
-    "prettier": "prettier --write '**/*.{js,jsx,ts,tsx,json,css,scss,md}'",
-    "deploy": "npx ha"
+    "prettier": "prettier --write '**/*.{js,jsx,ts,tsx,json,css,scss,md}'"
   },
   "dependencies": {
     "@account-abstraction/contracts": "^0.6.0",
