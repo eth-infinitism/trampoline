@@ -7,7 +7,7 @@ import {
   UserOperationStruct,
 } from '@account-abstraction/contracts';
 import { arrayify, hexConcat } from 'ethers/lib/utils';
-import Config from '../../../exconfig.json';
+import Config from '../../../exconfig';
 import { AccountApiParamsType, AccountApiType } from './types';
 import { MessageSigningRequest } from '../../Background/redux-slices/signing';
 import { TransactionDetailsForUserOp } from '@account-abstraction/sdk/dist/src/TransactionDetailsForUserOp';
