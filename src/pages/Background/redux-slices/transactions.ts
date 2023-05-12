@@ -137,6 +137,12 @@ const transactionsSlice = createSlice<
       ...state,
       typedDataRequest: undefined,
       signDataRequest: undefined,
+      transactionRequest: undefined,
+      transactionsRequest: undefined,
+      modifiedTransactionsRequest: undefined,
+      requestOrigin: undefined,
+      userOperationRequest: undefined,
+      unsignedUserOperation: undefined,
     }),
   },
 });
@@ -173,6 +179,8 @@ export const sendTransaction = createBackgroundAsyncThunk(
         context
       );
       const txnHash = keyringService.sendUserOp(address, signedUserOp);
+
+      dispatch(clearTransactionState());
 
       const providerBridgeService = mainServiceManager.getService(
         ProviderBridgeService.name
