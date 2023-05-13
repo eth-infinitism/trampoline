@@ -411,15 +411,33 @@ export default class KeyringService extends BaseService<Events> {
       await keyring.signUserOp(userOp)
     );
 
-    userOp.callGasLimit = ethers.BigNumber.from(
-      gasParameters?.callGasLimit || userOp.callGasLimit
-    ).toHexString();
-    userOp.verificationGasLimit = ethers.BigNumber.from(
-      gasParameters?.verificationGas || userOp.verificationGasLimit
-    ).toHexString();
-    userOp.preVerificationGas = ethers.BigNumber.from(
-      gasParameters?.preVerificationGas || userOp.preVerificationGas
-    ).toHexString();
+    const estimatedGasLimit = ethers.BigNumber.from(
+      gasParameters?.callGasLimit
+    );
+    const estimateVerificationGasLimit = ethers.BigNumber.from(
+      gasParameters?.verificationGas
+    );
+    const estimatePreVerificationGas = ethers.BigNumber.from(
+      gasParameters?.preVerificationGas
+    );
+
+    userOp.callGasLimit = estimatedGasLimit.gt(
+      ethers.BigNumber.from(userOp.callGasLimit)
+    )
+      ? estimatedGasLimit.toHexString()
+      : userOp.callGasLimit;
+
+    userOp.verificationGasLimit = estimateVerificationGasLimit.gt(
+      ethers.BigNumber.from(userOp.verificationGasLimit)
+    )
+      ? estimateVerificationGasLimit.toHexString()
+      : userOp.verificationGasLimit;
+
+    userOp.preVerificationGas = estimatePreVerificationGas.gt(
+      ethers.BigNumber.from(userOp.preVerificationGas)
+    )
+      ? estimatePreVerificationGas.toHexString()
+      : userOp.preVerificationGas;
 
     return userOp;
   };
