@@ -104,7 +104,7 @@ function parsedRPCErrorResponse(error: { body: string }):
       message:
         'message' in parsedError && parsedError.message
           ? parsedError.message[0].toUpperCase() + parsedError.message.slice(1)
-          : EIP1193_ERROR_CODES.userRejectedRequest.message,
+          : EIP1193_ERROR_CODES.rpcErrorNotParsed.message,
     };
   } catch (err) {
     return undefined;
@@ -271,7 +271,6 @@ export default class ProviderBridgeService extends BaseService<Events> {
             origin
           );
         } else {
-          console.log('here?');
           // if user does NOT agree, then reject
           response.result = new EIP1193Error(
             EIP1193_ERROR_CODES.userRejectedRequest
@@ -551,7 +550,7 @@ export default class ProviderBridgeService extends BaseService<Events> {
         //     }
         //     if (!FeatureFlags.SUPPORT_CUSTOM_NETWORKS) {
         //       // Dissallow adding new chains until feature flag is turned on.
-        throw new EIP1193Error(EIP1193_ERROR_CODES.userRejectedRequest);
+        throw new EIP1193Error(EIP1193_ERROR_CODES.methodNotSupported);
         //     }
         //     try {
         //       const validatedParam = validateAddEthereumChainParameter(chainInfo);
@@ -725,7 +724,7 @@ export default class ProviderBridgeService extends BaseService<Events> {
      */
     return (
       response ??
-      new EIP1193Error(EIP1193_ERROR_CODES.userRejectedRequest).toJSON()
+      new EIP1193Error(EIP1193_ERROR_CODES.rpcErrorNotParsed).toJSON()
     );
   }
 }

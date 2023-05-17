@@ -1,6 +1,4 @@
-# Trampoline Example
-
-<img src="src/assets/img/icon-128.png" width="64"/>
+<img src="src/assets/img/logo.png" width="260"/>
 
 Trampoline is a chrome extension boilerplate code to showcase your own Smart Contract Wallets with React 18 and Webpack 5 support.
 
@@ -10,7 +8,7 @@ Trampoline is a chrome extension boilerplate code to showcase your own Smart Con
 
 1. Verify that your [Node.js](https://nodejs.org/) version is >= **18.12.0**.
 2. Clone this repository.
-3. Make sure you configure the `provider` in `src/exconfig.json` to the `Goerli` network.
+3. Make sure you configure the `provider` in `src/exconfig.ts` to the `Goerli` network.
 4. Edit the `bundler` URL pointing to `Goerli` network and accepting EntryPoint=`0x0576a174D229E3cFA37253523E645A78A0C91B57`
 5. Run `yarn install` to install the dependencies.
 6. Run `yarn start`
@@ -21,25 +19,70 @@ Trampoline is a chrome extension boilerplate code to showcase your own Smart Con
    4. Select the `build` folder.
 8. Happy hacking.
 
+> **Warning**
+> Auto refresh is disabled by default, so you will have to manually refresh the page.
+> If you make changes in background script or account-api, you will also have to refresh the background page. Check instructions on how to do that below.
+
+> **Warning**
+> Logs of all the blockchain interactions are shown in the background script. Do keep it open for faster debugging.
+
+### How to see and refresh background page
+
+1. Open extension's page: `chrome://extensions/`
+2. Find the Trampoline extension, and click Details.
+3. Check the `Inspect views` area and click on `background page` to inspect it's logs
+4. To refresh click `cmd + r` or `ctrl + r` in the background inspect page to refresh the background script.
+5. You can reload the extension completely too, the state is always kept in localstorage so nothing will be lost.
+
+## Config
+
+Config of the extension can be set in `excnfig.json` file.
+
+```json
+{
+  // Enable or disable password for the user.
+  "enablePasswordEncryption": true,
+  // Show default transaction screen
+  "showTransactionConfirmationScreen": true,
+  // stateVersion is the version of state stored in localstorage of your browser. If you want to reset your extension, change this number to a new version and that will invalidate the older state.
+  stateVersion: '0.1',
+  // Network that your SCW supports. Currently this app only supports a single network, we will soon have support for multiple networks in future
+  "network": {
+    "chainID": "5",
+    "family": "EVM",
+    "name": "Goerli",
+    "provider": "https://goerli.infura.io/v3/bdabe9d2f9244005af0f566398e648da",
+    "entryPointAddress": "0x0F46c65C17AA6b4102046935F33301f0510B163A",
+    "bundler": "https://app.stackup.sh/api/v1/bundler/96771b1b09e802669c33a3fc50f517f0f514a40da6448e24640ecfd83263d336",
+    "baseAsset": {
+      "symbol": "ETH",
+      "name": "ETH",
+      "decimals": 18,
+      "image": "https://ethereum.org/static/6b935ac0e6194247347855dc3d328e83/6ed5f/eth-diamond-black.webp"
+    }
+  }
+}
+```
+
 ### Custom Network
 
 1. Make sure EntryPoint is deployed on the target network.
-2. Edit the `entryPointAddress` in `src/exconfig.json`.
+2. Edit the `entryPointAddress` in `src/exconfig.ts`.
 3. Add your network details in `hardhat.config.ts`.
-4. Deploy the factory using `ETHERSCAN_API_KEY=<optional> INFURA_ID=<required> npx hardhat deploy --network <network>`.
+4. Deploy the factory using `INFURA_ID=<required> npx hardhat deploy --network <network>`.
 5. Edit the `factory_address` in `src/exconfig.json`
-6. Edit the `bundler` url in `src/exconfig.json` that points to your network and accepts requests for your EntryPoint.
+6. Edit the `bundler` url in `src/exconfig.ts` that points to your network and accepts requests for your EntryPoint.
 7. Run `yarn start`
 
 ### Local Network
 
 1. Run a local hardhat node with `npx hardhat node` or use the node inside the bundler repo.
 2. Deploy EntryPoint from [the infinitism repo](https://github.com/eth-infinitism/account-abstraction), you can find the instructions [below](#how-to-deploy-entrypoint-locally).
-3. Edit the `entryPointAddress` in `src/exconfig.json`.
+3. Edit the `entryPointAddress` in `src/exconfig.ts`.
 4. Deploy the factory using `npx hardhat deploy --network localhost`.
-5. Edit the `factory_address` in `src/exconfig.json`
-6. Start a local bunder from [the infinitism repo](https://github.com/eth-infinitism/bundler) at port `9000`, you can find the instructions [below](#how-to-run-bundler-locally).
-7. Edit the `bundler` to `http://localhost:9000/rpc` url in `src/exconfig.json` that points to your network and accepts requests for your EntryPoint.
+5. Edit the `factory_address` in `src/exconfig.ts`
+6. Start a local bunder from [the infinitism repo](https://github.com/eth-infinitism/bundler), you can find the instructions [below](#how-to-run-bundler-locally).
+7. Edit the `bundler` to `http://localhost:9000/rpc` url in `src/exconfig.ts` that points to your network and accepts requests for your EntryPoint.
 8. Run `yarn start`
 
 ### How to deploy EntryPoint Locally
@@ -56,9 +99,8 @@ Trampoline is a chrome extension boilerplate code to showcase your own Smart Con
 4. Edit `bundler.config.json` at `packages/bundler/localconfig`:
    a. Edit `network` to your local hardhat node
    b. Edit the `entryPoint` address that you got while deploying it using instructions above.
-   c. Change port to `9000`.
-   d. Make sure your mnemonic & beneficiary are setup correctly.
-5. Run the bunder using `yarn bundler --unsafe --port 9000 --auto`
+   c. Make sure your mnemonic & beneficiary are setup correctly.
+5. Run the bunder using `yarn bundler --unsafe --auto`
 
 ---
 
@@ -211,39 +253,11 @@ The signature of the `createUnsignedUserOp` is as follows, which shows how the `
 
 If you want you can also attach a paymaster here if your wallet wants to sponsor the transaction as well. The paymaster information will be displayed to the user.
 
-## Config
-
-Config of the extension can be set in `excnfig.json` file.
-
-```json
-{
-  // Enable or disable password for the user.
-  "enablePasswordEncryption": true,
-  // Show default transaction screen
-  "showTransactionConfirmationScreen": true,
-  // Network that your SCW supports. Currently this app only supports a single network, we will soon have support for multiple networks in future
-  "network": {
-    "chainID": "5",
-    "family": "EVM",
-    "name": "Goerli",
-    "provider": "https://goerli.infura.io/v3/bdabe9d2f9244005af0f566398e648da",
-    "entryPointAddress": "0x0F46c65C17AA6b4102046935F33301f0510B163A",
-    "bundler": "https://app.stackup.sh/api/v1/bundler/96771b1b09e802669c33a3fc50f517f0f514a40da6448e24640ecfd83263d336",
-    "baseAsset": {
-      "symbol": "ETH",
-      "name": "ETH",
-      "decimals": 18,
-      "image": "https://ethereum.org/static/6b935ac0e6194247347855dc3d328e83/6ed5f/eth-diamond-black.webp"
-    }
-  }
-}
-```
-
 ## FAQ
 
 ### Is the password screen mandatory?
 
-No you can disable that by setting `enablePasswordEncryption` flag to `false` in `exconfig.json`.
+No you can disable that by setting `enablePasswordEncryption` flag to `false` in `exconfig.ts`.
 
 > **Warning:** the local storage will be unencrypted and your wallet must return an encrypted state when `serialize` function of `account-api` willo be called or else the user's fund will be at risk.
 
@@ -260,3 +274,7 @@ You must return the paymaster information in the `userOp` constructed by the fun
 ## Webpack auto-reload and HRM Errors
 
 This repository is based on the boilerplate code found at [lxieyang/chrome-extension-boilerplate-react](https://github.com/lxieyang/chrome-extension-boilerplate-react). To understand how hot-reloading and content scripts work, refer to its README.
+
+### LOGO Attributions
+
+Designed by Tomo Saito, a designer and artist at the Ethereum Foundation. [@tomosaito](https://twitter.com/tomosaito)

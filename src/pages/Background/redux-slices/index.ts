@@ -10,8 +10,8 @@ import transactions from './transactions';
 import dappPermissions from './permissions';
 import signing from './signing';
 import { allAliases } from './utils';
-import { persistReducer, createTransform } from 'redux-persist';
-import storage from 'redux-persist/lib/storage';
+import Config from '../../../exconfig';
+import { debounce } from '@mui/material';
 
 const rootReducer = combineReducers({
   account,
@@ -44,30 +44,30 @@ const devToolsSanitizer = (input: unknown) => {
   }
 };
 
-const CustomJSONTransform = createTransform(
-  // transform state on its way to being serialized and persisted.
-  (inboundState: RootState) => {
-    // convert mySet to an Array.
-    return JSON.parse(encodeJSON(inboundState));
-  },
-  // transform state being rehydrated
-  (outboundState: RootState) => {
-    // convert mySet back to a Set.
-    return decodeJSON(JSON.stringify(outboundState)) as RootState;
-  }
-);
-
-const persistConfig = {
-  key: 'root',
-  storage,
-  transforms: [CustomJSONTransform],
+const persistStoreFn = <T>(state: T) => {
+  // Browser extension storage supports JSON natively, despite that we have
+  // to stringify to preserve BigInts
+  localStorage.setItem('state', encodeJSON(state));
+  localStorage.setItem('version', Config.stateVersion);
 };
 
-const persistedReducer = persistReducer(persistConfig, rootReducer);
+const persistStoreState = debounce(persistStoreFn, 50);
 
-export const initializeStore = (mainServiceManager: MainServiceManager) =>
+const reduxCache = (store) => (next) => (action) => {
+  const result = next(action);
+  const state = store.getState();
+
+  persistStoreState(state);
+  return result;
+};
+
+export const initializeStore = (
+  preloadedState,
+  mainServiceManager: MainServiceManager
+) =>
   configureStore({
-    reducer: persistedReducer,
+    preloadedState: preloadedState,
+    reducer: rootReducer,
     devTools: false,
     middleware: (getDefaultMiddleware) => {
       const middleware = getDefaultMiddleware({
@@ -79,6 +79,7 @@ export const initializeStore = (mainServiceManager: MainServiceManager) =>
       });
 
       middleware.unshift(alias(allAliases));
+      middleware.push(reduxCache);
 
       return middleware;
     },

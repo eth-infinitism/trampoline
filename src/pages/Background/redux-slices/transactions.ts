@@ -137,6 +137,12 @@ const transactionsSlice = createSlice<
       ...state,
       typedDataRequest: undefined,
       signDataRequest: undefined,
+      transactionRequest: undefined,
+      transactionsRequest: undefined,
+      modifiedTransactionsRequest: undefined,
+      requestOrigin: undefined,
+      userOperationRequest: undefined,
+      unsignedUserOperation: undefined,
     }),
   },
 });
@@ -174,6 +180,8 @@ export const sendTransaction = createBackgroundAsyncThunk(
       );
       const txnHash = keyringService.sendUserOp(address, signedUserOp);
 
+      dispatch(clearTransactionState());
+
       const providerBridgeService = mainServiceManager.getService(
         ProviderBridgeService.name
       ) as ProviderBridgeService;
@@ -200,42 +208,6 @@ export const createUnsignedUserOp = createBackgroundAsyncThunk(
       );
       dispatch(setUnsignedUserOperation(userOp));
     }
-  }
-);
-
-export const modifyTransactionsRequest = createBackgroundAsyncThunk(
-  'transactions/modifyTransactionsRequest',
-  async (
-    {
-      address,
-      modifiedTransactions,
-    }: {
-      address: string;
-      modifiedTransactions: EthersTransactionRequest[];
-    },
-    { dispatch, extra: { mainServiceManager } }
-  ) => {
-    dispatch(setModifyTransactionsRequest(modifiedTransactions));
-
-    const state = mainServiceManager.store.getState() as RootState;
-    const modifiedTransactionsRequest =
-      state.transactions.modifiedTransactionsRequest;
-    const transactionsRequest = state.transactions.transactionsRequest;
-
-    const transactions =
-      modifiedTransactionsRequest || transactionsRequest || [];
-
-    const keyringService = mainServiceManager.getService(
-      KeyringService.name
-    ) as KeyringService;
-
-    const unsignedUserOperation =
-      await keyringService.createUnsignedUserOpForTransactions(
-        address,
-        transactions
-      );
-
-    dispatch(setUnsignedUserOperation(unsignedUserOperation));
   }
 );
 

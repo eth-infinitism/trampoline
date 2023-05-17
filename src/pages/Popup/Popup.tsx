@@ -15,7 +15,7 @@ import SignTransactionRequest from './pages/sign-transaction-request';
 import { jsonRpcProvider } from '@wagmi/core/providers/jsonRpc';
 import { WalletConnectConnector } from 'wagmi/connectors/walletConnect';
 import { getActiveNetwork } from '../Background/redux-slices/selectors/networkSelectors';
-import Config from '../../exconfig.json';
+import Config from '../../exconfig';
 console.debug('---- LAUNCHING WITH CONFIG ----', Config);
 
 const Popup = () => {

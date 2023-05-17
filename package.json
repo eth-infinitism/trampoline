@@ -1,22 +1,24 @@
 {
-  "name": "chrome-extension-boilerplate-react",
+  "name": "trampoline",
   "version": "5.0.4",
-  "description": "A chrome extension boilerplate built with React 18, Webpack 5, and Webpack Dev Server 4",
+  "description": "Trampoline is a chrome extension boilerplate code to showcase your own Smart Contract Wallets",
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/lxieyang/chrome-extension-boilerplate-react.git"
   },
   "scripts": {
+    "server": "node utils/webserver.js",
+    "start": "QUIET=false NODE_ENV=development run-p devtools \"dev {@}\" --",
+    "dev": "npx hardhat clean && npx hardhat compile && webpack --config webpack.config.js --watch",
+    "hardhat-clean-comile": "npx hardhat clean && npx hardhat compile",
     "devtools": "npx redux-devtools --hostname=localhost --port=8000 --open",
     "build": "npx hardhat clean && npx hardhat compile && node utils/build.js",
-    "start": "npx hardhat clean && npx hardhat compile && node utils/webserver.js",
-    "prettier": "prettier --write '**/*.{js,jsx,ts,tsx,json,css,scss,md}'",
-    "deploy": "npx ha"
+    "prettier": "prettier --write '**/*.{js,jsx,ts,tsx,json,css,scss,md}'"
   },
   "dependencies": {
-    "@account-abstraction/contracts": "^0.5.0",
-    "@account-abstraction/sdk": "^0.5.0",
+    "@account-abstraction/contracts": "^0.6.0",
+    "@account-abstraction/sdk": "^0.6.0",
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
     "@fontsource/roboto": "^4.5.8",
@@ -47,10 +49,12 @@
     "redux-devtools": "^3.7.0",
     "redux-persist": "^6.0.0",
     "siwe": "^1.1.6",
+    "ssestream": "^1.1.0",
     "uuid": "^9.0.0",
     "wagmi": "^0.11.3",
     "webext-redux": "^2.1.9",
-    "webextension-polyfill": "^0.10.0"
+    "webextension-polyfill": "^0.10.0",
+    "webpack-livereload-plugin": "^3.0.2"
   },
   "devDependencies": {
     "@babel/core": "^7.20.12",
@@ -89,6 +93,7 @@
     "hardhat-gas-reporter": "^1.0.9",
     "html-loader": "^4.2.0",
     "html-webpack-plugin": "^5.5.0",
+    "npm-run-all": "^4.1.5",
     "prettier": "^2.8.3",
     "react-refresh": "^0.14.0",
     "react-refresh-typescript": "^2.0.7",

@@ -44,11 +44,7 @@ const Home = () => {
           >
             <TransferAssetButton activeAccount={activeAccount || ''} />
           </Box>
-          <AccountActivity />
         </CardContent>
-        <CardActions sx={{ width: '100%', pl: 2, pr: 2, pt: 0 }}>
-          Card actions
-        </CardActions>
       </Card>
     </Container>
   );

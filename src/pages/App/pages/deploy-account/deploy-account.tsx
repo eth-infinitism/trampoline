@@ -32,8 +32,10 @@ import {
   sendTransaction,
   sendTransactionsRequest,
 } from '../../../Background/redux-slices/transactions';
+import { useNavigate } from 'react-router-dom';
 
 const DeployAccount = () => {
+  const navigate = useNavigate();
   const [deployLoader, setDeployLoader] = useState<boolean>(false);
   const [tooltipMessage, setTooltipMessage] = useState<string>('Copy address');
   const activeAccount = useBackgroundSelector(getActiveAccount);
@@ -45,6 +47,18 @@ const DeployAccount = () => {
       address: activeAccount || '',
     })
   );
+
+  const walletDeployed: boolean = useMemo(
+    () => (accountData === 'loading' ? false : accountData.accountDeployed),
+    [accountData]
+  );
+
+  useEffect(() => {
+    if (walletDeployed) {
+      alert('Account already deployed');
+      navigate('/');
+    }
+  }, [navigate, walletDeployed]);
 
   const backgroundDispatch = useBackgroundDispatch();
 
@@ -118,10 +132,12 @@ const DeployAccount = () => {
       });
 
       console.log(accounts, txHash);
+      alert('success');
+      navigate('/');
     }
 
     // await backgroundDispatch(sendTransaction(activeAccount));
-  }, [backgroundDispatch, activeAccount]);
+  }, [activeAccount, navigate]);
 
   return (
     <Container sx={{ width: '62vw', height: '100vh' }}>

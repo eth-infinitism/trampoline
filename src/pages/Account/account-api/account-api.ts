@@ -11,9 +11,10 @@ import { arrayify, hexConcat } from 'ethers/lib/utils';
 import { AccountApiParamsType, AccountApiType } from './types';
 import { MessageSigningRequest } from '../../Background/redux-slices/signing';
 import { TransactionDetailsForUserOp } from '@account-abstraction/sdk/dist/src/TransactionDetailsForUserOp';
-import config from '../../../exconfig.json';
+import config from '../../../exconfig';
 
-const FACTORY_ADDRESS = config.factory_address || '0x6C583EE7f3a80cB53dDc4789B0Af1aaFf90e55F3';
+const FACTORY_ADDRESS =
+  config.factory_address || '0x6C583EE7f3a80cB53dDc4789B0Af1aaFf90e55F3';
 
 /**
  * An implementation of the BaseAccountAPI using the SimpleAccount contract.
@@ -36,7 +37,7 @@ class SimpleAccountAPI extends AccountApiType {
 
   factory?: SimpleAccountFactory;
 
-  constructor(params: AccountApiParamsType<{}>) {
+  constructor(params: AccountApiParamsType<{}, { privateKey: string }>) {
     super(params);
     this.factoryAddress = FACTORY_ADDRESS;
 
@@ -47,7 +48,7 @@ class SimpleAccountAPI extends AccountApiType {
     this.name = 'SimpleAccountAPI';
   }
 
-  serialize = async (): Promise<object> => {
+  serialize = async (): Promise<{ privateKey: string }> => {
     return {
       privateKey: this.owner.privateKey,
     };
@@ -92,7 +93,7 @@ class SimpleAccountAPI extends AccountApiType {
       return BigNumber.from(0);
     }
     const accountContract = await this._getAccountContract();
-    return await accountContract.nonce();
+    return await accountContract.getNonce();
   }
 
   /**
@@ -134,58 +135,6 @@ class SimpleAccountAPI extends AccountApiType {
       signature: await this.signUserOpHash(await this.getUserOpHash(userOp)),
     };
   };
-
-  async createUnsignedUserOpForTransactions(
-    transactions: TransactionDetailsForUserOp[]
-  ): Promise<UserOperationStruct> {
-    const accountContract = await this._getAccountContract();
-    const callData = accountContract.interface.encodeFunctionData(
-      'executeBatch',
-      [
-        transactions.map((transaction) => transaction.target),
-        transactions.map((transaction) => transaction.data),
-      ]
-    );
-
-    const callGasLimit = await this.provider.estimateGas({
-      from: this.entryPointAddress,
-      to: this.getAccountAddress(),
-      data: callData,
-    });
-
-    const initCode = await this.getInitCode();
-
-    const initGas = await this.estimateCreationGas(initCode);
-    const verificationGasLimit = BigNumber.from(
-      await this.getVerificationGasLimit()
-    ).add(initGas);
-
-    let maxFeePerGas, maxPriorityFeePerGas;
-
-    const feeData = await this.provider.getFeeData();
-    maxFeePerGas = feeData.maxFeePerGas ?? 0;
-    maxPriorityFeePerGas = feeData.maxPriorityFeePerGas ?? 0;
-
-    const partialUserOp: UserOperationStruct = {
-      sender: await this.getAccountAddress(),
-      nonce: this.getNonce(),
-      initCode,
-      callData,
-      callGasLimit,
-      verificationGasLimit,
-      maxFeePerGas,
-      maxPriorityFeePerGas,
-      paymasterAndData: '',
-      preVerificationGas: 0,
-      signature: '',
-    };
-
-    return {
-      ...partialUserOp,
-      preVerificationGas: this.getPreVerificationGas(partialUserOp),
-      signature: '',
-    };
-  }
 }
 
 export default SimpleAccountAPI;

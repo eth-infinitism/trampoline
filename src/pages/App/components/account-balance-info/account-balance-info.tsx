@@ -43,10 +43,10 @@ const AccountBalanceInfo = ({ address }: { address: string }) => {
         accountData.balances &&
         accountData.balances[activeNetwork.baseAsset.symbol] && (
           <Typography variant="h3">
-            {
+            {parseFloat(
               accountData.balances[activeNetwork.baseAsset.symbol].assetAmount
                 .amount
-            }{' '}
+            ).toFixed(4)}{' '}
             {activeNetwork.baseAsset.symbol}
           </Typography>
         )}
