@@ -45,7 +45,7 @@ Config of the extension can be set in `excnfig.json` file.
   // Show default transaction screen
   "showTransactionConfirmationScreen": true,
   // stateVersion is the version of state stored in localstorage of your browser. If you want to reset your extension, change this number to a new version and that will invalidate the older state.
-  stateVersion: '0.1',
+  "stateVersion": "0.1",
   // Network that your SCW supports. Currently this app only supports a single network, we will soon have support for multiple networks in future
   "network": {
     "chainID": "5",
@@ -133,7 +133,7 @@ export abstract class AccountApiType extends BaseAccountAPI {
 
   abstract signUserOpWithContext(
     userOp: UserOperationStruct,
-    context?: any
+    postTransactionConfirmationContext?: any
   ): Promise<string>;
 }
 

@@ -22,7 +22,7 @@ export abstract class AccountApiType extends BaseAccountAPI {
 
   abstract signUserOpWithContext(
     userOp: UserOperationStruct,
-    context?: any
+    postTransactionConfirmationContext?: any
   ): Promise<UserOperationStruct>;
 }
 
