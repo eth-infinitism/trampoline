@@ -9,6 +9,11 @@ import { MessageSigningRequest } from '../../Background/redux-slices/signing';
 export abstract class AccountApiType extends BaseAccountAPI {
   abstract serialize: () => Promise<object>;
 
+  abstract createUnsignedUserOpWithContext(
+    info: TransactionDetailsForUserOp,
+    preTransactionConfirmationContext?: any
+  ): Promise<UserOperationStruct>;
+
   /** sign a message for the use */
   abstract signMessage: (
     request?: MessageSigningRequest,
