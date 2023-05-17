@@ -10,7 +10,7 @@ import { createBackgroundAsyncThunk } from './utils';
 export type TransactionState = {
   transactionRequest?: EthersTransactionRequest;
   transactionsRequest?: EthersTransactionRequest[];
-  modifiedTransactionsRequest?: EthersTransactionRequest[];
+  modifiedTransactionRequest?: EthersTransactionRequest;
 
   requestOrigin?: string;
   userOperationRequest?: Partial<UserOperationStruct>;
@@ -47,12 +47,12 @@ type SigningReducers = {
       };
     }
   ) => TransactionState;
-  setModifyTransactionsRequest: (
+  setModifyTransactionRequest: (
     state: TransactionState,
     {
       payload,
     }: {
-      payload: EthersTransactionRequest[];
+      payload: EthersTransactionRequest;
     }
   ) => TransactionState;
   sendUserOperationRquest: (
@@ -108,16 +108,16 @@ const transactionsSlice = createSlice<
         requestOrigin: origin,
       };
     },
-    setModifyTransactionsRequest: (
+    setModifyTransactionRequest: (
       state,
       {
         payload,
       }: {
-        payload: EthersTransactionRequest[];
+        payload: EthersTransactionRequest;
       }
     ) => ({
       ...state,
-      modifiedTransactionsRequest: payload,
+      modifiedTransactionRequest: payload,
     }),
     sendUserOperationRquest: (
       state,
@@ -139,7 +139,7 @@ const transactionsSlice = createSlice<
       signDataRequest: undefined,
       transactionRequest: undefined,
       transactionsRequest: undefined,
-      modifiedTransactionsRequest: undefined,
+      modifiedTransactionRequest: undefined,
       requestOrigin: undefined,
       userOperationRequest: undefined,
       unsignedUserOperation: undefined,
@@ -150,7 +150,7 @@ const transactionsSlice = createSlice<
 export const {
   sendTransactionRequest,
   sendTransactionsRequest,
-  setModifyTransactionsRequest,
+  setModifyTransactionRequest,
   sendUserOperationRquest,
   setUnsignedUserOperation,
   clearTransactionState,
@@ -193,7 +193,10 @@ export const sendTransaction = createBackgroundAsyncThunk(
 
 export const createUnsignedUserOp = createBackgroundAsyncThunk(
   'transactions/createUnsignedUserOp',
-  async (address: string, { dispatch, extra: { mainServiceManager } }) => {
+  async (
+    { address, context }: { address: string; context?: any },
+    { dispatch, extra: { mainServiceManager } }
+  ) => {
     const keyringService = mainServiceManager.getService(
       KeyringService.name
     ) as KeyringService;
@@ -204,7 +207,8 @@ export const createUnsignedUserOp = createBackgroundAsyncThunk(
     if (transactionRequest) {
       const userOp = await keyringService.createUnsignedUserOp(
         address,
-        transactionRequest
+        transactionRequest,
+        context
       );
       dispatch(setUnsignedUserOperation(userOp));
     }
