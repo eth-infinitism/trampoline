@@ -126,9 +126,21 @@ class SimpleAccountAPI extends AccountApiType {
     return this.owner.signMessage(request?.rawSigningData || '');
   };
 
+  async createUnsignedUserOpWithContext(
+    info: TransactionDetailsForUserOp,
+    context?: any
+  ): Promise<UserOperationStruct> {
+    return {
+      ...(await this.createUnsignedUserOp(info)),
+      paymasterAndData: context?.paymasterAndData
+        ? context?.paymasterAndData
+        : '0x',
+    };
+  }
+
   signUserOpWithContext = async (
     userOp: UserOperationStruct,
-    context: any
+    preTransactionConfirmationContext: any
   ): Promise<UserOperationStruct> => {
     return {
       ...userOp,

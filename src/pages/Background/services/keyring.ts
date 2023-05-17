@@ -371,21 +371,25 @@ export default class KeyringService extends BaseService<Events> {
 
   createUnsignedUserOp = async (
     address: string,
-    transaction: EthersTransactionRequest
+    transaction: EthersTransactionRequest,
+    context?: any
   ): Promise<UserOperationStruct> => {
     const keyring = this.keyrings[address];
-    const userOp = await keyring.createUnsignedUserOp({
-      target: transaction.to,
-      data: transaction.data
-        ? ethers.utils.hexConcat([transaction.data])
-        : '0x',
-      value: transaction.value
-        ? ethers.BigNumber.from(transaction.value)
-        : undefined,
-      gasLimit: transaction.gasLimit,
-      maxFeePerGas: transaction.maxFeePerGas,
-      maxPriorityFeePerGas: transaction.maxPriorityFeePerGas,
-    });
+    const userOp = await keyring.createUnsignedUserOpWithContext(
+      {
+        target: transaction.to,
+        data: transaction.data
+          ? ethers.utils.hexConcat([transaction.data])
+          : '0x',
+        value: transaction.value
+          ? ethers.BigNumber.from(transaction.value)
+          : undefined,
+        gasLimit: transaction.gasLimit,
+        maxFeePerGas: transaction.maxFeePerGas,
+        maxPriorityFeePerGas: transaction.maxPriorityFeePerGas,
+      },
+      context
+    );
 
     userOp.sender = await userOp.sender;
     userOp.nonce = ethers.BigNumber.from(await userOp.nonce).toHexString();
