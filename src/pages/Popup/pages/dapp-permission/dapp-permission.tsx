@@ -45,7 +45,6 @@ const DappPermission = () => {
   }, [permission, awaitingBackgroundDispatch, navigate]);
 
   const deny = useCallback(async () => {
-    console.log('is this the problem?');
     // The denyOrRevokePermission will be dispatched in the onbeforeunload effect
     if (typeof permission !== 'undefined') {
       setAwaitingBackgroundDispatch(true);
