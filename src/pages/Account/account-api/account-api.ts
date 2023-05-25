@@ -12,6 +12,7 @@ import { AccountApiParamsType, AccountApiType } from './types';
 import { MessageSigningRequest } from '../../Background/redux-slices/signing';
 import { TransactionDetailsForUserOp } from '@account-abstraction/sdk/dist/src/TransactionDetailsForUserOp';
 import config from '../../../exconfig';
+import { SimpleAccountAPI } from '@account-abstraction/sdk';
 
 const FACTORY_ADDRESS =
   config.factory_address || '0x6C583EE7f3a80cB53dDc4789B0Af1aaFf90e55F3';
@@ -23,8 +24,7 @@ const FACTORY_ADDRESS =
  * - nonce method is "nonce()"
  * - execute method is "execFromEntryPoint()"
  */
-class SimpleAccountAPI extends AccountApiType {
-  name: string;
+class SimpleAccountTrampolineAPI extends AccountApiType {
   factoryAddress?: string;
   owner: Wallet;
   index: number;
@@ -33,7 +33,7 @@ class SimpleAccountAPI extends AccountApiType {
    * our account contract.
    * should support the "execFromEntryPoint" and "nonce" methods
    */
-  accountContract?: SimpleAccount;
+  simpleAccountApiInstance: SimpleAccountAPI;
 
   factory?: SimpleAccountFactory;
 
@@ -45,7 +45,14 @@ class SimpleAccountAPI extends AccountApiType {
       ? new ethers.Wallet(params.deserializeState?.privateKey)
       : ethers.Wallet.createRandom();
     this.index = 0;
-    this.name = 'SimpleAccountAPI';
+
+    this.simpleAccountApiInstance = new SimpleAccountAPI({
+      provider: this.provider,
+      owner: this.owner,
+      factoryAddress: this.factoryAddress,
+      entryPointAddress: params.entryPointAddress,
+      index: this.index,
+    });
   }
 
   serialize = async (): Promise<{ privateKey: string }> => {
@@ -55,13 +62,7 @@ class SimpleAccountAPI extends AccountApiType {
   };
 
   async _getAccountContract(): Promise<SimpleAccount> {
-    if (this.accountContract == null) {
-      this.accountContract = SimpleAccount__factory.connect(
-        await this.getAccountAddress(),
-        this.provider
-      );
-    }
-    return this.accountContract;
+    return this.simpleAccountApiInstance._getAccountContract();
   }
 
   /**
@@ -69,31 +70,11 @@ class SimpleAccountAPI extends AccountApiType {
    * this value holds the "factory" address, followed by this account's information
    */
   async getAccountInitCode(): Promise<string> {
-    if (this.factory == null) {
-      if (this.factoryAddress != null && this.factoryAddress !== '') {
-        this.factory = SimpleAccountFactory__factory.connect(
-          this.factoryAddress,
-          this.provider
-        );
-      } else {
-        throw new Error('no factory to get initCode');
-      }
-    }
-    return hexConcat([
-      this.factory.address,
-      this.factory.interface.encodeFunctionData('createAccount', [
-        await this.owner.getAddress(),
-        this.index,
-      ]),
-    ]);
+    return this.simpleAccountApiInstance.getAccountInitCode();
   }
 
   async getNonce(): Promise<BigNumber> {
-    if (await this.checkAccountPhantom()) {
-      return BigNumber.from(0);
-    }
-    const accountContract = await this._getAccountContract();
-    return await accountContract.getNonce();
+    return this.simpleAccountApiInstance.getNonce();
   }
 
   /**
@@ -107,23 +88,17 @@ class SimpleAccountAPI extends AccountApiType {
     value: BigNumberish,
     data: string
   ): Promise<string> {
-    const accountContract = await this._getAccountContract();
-    return accountContract.interface.encodeFunctionData('execute', [
-      target,
-      value,
-      data,
-    ]);
+    return this.simpleAccountApiInstance.encodeExecute(target, value, data);
   }
-
   async signUserOpHash(userOpHash: string): Promise<string> {
-    return await this.owner.signMessage(arrayify(userOpHash));
+    return this.simpleAccountApiInstance.signUserOpHash(userOpHash);
   }
 
   signMessage = async (
     context: any,
     request?: MessageSigningRequest
   ): Promise<string> => {
-    return this.owner.signMessage(request?.rawSigningData || '');
+    throw new Error('signMessage method not implemented.');
   };
 
   async createUnsignedUserOpWithContext(
@@ -131,7 +106,7 @@ class SimpleAccountAPI extends AccountApiType {
     preTransactionConfirmationContext?: any
   ): Promise<UserOperationStruct> {
     return {
-      ...(await this.createUnsignedUserOp(info)),
+      ...(await this.simpleAccountApiInstance.createUnsignedUserOp(info)),
       paymasterAndData: preTransactionConfirmationContext?.paymasterAndData
         ? preTransactionConfirmationContext?.paymasterAndData
         : '0x',
@@ -142,11 +117,8 @@ class SimpleAccountAPI extends AccountApiType {
     userOp: UserOperationStruct,
     postTransactionConfirmationContext: any
   ): Promise<UserOperationStruct> => {
-    return {
-      ...userOp,
-      signature: await this.signUserOpHash(await this.getUserOpHash(userOp)),
-    };
+    return this.signUserOp(userOp);
   };
 }
 
-export default SimpleAccountAPI;
+export default SimpleAccountTrampolineAPI;
