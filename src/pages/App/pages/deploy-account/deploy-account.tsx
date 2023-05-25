@@ -36,6 +36,7 @@ import { useNavigate } from 'react-router-dom';
 
 const DeployAccount = () => {
   const navigate = useNavigate();
+  const [error, setError] = useState<string | undefined>(undefined);
   const [deployLoader, setDeployLoader] = useState<boolean>(false);
   const [tooltipMessage, setTooltipMessage] = useState<string>('Copy address');
   const activeAccount = useBackgroundSelector(getActiveAccount);
@@ -113,27 +114,33 @@ const DeployAccount = () => {
   }, [activeAccount]);
 
   const deployAcount = useCallback(async () => {
+    setError(undefined);
     if (!activeAccount) return;
     setDeployLoader(true);
 
     if (window.ethereum) {
-      const accounts = await window.ethereum.request({
-        method: 'eth_requestAccounts',
-      });
-      const txHash = await window.ethereum.request({
-        method: 'eth_sendTransaction',
-        params: [
-          {
-            from: activeAccount,
-            to: ethers.constants.AddressZero,
-            data: '0x',
-          },
-        ],
-      });
+      try {
+        const accounts = await window.ethereum.request({
+          method: 'eth_requestAccounts',
+        });
+        const txHash = await window.ethereum.request({
+          method: 'eth_sendTransaction',
+          params: [
+            {
+              from: activeAccount,
+              to: ethers.constants.AddressZero,
+              data: '0x',
+            },
+          ],
+        });
 
-      console.log(accounts, txHash);
-      alert('success');
-      navigate('/');
+        setDeployLoader(false);
+        alert('success');
+        navigate('/');
+      } catch (e) {
+        setError(e?.message || 'Unknown error');
+        setDeployLoader(false);
+      }
     }
 
     // await backgroundDispatch(sendTransaction(activeAccount));
@@ -185,6 +192,9 @@ const DeployAccount = () => {
                 <Typography>
                   Initiate the deployment transaction, it may take some time for
                   the transaction to be added to the blockchain.
+                </Typography>
+                <Typography color="red">
+                  {error && `Error: ${error}`}
                 </Typography>
                 <Box sx={{ mb: 2 }}>
                   <Button

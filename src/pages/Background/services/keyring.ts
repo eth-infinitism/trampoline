@@ -18,6 +18,7 @@ import { DomainName, URI } from '../types/common';
 import { EVMNetwork } from '../types/network';
 import { EthersTransactionRequest } from './types';
 import { UserOperationStruct } from '@account-abstraction/contracts';
+import { resolveProperties } from 'ethers/lib/utils.js';
 
 interface Events extends ServiceLifecycleEvents {
   createPassword: string;
@@ -166,6 +167,8 @@ export default class KeyringService extends BaseService<Events> {
       deserializeState: data,
     });
 
+    await account.init();
+
     return account;
   }
 
@@ -253,6 +256,7 @@ export default class KeyringService extends BaseService<Events> {
       context,
       paymasterAPI: this.paymasterAPI,
     });
+    await account.init();
     const address = await account.getAccountAddress();
     if (address === ethers.constants.AddressZero)
       throw new Error(
@@ -375,41 +379,40 @@ export default class KeyringService extends BaseService<Events> {
     context?: any
   ): Promise<UserOperationStruct> => {
     const keyring = this.keyrings[address];
-    const userOp = await keyring.createUnsignedUserOpWithContext(
-      {
-        target: transaction.to,
-        data: transaction.data
-          ? ethers.utils.hexConcat([transaction.data])
-          : '0x',
-        value: transaction.value
-          ? ethers.BigNumber.from(transaction.value)
-          : undefined,
-        gasLimit: transaction.gasLimit,
-        maxFeePerGas: transaction.maxFeePerGas,
-        maxPriorityFeePerGas: transaction.maxPriorityFeePerGas,
-      },
-      context
+    const userOp = await resolveProperties(
+      await keyring.createUnsignedUserOpWithContext(
+        {
+          target: transaction.to,
+          data: transaction.data
+            ? ethers.utils.hexConcat([transaction.data])
+            : '0x',
+          value: transaction.value
+            ? ethers.BigNumber.from(transaction.value)
+            : undefined,
+          gasLimit: transaction.gasLimit,
+          maxFeePerGas: transaction.maxFeePerGas,
+          maxPriorityFeePerGas: transaction.maxPriorityFeePerGas,
+        },
+        context
+      )
     );
 
-    userOp.sender = await userOp.sender;
-    userOp.nonce = ethers.BigNumber.from(await userOp.nonce).toHexString();
-    userOp.initCode = await userOp.initCode;
-    userOp.callData = await userOp.callData;
+    userOp.nonce = ethers.BigNumber.from(userOp.nonce).toHexString();
     userOp.callGasLimit = ethers.BigNumber.from(
-      await userOp.callGasLimit
+      userOp.callGasLimit
     ).toHexString();
     userOp.verificationGasLimit = ethers.BigNumber.from(
-      await userOp.verificationGasLimit
+      userOp.verificationGasLimit
     ).toHexString();
-    userOp.preVerificationGas = await userOp.preVerificationGas;
+    userOp.preVerificationGas = ethers.BigNumber.from(
+      userOp.preVerificationGas
+    ).toHexString();
     userOp.maxFeePerGas = ethers.BigNumber.from(
-      await userOp.maxFeePerGas
+      userOp.maxFeePerGas
     ).toHexString();
     userOp.maxPriorityFeePerGas = ethers.BigNumber.from(
-      await userOp.maxPriorityFeePerGas
+      userOp.maxPriorityFeePerGas
     ).toHexString();
-    userOp.paymasterAndData = await userOp.paymasterAndData;
-    userOp.signature = await userOp.signature;
 
     const gasParameters = await this.bundler?.estimateUserOpGas(
       await keyring.signUserOp(userOp)
