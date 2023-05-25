@@ -26,11 +26,10 @@ class SimpleAccountTrampolineAPI
   implements AccountApiType
 {
   /**
-   * our account contract.
-   * should support the "execFromEntryPoint" and "nonce" methods
+   *
+   * We create a new private key or use the one provided in the
+   * deserializeState and initialize the SimpleAccountAPI
    */
-  factory?: SimpleAccountFactory;
-
   constructor(params: AccountApiParamsType<{}, { privateKey: string }>) {
     super({
       ...params,
@@ -42,12 +41,21 @@ class SimpleAccountTrampolineAPI
     });
   }
 
+  /**
+   *
+   * @returns the serialized state of the account that is saved in
+   * the secured vault in localstorage and later passed to the
+   * constructor in the deserializeState parameter
+   */
   serialize = async (): Promise<{ privateKey: string }> => {
     return {
       privateKey: (this.owner as Wallet).privateKey,
     };
   };
 
+  /**
+   * Called when the Dapp requests eth_signTypedData
+   */
   signMessage = async (
     context: any,
     request?: MessageSigningRequest
@@ -55,6 +63,11 @@ class SimpleAccountTrampolineAPI
     throw new Error('signMessage method not implemented.');
   };
 
+  /**
+   * Called after the user is presented with the pre-transaction confirmation screen
+   * The context passed to this method is the same as the one passed to the
+   * onComplete method of the PreTransactionConfirmationComponent
+   */
   async createUnsignedUserOpWithContext(
     info: TransactionDetailsForUserOp,
     preTransactionConfirmationContext?: any
@@ -67,6 +80,11 @@ class SimpleAccountTrampolineAPI
     };
   }
 
+  /**
+   * Callled after the user has accepted the transaction on the transaction confirmation screen
+   * The context passed to this method is the same as the one passed to the
+   * onComplete method of the TransactionConfirmationComponent
+   */
   signUserOpWithContext = async (
     userOp: UserOperationStruct,
     postTransactionConfirmationContext: any
