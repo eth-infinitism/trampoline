@@ -145,11 +145,7 @@ class SimpleAccountTrampolineAPI
     info: TransactionDetailsForUserOp,
     preTransactionConfirmationContext?: any
   ): Promise<UserOperationStruct> {
-    const userOp = await this.createUnsignedUserOp(info);
-
-    return {
-      ...userOp,
-    };
+    return this.createUnsignedUserOp(info);
   }
 
   /**
@@ -161,7 +157,6 @@ class SimpleAccountTrampolineAPI
     userOp: UserOperationStruct,
     postTransactionConfirmationContext: any
   ): Promise<UserOperationStruct> => {
-    console.log('signUserOpWithContext', userOp);
     return this.signUserOp(userOp);
   };
 }
