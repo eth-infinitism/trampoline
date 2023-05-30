@@ -1,9 +1,5 @@
-import { BigNumber, BigNumberish, ethers, Wallet } from 'ethers';
-import {
-  SimpleAccount,
-  SimpleAccountFactory,
-  UserOperationStruct,
-} from '@account-abstraction/contracts';
+import { ethers, Wallet } from 'ethers';
+import { UserOperationStruct } from '@account-abstraction/contracts';
 
 import { AccountApiParamsType, AccountApiType } from './types';
 import { MessageSigningRequest } from '../../Background/redux-slices/signing';
@@ -11,8 +7,7 @@ import { TransactionDetailsForUserOp } from '@account-abstraction/sdk/dist/src/T
 import config from '../../../exconfig';
 import { SimpleAccountAPI } from '@account-abstraction/sdk';
 
-const FACTORY_ADDRESS =
-  config.factory_address || '0x6C583EE7f3a80cB53dDc4789B0Af1aaFf90e55F3';
+const FACTORY_ADDRESS = config.factory_address;
 
 /**
  * An implementation of the BaseAccountAPI using the SimpleAccount contract.
