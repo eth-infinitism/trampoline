@@ -126,6 +126,7 @@ class SimpleAccountTrampolineAPI
       await this.erc20Paymaster.generatePaymasterAndData(userOp);
     return {
       ...userOp,
+      // preVerificationGas predictions doesn't work properly on Mumbai network
       preVerificationGas: ethers.BigNumber.from(userOp.preVerificationGas).gt(
         50000
       )
@@ -144,20 +145,10 @@ class SimpleAccountTrampolineAPI
     info: TransactionDetailsForUserOp,
     preTransactionConfirmationContext?: any
   ): Promise<UserOperationStruct> {
-    if (!this.erc20Paymaster) throw new Error('erc20Paymaster not initialized');
-
-    const userOp = await resolveProperties(
-      await this.createUnsignedUserOp(info)
-    );
-
-    // await this.erc20Paymaster.verifyTokenApproval(userOp);
-
-    const erc20PaymasterAndData =
-      await this.erc20Paymaster.generatePaymasterAndData(userOp);
+    const userOp = await this.createUnsignedUserOp(info);
 
     return {
       ...userOp,
-      paymasterAndData: erc20PaymasterAndData ? erc20PaymasterAndData : '0x',
     };
   }
 

@@ -261,7 +261,6 @@ export default class ProviderBridgeService extends BaseService<Events> {
 
         // Fetch the latest permission
         const persistedPermission = await this.checkPermission(origin);
-        console.log(persistedPermission);
         if (typeof persistedPermission !== 'undefined') {
           // if agrees then let's return the account data
 
@@ -372,10 +371,10 @@ export default class ProviderBridgeService extends BaseService<Events> {
     );
     await showExtensionPopup(AllowedQueryParamPage.dappPermission);
 
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       this.#pendingRequests[permissionRequest.origin] = {
         resolve,
-        reject: resolve,
+        reject,
       };
     });
   }
@@ -681,10 +680,7 @@ export default class ProviderBridgeService extends BaseService<Events> {
             params,
             origin,
             showExtensionPopup(AllowedQueryParamPage.signTransaction)
-          ).catch((error) => {
-            console.log(error);
-            new EIP1193Error(EIP1193_ERROR_CODES.userRejectedRequest).toJSON();
-          });
+          );
 
         default: {
           return await this.routeSafeRPCRequest(method, params, origin);
