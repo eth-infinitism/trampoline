@@ -42,6 +42,7 @@ const config: HardhatUserConfig = {
   },
   networks: {
     goerli: getNetwork('goerli'),
+    mumbai: getNetwork('polygon-mumbai'),
   },
   etherscan: {
     apiKey: process.env.ETHERSCAN_API_KEY,
