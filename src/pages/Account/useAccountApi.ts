@@ -6,7 +6,14 @@ import {
   getActiveAccount,
 } from '../Background/redux-slices/selectors/accountSelectors';
 
-const useAccountApi = () => {
+const useAccountApi = ({
+  functionName,
+  args,
+}: {
+  functionName: string;
+  args?: any[];
+}) => {
+  const [apiCalled, setApicalled] = useState(false);
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const activeAccount = useBackgroundSelector(getActiveAccount);
@@ -16,17 +23,16 @@ const useAccountApi = () => {
   const { accountApiCallResult, accountApiCallResultState } =
     useBackgroundSelector(getAccountApiCallResult);
 
-  const callAccountApi = useCallback(
-    async (functionName: string, args?: any[]) => {
-      setLoading(true);
-      if (activeAccount) {
-        await backgroundDispatch(
-          callAccountApiThunk({ address: activeAccount, functionName, args })
-        );
-      }
-    },
-    [backgroundDispatch, activeAccount]
-  );
+  const callAccountApi = useCallback(async () => {
+    if (apiCalled) return;
+    setLoading(true);
+    setApicalled(true);
+    if (activeAccount) {
+      await backgroundDispatch(
+        callAccountApiThunk({ address: activeAccount, functionName, args })
+      );
+    }
+  }, [apiCalled, activeAccount, backgroundDispatch, functionName, args]);
 
   useEffect(() => {
     if (accountApiCallResultState === 'set' && loading) {
