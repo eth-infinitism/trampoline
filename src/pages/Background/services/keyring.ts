@@ -52,45 +52,52 @@ export default class KeyringService extends BaseService<Events> {
   constructor(
     readonly mainServiceManager: MainServiceManager,
     provider: string,
-    bundler: string,
+    readonly bundlerUrl: string,
     readonly entryPointAddress: string,
     vault?: string
   ) {
     super();
     this.keyrings = {};
     this.provider = new ethers.providers.JsonRpcBatchProvider(provider);
-    this.provider
-      .getNetwork()
-      .then((net) => net.chainId)
-      .then(async (chainId) => {
-        let bundlerRPC;
-        try {
-          bundlerRPC = new ethers.providers.JsonRpcProvider(bundler);
-        } catch (e) {
-          throw new Error(`Bundler network is not connected on url ${bundler}`);
-        }
-
-        if (bundlerRPC) {
-          const supportedEntryPoint = await bundlerRPC.send(
-            'eth_supportedEntryPoints',
-            []
-          );
-          if (!supportedEntryPoint.includes(entryPointAddress)) {
-            throw new Error(
-              `Bundler network doesn't support entryPoint ${entryPointAddress}`
-            );
-          }
-        }
-
-        const code = await this.provider.getCode(entryPointAddress);
-        if (code === '0x')
-          throw new Error(`Entrypoint not deployed at ${entryPointAddress}`);
-
-        this.bundler = new HttpRpcClient(bundler, entryPointAddress, chainId);
-      });
-
     this.vault = vault;
   }
+
+  init = async () => {
+    const net = await this.provider.getNetwork();
+
+    const chainId = net.chainId;
+
+    let bundlerRPC;
+    try {
+      bundlerRPC = new ethers.providers.JsonRpcProvider(this.bundlerUrl);
+    } catch (e) {
+      throw new Error(
+        `Bundler network is not connected on url ${this.bundlerUrl}`
+      );
+    }
+
+    if (bundlerRPC) {
+      const supportedEntryPoint = await bundlerRPC.send(
+        'eth_supportedEntryPoints',
+        []
+      );
+      if (!supportedEntryPoint.includes(this.entryPointAddress)) {
+        throw new Error(
+          `Bundler network doesn't support entryPoint ${this.entryPointAddress}`
+        );
+      }
+    }
+
+    const code = await this.provider.getCode(this.entryPointAddress);
+    if (code === '0x')
+      throw new Error(`Entrypoint not deployed at ${this.entryPointAddress}`);
+
+    this.bundler = new HttpRpcClient(
+      this.bundlerUrl,
+      this.entryPointAddress,
+      chainId
+    );
+  };
 
   async unlockVault(
     password?: string,
@@ -470,6 +477,8 @@ export default class KeyringService extends BaseService<Events> {
       entryPointAddress,
       initialState?.vault
     );
+
+    await keyringService.init();
 
     if (initialState?.encryptionKey && initialState?.encryptionSalt) {
       await keyringService.unlockVault(
