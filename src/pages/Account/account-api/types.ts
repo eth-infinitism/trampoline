@@ -5,6 +5,7 @@ import {
 } from '@account-abstraction/sdk/dist/src/BaseAccountAPI';
 import { TransactionDetailsForUserOp } from '@account-abstraction/sdk/dist/src/TransactionDetailsForUserOp';
 import { MessageSigningRequest } from '../../Background/redux-slices/signing';
+import { HttpRpcClient } from '@account-abstraction/sdk';
 
 export abstract class AccountApiType extends BaseAccountAPI {
   abstract serialize: () => Promise<object>;
@@ -29,6 +30,7 @@ export abstract class AccountApiType extends BaseAccountAPI {
 export interface AccountApiParamsType<T, S> extends BaseApiParams {
   context?: T;
   deserializeState?: S;
+  bundler: HttpRpcClient;
 }
 
 export type AccountImplementationType = new (

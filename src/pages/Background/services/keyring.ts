@@ -162,6 +162,7 @@ export default class KeyringService extends BaseService<Events> {
   ): Promise<AccountApiType> {
     const account = new AccountImplementations[type]({
       provider: this.provider,
+      bundler: this.bundler!,
       entryPointAddress: this.entryPointAddress,
       paymasterAPI: this.paymasterAPI,
       deserializeState: data,
@@ -252,6 +253,7 @@ export default class KeyringService extends BaseService<Events> {
   ): Promise<string> => {
     const account = new AccountImplementations[implementation]({
       provider: this.provider,
+      bundler: this.bundler!,
       entryPointAddress: this.entryPointAddress,
       context,
       paymasterAPI: this.paymasterAPI,
