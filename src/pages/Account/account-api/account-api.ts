@@ -5,7 +5,7 @@ import { AccountApiParamsType, AccountApiType } from './types';
 import { MessageSigningRequest } from '../../Background/redux-slices/signing';
 import { TransactionDetailsForUserOp } from '@account-abstraction/sdk/dist/src/TransactionDetailsForUserOp';
 import config from '../../../exconfig';
-import { SimpleAccountAPI } from '@account-abstraction/sdk';
+import { HttpRpcClient, SimpleAccountAPI } from '@account-abstraction/sdk';
 import { hexConcat, resolveProperties } from 'ethers/lib/utils.js';
 import {
   ERC20__factory,
@@ -16,6 +16,7 @@ import {
   SimpleAccountWithPaymasterFactory,
   SimpleAccountWithPaymasterFactory__factory,
 } from './typechain-types';
+import { NotPromise } from '@account-abstraction/utils';
 
 const FACTORY_ADDRESS = config.factory_address;
 
@@ -32,6 +33,7 @@ class SimpleAccountTrampolineAPI
 {
   factoryWithPaymaster?: SimpleAccountWithPaymasterFactory;
   erc20Paymaster?: ERC20Paymaster;
+  bundler: HttpRpcClient;
 
   /**
    *
@@ -47,6 +49,7 @@ class SimpleAccountTrampolineAPI
         : ethers.Wallet.createRandom(),
       factoryAddress: FACTORY_ADDRESS,
     });
+    this.bundler = params.bundler;
   }
 
   async init(): Promise<this> {
@@ -115,23 +118,86 @@ class SimpleAccountTrampolineAPI
     throw new Error('signMessage method not implemented.');
   };
 
+  adjustGasParameters = async (
+    userOp: NotPromise<UserOperationStruct>
+  ): Promise<NotPromise<UserOperationStruct>> => {
+    userOp.nonce = ethers.BigNumber.from(userOp.nonce).toHexString();
+    userOp.callGasLimit = ethers.BigNumber.from(
+      userOp.callGasLimit
+    ).toHexString();
+    userOp.verificationGasLimit = ethers.BigNumber.from(
+      userOp.verificationGasLimit
+    ).toHexString();
+    userOp.preVerificationGas = ethers.BigNumber.from(
+      userOp.preVerificationGas
+    ).toHexString();
+    userOp.maxFeePerGas = ethers.BigNumber.from(
+      userOp.maxFeePerGas
+    ).toHexString();
+    userOp.maxPriorityFeePerGas = ethers.BigNumber.from(
+      userOp.maxPriorityFeePerGas
+    )
+      .toHexString()
+      .toLowerCase();
+
+    console.log('yaha p to h');
+    const gasParameters = await this.bundler.estimateUserOpGas(
+      await this.signUserOp(userOp)
+    );
+
+    console.log(this.bundler, gasParameters);
+
+    const estimatedGasLimit = ethers.BigNumber.from(
+      gasParameters?.callGasLimit
+    );
+    const estimateVerificationGasLimit = ethers.BigNumber.from(
+      gasParameters?.verificationGas
+    );
+    const estimatePreVerificationGas = ethers.BigNumber.from(
+      gasParameters?.preVerificationGas
+    );
+
+    userOp.callGasLimit = estimatedGasLimit.gt(
+      ethers.BigNumber.from(userOp.callGasLimit)
+    )
+      ? estimatedGasLimit.toHexString()
+      : userOp.callGasLimit;
+
+    userOp.verificationGasLimit = estimateVerificationGasLimit.gt(
+      ethers.BigNumber.from(userOp.verificationGasLimit)
+    )
+      ? estimateVerificationGasLimit.toHexString()
+      : userOp.verificationGasLimit;
+
+    userOp.preVerificationGas = estimatePreVerificationGas.gt(
+      ethers.BigNumber.from(userOp.preVerificationGas)
+    )
+      ? estimatePreVerificationGas.toHexString()
+      : userOp.preVerificationGas;
+
+    return userOp;
+  };
+
   createUnsignedUserOp = async (
     info: TransactionDetailsForUserOp
   ): Promise<UserOperationStruct> => {
     const userOp = await resolveProperties(
       await super.createUnsignedUserOp(info)
     );
+    // preVerificationGas predictions doesn't work properly on Mumbai network
+    userOp.preVerificationGas = ethers.BigNumber.from(
+      userOp.preVerificationGas
+    ).gt(50000)
+      ? userOp.preVerificationGas
+      : ethers.BigNumber.from(50000).toHexString();
+
     if (!this.erc20Paymaster) throw new Error('erc20Paymaster not initialized');
     const erc20PaymasterAndData =
-      await this.erc20Paymaster.generatePaymasterAndData(userOp);
+      await this.erc20Paymaster.generatePaymasterAndData(
+        await this.adjustGasParameters(userOp)
+      );
     return {
       ...userOp,
-      // preVerificationGas predictions doesn't work properly on Mumbai network
-      preVerificationGas: ethers.BigNumber.from(userOp.preVerificationGas).gt(
-        50000
-      )
-        ? userOp.preVerificationGas
-        : ethers.BigNumber.from(50000).toHexString(),
       paymasterAndData: erc20PaymasterAndData ? erc20PaymasterAndData : '0x',
     };
   };
