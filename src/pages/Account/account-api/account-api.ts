@@ -1,20 +1,13 @@
-import { BigNumber, BigNumberish, ethers, Wallet } from 'ethers';
-import {
-  SimpleAccount,
-  SimpleAccount__factory,
-  SimpleAccountFactory,
-  SimpleAccountFactory__factory,
-  UserOperationStruct,
-} from '@account-abstraction/contracts';
-import { arrayify, hexConcat } from 'ethers/lib/utils';
+import { ethers, Wallet } from 'ethers';
+import { UserOperationStruct } from '@account-abstraction/contracts';
 
 import { AccountApiParamsType, AccountApiType } from './types';
 import { MessageSigningRequest } from '../../Background/redux-slices/signing';
 import { TransactionDetailsForUserOp } from '@account-abstraction/sdk/dist/src/TransactionDetailsForUserOp';
 import config from '../../../exconfig';
+import { SimpleAccountAPI } from '@account-abstraction/sdk';
 
-const FACTORY_ADDRESS =
-  config.factory_address || '0x6C583EE7f3a80cB53dDc4789B0Af1aaFf90e55F3';
+const FACTORY_ADDRESS = config.factory_address;
 
 /**
  * An implementation of the BaseAccountAPI using the SimpleAccount contract.
@@ -23,118 +16,76 @@ const FACTORY_ADDRESS =
  * - nonce method is "nonce()"
  * - execute method is "execFromEntryPoint()"
  */
-class SimpleAccountAPI extends AccountApiType {
-  name: string;
-  factoryAddress?: string;
-  owner: Wallet;
-  index: number;
-
+class SimpleAccountTrampolineAPI
+  extends SimpleAccountAPI
+  implements AccountApiType
+{
   /**
-   * our account contract.
-   * should support the "execFromEntryPoint" and "nonce" methods
+   *
+   * We create a new private key or use the one provided in the
+   * deserializeState and initialize the SimpleAccountAPI
    */
-  accountContract?: SimpleAccount;
-
-  factory?: SimpleAccountFactory;
-
   constructor(params: AccountApiParamsType<{}, { privateKey: string }>) {
-    super(params);
-    this.factoryAddress = FACTORY_ADDRESS;
-
-    this.owner = params.deserializeState?.privateKey
-      ? new ethers.Wallet(params.deserializeState?.privateKey)
-      : ethers.Wallet.createRandom();
-    this.index = 0;
-    this.name = 'SimpleAccountAPI';
+    super({
+      ...params,
+      index: 0,
+      owner: params.deserializeState?.privateKey
+        ? new ethers.Wallet(params.deserializeState?.privateKey)
+        : ethers.Wallet.createRandom(),
+      factoryAddress: FACTORY_ADDRESS,
+    });
   }
 
+  /**
+   *
+   * @returns the serialized state of the account that is saved in
+   * the secured vault in localstorage and later passed to the
+   * constructor in the deserializeState parameter
+   */
   serialize = async (): Promise<{ privateKey: string }> => {
     return {
-      privateKey: this.owner.privateKey,
+      privateKey: (this.owner as Wallet).privateKey,
     };
   };
 
-  async _getAccountContract(): Promise<SimpleAccount> {
-    if (this.accountContract == null) {
-      this.accountContract = SimpleAccount__factory.connect(
-        await this.getAccountAddress(),
-        this.provider
-      );
-    }
-    return this.accountContract;
-  }
-
   /**
-   * return the value to put into the "initCode" field, if the account is not yet deployed.
-   * this value holds the "factory" address, followed by this account's information
+   * Called when the Dapp requests eth_signTypedData
    */
-  async getAccountInitCode(): Promise<string> {
-    if (this.factory == null) {
-      if (this.factoryAddress != null && this.factoryAddress !== '') {
-        this.factory = SimpleAccountFactory__factory.connect(
-          this.factoryAddress,
-          this.provider
-        );
-      } else {
-        throw new Error('no factory to get initCode');
-      }
-    }
-    return hexConcat([
-      this.factory.address,
-      this.factory.interface.encodeFunctionData('createAccount', [
-        await this.owner.getAddress(),
-        this.index,
-      ]),
-    ]);
-  }
-
-  async getNonce(): Promise<BigNumber> {
-    if (await this.checkAccountPhantom()) {
-      return BigNumber.from(0);
-    }
-    const accountContract = await this._getAccountContract();
-    return await accountContract.getNonce();
-  }
-
-  /**
-   * encode a method call from entryPoint to our contract
-   * @param target
-   * @param value
-   * @param data
-   */
-  async encodeExecute(
-    target: string,
-    value: BigNumberish,
-    data: string
-  ): Promise<string> {
-    const accountContract = await this._getAccountContract();
-    return accountContract.interface.encodeFunctionData('execute', [
-      target,
-      value,
-      data,
-    ]);
-  }
-
-  async signUserOpHash(userOpHash: string): Promise<string> {
-    return await this.owner.signMessage(arrayify(userOpHash));
-  }
-
   signMessage = async (
     context: any,
     request?: MessageSigningRequest
   ): Promise<string> => {
-    return this.owner.signMessage(request?.rawSigningData || '');
+    throw new Error('signMessage method not implemented.');
   };
 
+  /**
+   * Called after the user is presented with the pre-transaction confirmation screen
+   * The context passed to this method is the same as the one passed to the
+   * onComplete method of the PreTransactionConfirmationComponent
+   */
+  async createUnsignedUserOpWithContext(
+    info: TransactionDetailsForUserOp,
+    preTransactionConfirmationContext?: any
+  ): Promise<UserOperationStruct> {
+    return {
+      ...(await this.createUnsignedUserOp(info)),
+      paymasterAndData: preTransactionConfirmationContext?.paymasterAndData
+        ? preTransactionConfirmationContext?.paymasterAndData
+        : '0x',
+    };
+  }
+
+  /**
+   * Callled after the user has accepted the transaction on the transaction confirmation screen
+   * The context passed to this method is the same as the one passed to the
+   * onComplete method of the TransactionConfirmationComponent
+   */
   signUserOpWithContext = async (
     userOp: UserOperationStruct,
-    context: any
+    postTransactionConfirmationContext: any
   ): Promise<UserOperationStruct> => {
-    return {
-      ...userOp,
-      signature: await this.signUserOpHash(await this.getUserOpHash(userOp)),
-    };
+    return this.signUserOp(userOp);
   };
 }
 
-export default SimpleAccountAPI;
+export default SimpleAccountTrampolineAPI;
