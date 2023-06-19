@@ -55,7 +55,7 @@ type SigningReducers = {
       payload: EthersTransactionRequest[];
     }
   ) => TransactionState;
-  sendUserOperationRquest: (
+  sendUserOperationRequest: (
     state: TransactionState,
     { payload }: { payload: UserOperationStruct }
   ) => TransactionState;
@@ -119,7 +119,7 @@ const transactionsSlice = createSlice<
       ...state,
       modifiedTransactionsRequest: payload,
     }),
-    sendUserOperationRquest: (
+    sendUserOperationRequest: (
       state,
       { payload }: { payload: UserOperationStruct }
     ) => ({
@@ -151,7 +151,7 @@ export const {
   sendTransactionRequest,
   sendTransactionsRequest,
   setModifyTransactionsRequest,
-  sendUserOperationRquest,
+  sendUserOperationRequest,
   setUnsignedUserOperation,
   clearTransactionState,
 } = transactionsSlice.actions;
