@@ -45,7 +45,7 @@ Config of the extension can be set in `excnfig.json` file.
   // Show default transaction screen
   "showTransactionConfirmationScreen": true,
   // stateVersion is the version of state stored in localstorage of your browser. If you want to reset your extension, change this number to a new version and that will invalidate the older state.
-  stateVersion: '0.1',
+  "stateVersion": "0.1",
   // Network that your SCW supports. Currently this app only supports a single network, we will soon have support for multiple networks in future
   "network": {
     "chainID": "5",
@@ -131,9 +131,24 @@ export abstract class AccountApiType extends BaseAccountAPI {
     context?: any
   ) => Promise<string>;
 
+  /**
+   * Called after the user is presented with the pre-transaction confirmation screen
+   * The context passed to this method is the same as the one passed to the
+   * onComplete method of the PreTransactionConfirmationComponent
+   */
+  async createUnsignedUserOpWithContext(
+    info: TransactionDetailsForUserOp,
+    preTransactionConfirmationContext?: any
+  ): Promise<UserOperationStruct>;
+
+  /**
+   * Called after the user is presented with the post-transaction confirmation screen
+   * The context passed to this method is the same as the one passed to the
+   * onComplete method of the PostTransactionConfirmationComponent
+   */
   abstract signUserOpWithContext(
     userOp: UserOperationStruct,
-    context?: any
+    postTransactionConfirmationContext?: any
   ): Promise<string>;
 }
 
@@ -222,36 +237,71 @@ The signature of the `signMessage` is as follows, which shows how the `context` 
   ) => Promise<string>;
 ```
 
-The `transaction` folder defines the component that will be displayed to the user whenever the dapp requests to initiate a transaction, i.e. dapp calls `eth_sendTransaction` RPC method. You can display custom information or collect user inputs if needed.
+The `transaction` folder contains components that are displayed to the user whenever the Dapp requests to initiate a transaction by calling the `eth_sendTransaction` RPC method. These components can display custom information or gather necessary user inputs.
 
-The signature of the `TransactionComponent` is defined as follows.
+There are three key components involved in the transaction process:
+
+- `PreTransactionConfirmationComponent`
+- `TransactionConfirmationComponent`
+- `PostTransactionConfirmationComponent`
+
+The flow of these components' mounting and interaction is detailed below:
+
+## Process Flow
+
+1. **Dapp Initiates Transaction:** The Dapp calls `eth_sendTransaction`.
+
+2. **Pre-Transaction Confirmation:** The `PreTransactionConfirmationComponent` is loaded. It can display any necessary information and also return a `context`.
+
+3. **Unsigned User Operation Creation:** The `context` from the previous step is passed to the background `account-api` function `createUnsignedUserOpWithContext`. This function returns the unsigned user operation with paymaster and data. If the developer requires any specific parameters for the paymaster, they can be included in the `context` from Step 2, which is passed to `createUnsignedUserOpWithContext`.
+
+4. **Transaction Confirmation:** The unsigned user operation is passed to the `TransactionConfirmationComponent`. This is the default transaction confirmation screen, but developers can now modify it as it is part of the `account-api` components. This component is also passed the `context` from Step 2 and can return a new `context`.
+
+5. **Post-Transaction Confirmation:** The `PostTransactionConfirmationComponent` is then mounted with the `context` from Step 4. This is the stage where developers can request external signs after the transaction has been confirmed by the user (for example, in a two-owner setup, a rainbow is needed). This component also returns a `context` which will be passed to `account-api`.
+
+6. **User Operation Signature:** After Step 5, `account-api` is called and the function `signUserOpWithContext` is executed, where the `context` from Step 5 is passed.
+
+7. **User Operation Dispatch:** Once a signature is received from Step 6, the `userOp` is sent to the blockchain.
+
+The signature of the `TransactionComponents` is defined as follows.
 
 ```typescript
 export interface TransactionComponentProps {
   transaction: EthersTransactionRequest;
+  onReject: () => Promise<void>;
+}
+
+export interface PreTransactionConfirmationtProps
+  extends TransactionComponentProps {
   onComplete: (
     modifiedTransaction: EthersTransactionRequest,
     context?: any
   ) => Promise<void>;
 }
 
-export interface TransactionComponent
-  extends React.FC<TransactionComponentProps> {}
+export interface TransactionConfirmationtProps
+  extends TransactionComponentProps {
+  userOp: UserOperationStruct;
+  context: any;
+  onComplete: (context?: any) => Promise<void>;
+}
+
+export interface PostTransactionConfirmationtProps
+  extends TransactionComponentProps {
+  userOp: UserOperationStruct;
+  context: any;
+  onComplete: (context?: any) => Promise<void>;
+}
+
+export interface PreTransactionConfirmation
+  extends React.FC<PreTransactionConfirmationtProps> {}
+
+export interface TransactionConfirmation
+  extends React.FC<TransactionConfirmationtProps> {}
+
+export interface PostTransactionConfirmation
+  extends React.FC<PostTransactionConfirmationtProps> {}
 ```
-
-Once the component has collected enough information from the user, it should pass the collected information to `onComplete` as the `context` parameter. You can also modify the transaction if you want and return it also as a parameter of `onComplete` function. This `context` and `modifiedTransaction` will be passed on to your `createUnsignedUserOp` function of `account-api`
-
-The signature of the `createUnsignedUserOp` is as follows, which shows how the `context` will be passed:
-
-```typescript
-  /** sign a message for the user */
-  abstract createUnsignedUserOp: (
-    request?: MessageSigningRequest,
-    context?: any
-  ) => Promise<string>;
-```
-
-If you want you can also attach a paymaster here if your wallet wants to sponsor the transaction as well. The paymaster information will be displayed to the user.
 
 ## FAQ
 

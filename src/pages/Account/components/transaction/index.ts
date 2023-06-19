@@ -1,3 +1,9 @@
-import Transaction from './transaction';
+import PreTransactionConfirmation from './pre-transaction-confirmation';
+import TransactionConfirmation from './transaction-confirmation';
+import PostTransactionConfirmation from './post-transaction-confirmation';
 
-export default Transaction;
+export {
+  PreTransactionConfirmation,
+  TransactionConfirmation,
+  PostTransactionConfirmation,
+};

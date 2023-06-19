@@ -2,6 +2,11 @@
 # yarn lockfile v1
 
 
+"@account-abstraction/contracts@^0.5.0":
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/@account-abstraction/contracts/-/contracts-0.5.0.tgz#a089aee7b4c446251fbbce7df315bbf8f659e37f"
+  integrity sha512-CKyS9Zh5rcYUM+4B6TlaB9+THHzJ+6TY3tWF5QofqvFpqGNvIhF8ddy6wyCmqZw6TB74/yYv7cYD/RarVudfDg==
+
 "@account-abstraction/contracts@^0.6.0":
   version "0.6.0"
   resolved "https://registry.yarnpkg.com/@account-abstraction/contracts/-/contracts-0.6.0.tgz#7188a01839999226e6b2796328af338329543b76"
@@ -20,6 +25,18 @@
     "@ethersproject/properties" "^5.7.0"
     "@ethersproject/providers" "^5.7.0"
     "@types/debug" "^4.1.7"
+    debug "^4.3.4"
+    ethers "^5.7.0"
+
+"@account-abstraction/utils@^0.5.0":
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/@account-abstraction/utils/-/utils-0.5.0.tgz#aa7925741048b1657a71d7f98ccaf3c187f99b4a"
+  integrity sha512-dgXguTn5WgFMmr3wQMdLGEoIMDcIJgzAv74YlHeb2D3Nyy1pByPArSb3eLOOcgxCJSJeqTscpO9P57uhNkkC4A==
+  dependencies:
+    "@account-abstraction/contracts" "^0.5.0"
+    "@ethersproject/abi" "^5.7.0"
+    "@ethersproject/providers" "^5.7.0"
+    "@openzeppelin/contracts" "^4.7.3"
     debug "^4.3.4"
     ethers "^5.7.0"
 
@@ -1602,7 +1619,7 @@
   dependencies:
     "@ethersproject/logger" "^5.7.0"
 
-"@ethersproject/providers@5.7.2", "@ethersproject/providers@^5.7.0":
+"@ethersproject/providers@5.7.2", "@ethersproject/providers@^5.7.0", "@ethersproject/providers@^5.7.2":
   version "5.7.2"
   resolved "https://registry.yarnpkg.com/@ethersproject/providers/-/providers-5.7.2.tgz#f8b1a4f275d7ce58cf0a2eec222269a08beb18cb"
   integrity sha512-g34EWZ1WWAVgr4aptGlVBF8mhl3VWjv+8hoAnzStu8Ah22VHBsuGzP17eb6xDVRzw895G4W7vvx60lFFur/1Rg==
@@ -2464,6 +2481,11 @@
   resolved "https://registry.yarnpkg.com/@openzeppelin/contracts/-/contracts-4.8.1.tgz#709cfc4bbb3ca9f4460d60101f15dac6b7a2d5e4"
   integrity sha512-xQ6eUZl+RDyb/FiZe1h+U7qr/f4p/SrTSQcTPH2bjur3C5DbuW/zFgCU/b1P/xcIaEqJep+9ju4xDRi3rmChdQ==
 
+"@openzeppelin/contracts@^4.8.2":
+  version "4.9.0"
+  resolved "https://registry.yarnpkg.com/@openzeppelin/contracts/-/contracts-4.9.0.tgz#683f33b6598970051bc5f0806fd8660da9e018dd"
+  integrity sha512-DUP74AFGKlic2sQb/CmgrN2aUPMFGxRrmCTUxLHsiU2RzwWqVuMPZBxiAyvlff6Pea77uylAX6B5x9W6evEbhA==
+
 "@peculiar/asn1-ecc@^2.3.4":
   version "2.3.4"
   resolved "https://registry.yarnpkg.com/@peculiar/asn1-ecc/-/asn1-ecc-2.3.4.tgz#f120091bde2ecd1e4f4691b46a2d18a74effce20"
@@ -2498,6 +2520,20 @@
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/@pedrouid/environment/-/environment-1.0.1.tgz#858f0f8a057340e0b250398b75ead77d6f4342ec"
   integrity sha512-HaW78NszGzRZd9SeoI3JD11JqY+lubnaOx7Pewj5pfjqWXOEATpeKIFb9Z4t2WBUK2iryiXX3lzWwmYWgUL0Ug==
+
+"@pimlico/erc20-paymaster@^0.0.12":
+  version "0.0.12"
+  resolved "https://registry.yarnpkg.com/@pimlico/erc20-paymaster/-/erc20-paymaster-0.0.12.tgz#e83131ebe73558a96a1fb7a86c4709fed75f68d5"
+  integrity sha512-UG03UYI6JgOVtMLtDhZeqUUStY4YPvvL7mBqBptLAkDkeUrDW5FlrwSZEZAv++3syOT2wbw5vHYkCWr5hF3UbQ==
+  dependencies:
+    "@account-abstraction/contracts" "^0.6.0"
+    "@account-abstraction/utils" "^0.5.0"
+    "@ethersproject/abi" "^5.7.0"
+    "@ethersproject/abstract-provider" "^5.7.0"
+    "@ethersproject/providers" "^5.7.2"
+    "@openzeppelin/contracts" "^4.8.2"
+    ethers "^5.7.2"
+    solady "^0.0.90"
 
 "@pmmmwh/react-refresh-webpack-plugin@^0.5.10":
   version "0.5.10"
@@ -13330,6 +13366,11 @@ socks@^2.6.2:
   dependencies:
     ip "^2.0.0"
     smart-buffer "^4.2.0"
+
+solady@^0.0.90:
+  version "0.0.90"
+  resolved "https://registry.yarnpkg.com/solady/-/solady-0.0.90.tgz#2075349dfa6909b05ed04031f3b609ddbcd73598"
+  integrity sha512-NSc0mkfJo2CeKfFfyED1qbBQ8ofvDFxpBb0BLJ/wx2ZN7vCAYl8sp/j6TIIMdPb0BDvOKl2Rie9dVum+KIKeVA==
 
 solc@0.7.3:
   version "0.7.3"
