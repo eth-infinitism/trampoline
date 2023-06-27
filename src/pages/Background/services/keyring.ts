@@ -407,53 +407,59 @@ export default class KeyringService extends BaseService<Events> {
     );
 
     userOp.nonce = ethers.BigNumber.from(userOp.nonce).toHexString();
-    userOp.callGasLimit = ethers.BigNumber.from(
-      userOp.callGasLimit
-    ).toHexString();
-    userOp.verificationGasLimit = ethers.BigNumber.from(
-      userOp.verificationGasLimit
-    ).toHexString();
-    userOp.preVerificationGas = ethers.BigNumber.from(
-      userOp.preVerificationGas
-    ).toHexString();
-    userOp.maxFeePerGas = ethers.BigNumber.from(
-      userOp.maxFeePerGas
-    ).toHexString();
-    userOp.maxPriorityFeePerGas = ethers.BigNumber.from(
-      userOp.maxPriorityFeePerGas
-    ).toHexString();
 
-    const gasParameters = await this.bundler?.estimateUserOpGas(
-      await keyring.signUserOp(userOp)
-    );
+    /**
+     * The following code was commented because the ERC20 paymaster uses these values to calculate the amount of USDC that will be required
+     * for the transaction to go through. So we must keep the gas values that we have calculated in the function createUnsignedUserOpWithContext
+     */
 
-    const estimatedGasLimit = ethers.BigNumber.from(
-      gasParameters?.callGasLimit
-    );
-    const estimateVerificationGasLimit = ethers.BigNumber.from(
-      gasParameters?.verificationGas
-    );
-    const estimatePreVerificationGas = ethers.BigNumber.from(
-      gasParameters?.preVerificationGas
-    );
+    // userOp.callGasLimit = ethers.BigNumber.from(
+    //   userOp.callGasLimit
+    // ).toHexString();
+    // userOp.verificationGasLimit = ethers.BigNumber.from(
+    //   userOp.verificationGasLimit
+    // ).toHexString();
+    // userOp.preVerificationGas = ethers.BigNumber.from(
+    //   userOp.preVerificationGas
+    // ).toHexString();
+    // userOp.maxFeePerGas = ethers.BigNumber.from(
+    //   userOp.maxFeePerGas
+    // ).toHexString();
+    // userOp.maxPriorityFeePerGas = ethers.BigNumber.from(
+    //   userOp.maxPriorityFeePerGas
+    // ).toHexString();
 
-    userOp.callGasLimit = estimatedGasLimit.gt(
-      ethers.BigNumber.from(userOp.callGasLimit)
-    )
-      ? estimatedGasLimit.toHexString()
-      : userOp.callGasLimit;
+    // const gasParameters = await this.bundler?.estimateUserOpGas(
+    //   await keyring.signUserOp(userOp)
+    // );
 
-    userOp.verificationGasLimit = estimateVerificationGasLimit.gt(
-      ethers.BigNumber.from(userOp.verificationGasLimit)
-    )
-      ? estimateVerificationGasLimit.toHexString()
-      : userOp.verificationGasLimit;
+    // const estimatedGasLimit = ethers.BigNumber.from(
+    //   gasParameters?.callGasLimit
+    // );
+    // const estimateVerificationGasLimit = ethers.BigNumber.from(
+    //   gasParameters?.verificationGas
+    // );
+    // const estimatePreVerificationGas = ethers.BigNumber.from(
+    //   gasParameters?.preVerificationGas
+    // );
 
-    userOp.preVerificationGas = estimatePreVerificationGas.gt(
-      ethers.BigNumber.from(userOp.preVerificationGas)
-    )
-      ? estimatePreVerificationGas.toHexString()
-      : userOp.preVerificationGas;
+    // userOp.callGasLimit = estimatedGasLimit.gt(
+    //   ethers.BigNumber.from(userOp.callGasLimit)
+    // )
+    //   ? estimatedGasLimit.toHexString()
+    //   : userOp.callGasLimit;
+
+    // userOp.verificationGasLimit = estimateVerificationGasLimit.gt(
+    //   ethers.BigNumber.from(userOp.verificationGasLimit)
+    // )
+    //   ? estimateVerificationGasLimit.toHexString()
+    //   : userOp.verificationGasLimit;
+
+    // userOp.preVerificationGas = estimatePreVerificationGas.gt(
+    //   ethers.BigNumber.from(userOp.preVerificationGas)
+    // )
+    //   ? estimatePreVerificationGas.toHexString()
+    //   : userOp.preVerificationGas;
 
     return userOp;
   };
