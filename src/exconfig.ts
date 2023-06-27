@@ -11,7 +11,7 @@ export default {
     provider:
       'https://polygon-mumbai.g.alchemy.com/v2/YdsNfZkPMSAefI7wwCnBFfXK0ZRz2F-k',
     entryPointAddress: '0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789',
-    bundler: 'http://localhost:3000/rpc',
+    bundler: 'https://mumbai.voltaire.candidewallet.com/rpc',
     baseAsset: {
       symbol: 'MATIC',
       name: 'MATIC',

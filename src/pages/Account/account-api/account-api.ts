@@ -131,21 +131,19 @@ class SimpleAccountTrampolineAPI
     userOp.preVerificationGas = ethers.BigNumber.from(
       userOp.preVerificationGas
     ).toHexString();
-    userOp.maxFeePerGas = ethers.BigNumber.from(
-      userOp.maxFeePerGas
-    ).toHexString();
+    userOp.maxFeePerGas = ethers.BigNumber.from(userOp.maxFeePerGas)
+      .mul(3) // Alchemy vs Candide have different gas prices
+      .toHexString();
     userOp.maxPriorityFeePerGas = ethers.BigNumber.from(
       userOp.maxPriorityFeePerGas
     )
+      .mul(3)
       .toHexString()
       .toLowerCase();
 
-    console.log('yaha p to h');
     const gasParameters = await this.bundler.estimateUserOpGas(
       await this.signUserOp(userOp)
     );
-
-    console.log(this.bundler, gasParameters);
 
     const estimatedGasLimit = ethers.BigNumber.from(
       gasParameters?.callGasLimit
@@ -187,9 +185,9 @@ class SimpleAccountTrampolineAPI
     // preVerificationGas predictions doesn't work properly on Mumbai network
     userOp.preVerificationGas = ethers.BigNumber.from(
       userOp.preVerificationGas
-    ).gt(50000)
+    ).gt(62660)
       ? userOp.preVerificationGas
-      : ethers.BigNumber.from(50000).toHexString();
+      : ethers.BigNumber.from(62660).toHexString();
 
     if (!this.erc20Paymaster) throw new Error('erc20Paymaster not initialized');
     const erc20PaymasterAndData =
