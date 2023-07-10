@@ -36,32 +36,32 @@ Trampoline is a chrome extension boilerplate code to showcase your own Smart Con
 
 ## Config
 
-Config of the extension can be set in `excnfig.json` file.
+Config of the extension can be set in `exconfig.ts` file.
 
-```json
-{
+```ts
+export default {
   // Enable or disable password for the user.
-  "enablePasswordEncryption": true,
+  enablePasswordEncryption: true,
   // Show default transaction screen
-  "showTransactionConfirmationScreen": true,
+  showTransactionConfirmationScreen: true,
   // stateVersion is the version of state stored in localstorage of your browser. If you want to reset your extension, change this number to a new version and that will invalidate the older state.
-  "stateVersion": "0.1",
+  stateVersion: "0.1",
   // Network that your SCW supports. Currently this app only supports a single network, we will soon have support for multiple networks in future
-  "network": {
-    "chainID": "5",
-    "family": "EVM",
-    "name": "Goerli",
-    "provider": "https://goerli.infura.io/v3/bdabe9d2f9244005af0f566398e648da",
-    "entryPointAddress": "0x0F46c65C17AA6b4102046935F33301f0510B163A",
-    "bundler": "https://app.stackup.sh/api/v1/bundler/96771b1b09e802669c33a3fc50f517f0f514a40da6448e24640ecfd83263d336",
-    "baseAsset": {
-      "symbol": "ETH",
-      "name": "ETH",
-      "decimals": 18,
-      "image": "https://ethereum.org/static/6b935ac0e6194247347855dc3d328e83/6ed5f/eth-diamond-black.webp"
+  network: {
+    chainID: "5",
+    family: "EVM",
+    name: "Goerli",
+    provider: "https://goerli.infura.io/v3/bdabe9d2f9244005af0f566398e648da",
+    entryPointAddress: "0x0F46c65C17AA6b4102046935F33301f0510B163A",
+    bundler: "https://app.stackup.sh/api/v1/bundler/96771b1b09e802669c33a3fc50f517f0f514a40da6448e24640ecfd83263d336",
+    baseAsset: {
+      symbol: "ETH",
+      name: "ETH",
+      decimals: 18,
+      image: "https://ethereum.org/static/6b935ac0e6194247347855dc3d328e83/6ed5f/eth-diamond-black.webp"
     }
   }
-}
+};
 ```
 
 ### Custom Network
