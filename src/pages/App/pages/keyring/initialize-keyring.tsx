@@ -1,7 +1,6 @@
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import {
   Box,
-  Button,
   CardActions,
   CardContent,
   Checkbox,
@@ -24,6 +23,7 @@ import { initializeKeyring } from '../../../Background/redux-slices/keyrings';
 import { selectKeyringStatus } from '../../../Background/redux-slices/selectors/keyringsSelectors';
 import { useBackgroundDispatch, useBackgroundSelector } from '../../hooks';
 import Config from '../../../../exconfig';
+import PrimaryButton from '../../../Account/components/PrimaryButton';
 
 const InitializeKeyring = () => {
   const keyringState = useBackgroundSelector(selectKeyringStatus);
@@ -179,7 +179,7 @@ const InitializeKeyring = () => {
           <CardActions sx={{ width: '100%', pl: 2, pr: 2, pt: 0 }}>
             <Stack spacing={2} sx={{ width: '100%', pl: 2, pr: 2 }}>
               <Box sx={{ position: 'relative' }}>
-                <Button
+                <PrimaryButton
                   sx={{ width: '100%' }}
                   disabled={
                     password.length === 0 ||
@@ -191,7 +191,7 @@ const InitializeKeyring = () => {
                   onClick={onSetPasswordClick}
                 >
                   Set password
-                </Button>
+                </PrimaryButton>
                 {showLoader && (
                   <CircularProgress
                     size={24}
