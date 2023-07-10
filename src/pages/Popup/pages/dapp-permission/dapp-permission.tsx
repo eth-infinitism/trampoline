@@ -26,6 +26,7 @@ import {
 } from '../../../Background/redux-slices/permissions';
 import AccountInfo from '../../components/account-info';
 import OriginInfo from '../../components/origin-info';
+import PrimaryButton from '../../../Account/components/PrimaryButton';
 
 const DappPermission = () => {
   const permission = useBackgroundSelector(selectCurrentPendingPermission);
@@ -122,9 +123,9 @@ const DappPermission = () => {
           <Button sx={{ width: 150 }} variant="outlined" onClick={deny}>
             Reject
           </Button>
-          <Button sx={{ width: 150 }} variant="contained" onClick={grant}>
+          <PrimaryButton sx={{ width: 150 }} variant="contained" onClick={grant}>
             Connect
-          </Button>
+          </PrimaryButton>
         </Box>
       </Paper>
     </Container>

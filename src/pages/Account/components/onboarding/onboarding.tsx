@@ -1,6 +1,5 @@
 import {
   Box,
-  Button,
   CardActions,
   CardContent,
   Typography,
@@ -8,6 +7,7 @@ import {
 import { Stack } from '@mui/system';
 import React from 'react';
 import { OnboardingComponent, OnboardingComponentProps } from '../types';
+import PrimaryButton from '../PrimaryButton';
 
 const Onboarding: OnboardingComponent = ({
   onOnboardingComplete,
@@ -34,13 +34,13 @@ const Onboarding: OnboardingComponent = ({
       </CardContent>
       <CardActions sx={{ pl: 4, pr: 4, width: '100%' }}>
         <Stack spacing={2} sx={{ width: '100%' }}>
-          <Button
+          <PrimaryButton
             size="large"
             variant="contained"
             onClick={() => onOnboardingComplete()}
           >
             Continue
-          </Button>
+          </PrimaryButton>
         </Stack>
       </CardActions>
     </Box>
