@@ -1,6 +1,5 @@
 import {
   Box,
-  Button,
   Card,
   CardContent,
   CircularProgress,
@@ -19,6 +18,7 @@ import { ethers } from 'ethers';
 import { useBackgroundSelector } from '../../hooks';
 import { getActiveAccount } from '../../../Background/redux-slices/selectors/accountSelectors';
 import { useNavigate } from 'react-router-dom';
+import PrimaryButton from '../../../Account/components/PrimaryButton';
 
 const TransferAsset = () => {
   const navigate = useNavigate();
@@ -107,7 +107,7 @@ const TransferAsset = () => {
               <Typography variant="body1" color="error">
                 {error}
               </Typography>
-              <Button
+              <PrimaryButton
                 disabled={loader}
                 onClick={sendEth}
                 sx={{ mt: 4 }}
@@ -127,7 +127,7 @@ const TransferAsset = () => {
                     }}
                   />
                 )}
-              </Button>
+              </PrimaryButton>
             </FormGroup>
           </Box>
         </CardContent>

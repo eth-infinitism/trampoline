@@ -1,7 +1,6 @@
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import {
   Box,
-  Button,
   CardActions,
   CardContent,
   Checkbox,
@@ -23,7 +22,8 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { initializeKeyring } from '../../../Background/redux-slices/keyrings';
 import { selectKeyringStatus } from '../../../Background/redux-slices/selectors/keyringsSelectors';
 import { useBackgroundDispatch, useBackgroundSelector } from '../../hooks';
-import Config from '../../../../exconfig.json';
+import Config from '../../../../exconfig';
+import PrimaryButton from '../../../Account/components/PrimaryButton';
 
 const InitializeKeyring = () => {
   const keyringState = useBackgroundSelector(selectKeyringStatus);
@@ -169,8 +169,8 @@ const InitializeKeyring = () => {
                     onChange={(e, checked) => setDeclaration(checked)}
                   />{' '}
                   <Typography variant="body2" color="text.secondary">
-                    I understand that TRAMPOLINE cannot recover this password
-                    for me
+                    I understand that TRAMPOLINE Account cannot recover this
+                    password for me
                   </Typography>
                 </Stack>
               </FormControl>
@@ -179,7 +179,7 @@ const InitializeKeyring = () => {
           <CardActions sx={{ width: '100%', pl: 2, pr: 2, pt: 0 }}>
             <Stack spacing={2} sx={{ width: '100%', pl: 2, pr: 2 }}>
               <Box sx={{ position: 'relative' }}>
-                <Button
+                <PrimaryButton
                   sx={{ width: '100%' }}
                   disabled={
                     password.length === 0 ||
@@ -191,7 +191,7 @@ const InitializeKeyring = () => {
                   onClick={onSetPasswordClick}
                 >
                   Set password
-                </Button>
+                </PrimaryButton>
                 {showLoader && (
                   <CircularProgress
                     size={24}
