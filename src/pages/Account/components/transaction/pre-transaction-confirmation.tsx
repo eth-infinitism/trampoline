@@ -122,25 +122,21 @@ const PreTransactionConfirmationComponent: PreTransactionConfirmation = ({
     <>
       <CardContent>
         <Typography variant="h3" gutterBottom>
-          Dummy Component
+          Paymaster Demo
         </Typography>
         <Typography variant="body1" color="text.secondary">
-          You can show as many steps as you want in this dummy component. You
-          need to call the function <b>onComplete</b> passed as a props to this
-          component. <br />
-          <br />
-          The function takes a modifiedTransactions & context as a parameter,
-          the context will be passed to your AccountApi when creating a new
-          account. While modifiedTransactions will be agreed upon by the user.
-          <br />
-          This Component is defined in exported in{' '}
+          We will be using{' '}
+          <a href="https://docs.stackup.sh/docs/paymaster-api-rpc-methods">
+            Stackup's paymaster
+          </a>{' '}
+          as our paymaster for the purpose of this demo.
+        </Typography>
+        <Typography variant="body1" color="text.secondary" sx={{ mt: 4 }}>
+          File name:
         </Typography>
         <Typography variant="caption">
           trampoline/src/pages/Account/components/transaction/pre-transaction-confirmation.ts
         </Typography>
-        <Box sx={{ mt: 4, mb: 4 }}>
-          <AddPaymasterAndData setPaymasterAndData={setPaymasterAndDataLocal} />
-        </Box>
       </CardContent>
       <CardActions sx={{ width: '100%' }}>
         <Stack spacing={2} sx={{ width: '100%' }}>

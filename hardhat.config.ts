@@ -42,6 +42,7 @@ const config: HardhatUserConfig = {
   },
   networks: {
     goerli: getNetwork('goerli'),
+    sepolia: getNetwork('sepolia'),
     mumbai: getNetwork('polygon-mumbai'),
   },
   etherscan: {
