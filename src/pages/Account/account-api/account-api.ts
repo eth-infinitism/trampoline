@@ -73,6 +73,13 @@ class SimpleAccountTrampolineAPI
     throw new Error('signMessage method not implemented.');
   };
 
+  dummySignUserOp = (userOp: UserOperationStruct): UserOperationStruct => {
+    return Object.assign(Object.assign({}, userOp), {
+      signature:
+        '0xe8fe34b166b64d118dccf44c7198648127bf8a76a48a042862321af6058026d276ca6abb4ed4b60ea265d1e57e33840d7466de75e13f072bbd3b7e64387eebfe1b',
+    });
+  };
+
   /**
    * Called after the user is presented with the pre-transaction confirmation screen
    * The context passed to this method is the same as the one passed to the
@@ -111,11 +118,8 @@ class SimpleAccountTrampolineAPI
       preVerificationGas: string;
       verificationGasLimit: string;
     } = await this.paymasterRPC.send('local_getPaymasterAndData', [
-      await resolveProperties(await this.signUserOp(userOp)),
+      await resolveProperties(this.dummySignUserOp(userOp)),
       config.network.entryPointAddress,
-      {
-        type: 'payg',
-      },
     ]);
 
     console.log('paymasterData', paymasterData);
