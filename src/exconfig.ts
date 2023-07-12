@@ -3,7 +3,7 @@ export default {
   enablePasswordEncryption: false,
   showTransactionConfirmationScreen: true,
   factory_address: '0x9406Cc6185a346906296840746125a0E44976454',
-  paymaster_url: '<PAYMASTER_URL>',
+  paymaster_url: 'http://localhost:8080/api/v1/paymaster',
   stateVersion: '0.1',
   network: {
     chainID: '11155111',

@@ -110,7 +110,7 @@ class SimpleAccountTrampolineAPI
       paymasterAndData: string;
       preVerificationGas: string;
       verificationGasLimit: string;
-    } = await this.paymasterRPC.send('pm_sponsorUserOperation', [
+    } = await this.paymasterRPC.send('local_getPaymasterAndData', [
       await resolveProperties(await this.signUserOp(userOp)),
       config.network.entryPointAddress,
       {

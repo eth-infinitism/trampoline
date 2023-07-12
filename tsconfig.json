@@ -17,6 +17,6 @@
     "typeRoots": ["./src/types"]
   },
   "include": ["src", "deploy"],
-  "exclude": ["build", "node_modules", "dist"],
+  "exclude": ["build", "node_modules", "dist", "server"],
   "files": ["./hardhat.config.ts"]
 }
