@@ -6,6 +6,7 @@ import { MessageSigningRequest } from '../../Background/redux-slices/signing';
 import { TransactionDetailsForUserOp } from '@account-abstraction/sdk/dist/src/TransactionDetailsForUserOp';
 import config from '../../../exconfig';
 import { SimpleAccountAPI } from '@account-abstraction/sdk';
+import { resolveProperties } from 'ethers/lib/utils.js';
 
 const FACTORY_ADDRESS = config.factory_address;
 
@@ -20,6 +21,8 @@ class SimpleAccountTrampolineAPI
   extends SimpleAccountAPI
   implements AccountApiType
 {
+  paymasterRPC?: ethers.providers.JsonRpcProvider;
+
   /**
    *
    * We create a new private key or use the one provided in the
@@ -34,6 +37,18 @@ class SimpleAccountTrampolineAPI
         : ethers.Wallet.createRandom(),
       factoryAddress: FACTORY_ADDRESS,
     });
+  }
+
+  async init(): Promise<this> {
+    this.paymasterRPC = new ethers.providers.JsonRpcProvider(
+      config.paymaster_url,
+      {
+        name: 'Paymaster',
+        chainId: (await this.provider.getNetwork()).chainId,
+      }
+    );
+
+    return this;
   }
 
   /**
@@ -67,11 +82,47 @@ class SimpleAccountTrampolineAPI
     info: TransactionDetailsForUserOp,
     preTransactionConfirmationContext?: any
   ): Promise<UserOperationStruct> {
+    if (!this.paymasterRPC) throw new Error('paymasterRPC not initialized');
+
+    const userOp = await resolveProperties(
+      await this.createUnsignedUserOp(info)
+    );
+
+    userOp.nonce = ethers.BigNumber.from(userOp.nonce).toHexString();
+    userOp.callGasLimit = ethers.BigNumber.from(
+      userOp.callGasLimit
+    ).toHexString();
+    userOp.verificationGasLimit = ethers.BigNumber.from(
+      userOp.verificationGasLimit
+    ).toHexString();
+    userOp.preVerificationGas = ethers.BigNumber.from(
+      userOp.preVerificationGas
+    ).toHexString();
+    userOp.maxFeePerGas = ethers.BigNumber.from(
+      userOp.maxFeePerGas
+    ).toHexString();
+    userOp.maxPriorityFeePerGas = ethers.BigNumber.from(
+      userOp.maxPriorityFeePerGas
+    ).toHexString();
+
+    const paymasterData: {
+      callGasLimit: string;
+      paymasterAndData: string;
+      preVerificationGas: string;
+      verificationGasLimit: string;
+    } = await this.paymasterRPC.send('pm_sponsorUserOperation', [
+      await resolveProperties(await this.signUserOp(userOp)),
+      config.network.entryPointAddress,
+      {
+        type: 'payg',
+      },
+    ]);
+
+    console.log('paymasterData', paymasterData);
+
     return {
       ...(await this.createUnsignedUserOp(info)),
-      paymasterAndData: preTransactionConfirmationContext?.paymasterAndData
-        ? preTransactionConfirmationContext?.paymasterAndData
-        : '0x',
+      ...paymasterData,
     };
   }
 
