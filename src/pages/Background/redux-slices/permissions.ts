@@ -1,8 +1,10 @@
 import { createSlice } from '@reduxjs/toolkit';
+
 import ProviderBridgeService, {
   PermissionRequest,
 } from '../services/provider-bridge';
 import { createBackgroundAsyncThunk } from './utils';
+import omit from '../../../helpers/omit';
 
 export type DappPermissionState = {
   permissionRequests: { [origin: string]: PermissionRequest };
@@ -55,10 +57,7 @@ const dappPermissionSlice = createSlice<
     grantPermission: (state, { payload: permission }) => {
       return {
         ...state,
-        permissionRequests: {
-          ...state.permissionRequests,
-          [permission.origin]: undefined,
-        },
+        permissionRequests: omit(state.permissionRequests, permission.origin),
         allowed: {
           evm: {
             ...state.allowed.evm,

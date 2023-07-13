@@ -1,23 +1,23 @@
-import {
-  KeyringInputError,
-  KeyringView,
-  KeyringViewInputFieldValue,
-  KeyringViewUserInput,
-  StoreState,
-  VaultState,
-} from '@epf-wallet/keyring-controller';
+// FIXME: These types came from '@epf-wallet/keyring-controller', but that
+// package doesn't seem to exist.
+type KeyringInputError = any;
+type KeyringView = any;
+type KeyringViewInputFieldValue = any;
+type KeyringViewUserInput = any;
+type StoreState = any;
+type VaultState = any;
 
 export type ChromeMessages<T> = {
   type:
-    | 'keyring/createPassword'
-    | 'keyring/locked'
-    | 'keyring/unlock'
-    | 'keyring/unlocked'
-    | 'keyring/vaultUpdate'
-    | 'keyring/createKeyringForImplementation'
-    | 'keyring/newAccountView'
-    | 'keyring/validateKeyringViewInputValue'
-    | 'keyring/addAcount';
+  | 'keyring/createPassword'
+  | 'keyring/locked'
+  | 'keyring/unlock'
+  | 'keyring/unlocked'
+  | 'keyring/vaultUpdate'
+  | 'keyring/createKeyringForImplementation'
+  | 'keyring/newAccountView'
+  | 'keyring/validateKeyringViewInputValue'
+  | 'keyring/addAcount';
   data?: T;
 };
 

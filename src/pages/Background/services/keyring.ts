@@ -353,11 +353,15 @@ export default class KeyringService extends BaseService<Events> {
   callAccountApi = async (
     address: string,
     functionName: string,
-    args?: any[]
+    args: any[] = [],
   ) => {
-    const keyring = this.keyrings[address];
+    const keyring = this.keyrings[address] as any;
 
-    return args ? keyring[functionName](...args) : keyring[functionName]();
+    if (typeof keyring[functionName] !== 'function') {
+      throw new Error(`Account api not found: ${functionName}`);
+    }
+
+    return keyring[functionName](...args);
   };
 
   signUserOpWithContext = async (

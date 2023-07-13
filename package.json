@@ -34,6 +34,7 @@
     "@redux-devtools/remote": "^0.8.0",
     "@reduxjs/toolkit": "^1.9.1",
     "@simplewebauthn/typescript-types": "^7.0.0",
+    "@types/webextension-polyfill": "^0.10.1",
     "base64url": "^3.0.1",
     "buffer": "^6.0.3",
     "daisyui": "^2.49.0",

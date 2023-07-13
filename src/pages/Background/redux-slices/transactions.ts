@@ -2,10 +2,9 @@ import { UserOperationStruct } from '@account-abstraction/contracts';
 import { createSlice } from '@reduxjs/toolkit';
 import { RootState } from '.';
 import KeyringService from '../services/keyring';
-import ProviderBridgeService, {
-  EthersTransactionRequest,
-} from '../services/provider-bridge';
+import ProviderBridgeService from '../services/provider-bridge';
 import { createBackgroundAsyncThunk } from './utils';
+import { EthersTransactionRequest } from '../services/types';
 
 export type TransactionState = {
   transactionRequest?: EthersTransactionRequest;
@@ -52,7 +51,7 @@ type SigningReducers = {
     {
       payload,
     }: {
-      payload: EthersTransactionRequest;
+      payload: EthersTransactionRequest | undefined;
     }
   ) => TransactionState;
   sendUserOperationRquest: (
@@ -113,7 +112,7 @@ const transactionsSlice = createSlice<
       {
         payload,
       }: {
-        payload: EthersTransactionRequest;
+        payload: EthersTransactionRequest | undefined;
       }
     ) => ({
       ...state,

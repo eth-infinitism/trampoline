@@ -1,3 +1,5 @@
+import { EVMNetwork } from "./pages/Background/types/network";
+
 // eslint-disable-next-line import/no-anonymous-default-export
 export default {
   enablePasswordEncryption: false,
@@ -18,5 +20,5 @@ export default {
       decimals: 18,
       image: 'https://cryptologos.cc/logos/polygon-matic-logo.png?v=025',
     },
-  },
+  } satisfies EVMNetwork,
 };
