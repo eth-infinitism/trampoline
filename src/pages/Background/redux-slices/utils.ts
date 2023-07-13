@@ -5,6 +5,7 @@ import {
   AsyncThunkAction,
   AsyncThunkOptions,
   AsyncThunkPayloadCreator,
+  Dispatch,
   createAsyncThunk,
 } from '@reduxjs/toolkit';
 
@@ -40,6 +41,17 @@ type AsyncThunkProps = keyof AsyncThunk<
   unknown,
   Record<string, unknown>
 >;
+
+type AsyncThunkConfig = {
+  state?: unknown;
+  dispatch?: Dispatch;
+  extra?: unknown;
+  rejectValue?: unknown;
+  serializedErrorType?: unknown;
+  pendingMeta?: unknown;
+  fulfilledMeta?: unknown;
+  rejectedMeta?: unknown;
+};
 
 // The type system will make sure we've listed all additional props that redux
 // toolkit adds to the AsyncThunk action creator below.
@@ -104,7 +116,7 @@ export function createBackgroundAsyncThunk<
   TypePrefix extends string,
   Returned,
   ThunkArg = void,
-  ThunkApiConfig = {
+  ThunkApiConfig extends AsyncThunkConfig = {
     extra: { mainServiceManager: MainServiceManager };
   }
 >(

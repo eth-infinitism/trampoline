@@ -20,17 +20,17 @@ export default class MainServiceManager extends BaseService<never> {
 
   constructor(readonly name: string) {
     super();
-    let state = {};
+    let state: Record<string, unknown> = {};
     const version = localStorage.getItem('version');
     if (version === Config.stateVersion) {
       const stateFromStorage = decodeJSON(
         localStorage.getItem('state') || ''
-      ) as {};
+      ) as any;
       if (
         stateFromStorage &&
         stateFromStorage.network &&
         stateFromStorage.network.activeNetwork.chainID ===
-          initialNetworkState.activeNetwork.chainID
+        initialNetworkState.activeNetwork.chainID
       ) {
         state = stateFromStorage;
       }

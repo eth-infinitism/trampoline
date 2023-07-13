@@ -32,7 +32,7 @@ const Home = () => {
             alignItems="center"
             sx={{ m: 2 }}
           >
-            <AccountBalanceInfo address={activeAccount} />
+            {activeAccount && <AccountBalanceInfo address={activeAccount} />}
           </Box>
           <Box
             component="div"

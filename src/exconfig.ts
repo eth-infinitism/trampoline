@@ -1,3 +1,5 @@
+import { EVMNetwork } from "./pages/Background/types/network";
+
 // eslint-disable-next-line import/no-anonymous-default-export
 export default {
   enablePasswordEncryption: false,
@@ -18,5 +20,5 @@ export default {
       image:
         'https://ethereum.org/static/6b935ac0e6194247347855dc3d328e83/6ed5f/eth-diamond-black.webp',
     },
-  },
+  } satisfies EVMNetwork,
 };

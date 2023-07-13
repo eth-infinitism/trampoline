@@ -19,6 +19,7 @@ import { useBackgroundSelector } from '../../hooks';
 import { getActiveAccount } from '../../../Background/redux-slices/selectors/accountSelectors';
 import { useNavigate } from 'react-router-dom';
 import PrimaryButton from '../../../Account/components/PrimaryButton';
+import getEthereumGlobal from '../../../../helpers/getEthereumGlobal';
 
 const TransferAsset = () => {
   const navigate = useNavigate();
@@ -36,24 +37,24 @@ const TransferAsset = () => {
     setLoader(true);
     setError('');
 
-    if (window.ethereum) {
-      await window.ethereum.request({
-        method: 'eth_requestAccounts',
-      });
-      const txHash = await window.ethereum.request({
-        method: 'eth_sendTransaction',
-        params: [
-          {
-            from: activeAccount,
-            to: toAddress,
-            data: '0x',
-            value: ethers.utils.parseEther(value),
-          },
-        ],
-      });
-      console.log(txHash);
-      navigate('/');
-    }
+    const ethereum = getEthereumGlobal();
+
+    await ethereum.request({
+      method: 'eth_requestAccounts',
+    });
+    const txHash = await ethereum.request({
+      method: 'eth_sendTransaction',
+      params: [
+        {
+          from: activeAccount,
+          to: toAddress,
+          data: '0x',
+          value: ethers.utils.parseEther(value),
+        },
+      ],
+    });
+    console.log(txHash);
+    navigate('/');
     setLoader(false);
   }, [activeAccount, navigate, toAddress, value]);
 

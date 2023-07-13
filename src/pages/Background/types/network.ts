@@ -24,7 +24,7 @@ export type Network = {
   family: NetworkFamily;
   chainID?: string;
   provider: string;
-  bundler: string;
+  bundler?: string;
   entryPointAddress: string;
 };
 

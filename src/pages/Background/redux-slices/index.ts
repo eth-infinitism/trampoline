@@ -53,7 +53,7 @@ const persistStoreFn = <T>(state: T) => {
 
 const persistStoreState = debounce(persistStoreFn, 50);
 
-const reduxCache = (store) => (next) => (action) => {
+const reduxCache = (store: any) => (next: any) => (action: any) => {
   const result = next(action);
   const state = store.getState();
 
@@ -62,7 +62,7 @@ const reduxCache = (store) => (next) => (action) => {
 };
 
 export const initializeStore = (
-  preloadedState,
+  preloadedState: any,
   mainServiceManager: MainServiceManager
 ) =>
   configureStore({
@@ -81,20 +81,25 @@ export const initializeStore = (
       middleware.unshift(alias(allAliases));
       middleware.push(reduxCache);
 
-      return middleware;
+      return middleware as any;
     },
-    enhancers:
-      process.env.NODE_ENV === 'development'
-        ? [
-            devToolsEnhancer({
-              hostname: 'localhost',
-              port: 8000,
-              realtime: true,
-              actionSanitizer: devToolsSanitizer,
-              stateSanitizer: devToolsSanitizer,
-            }),
-          ]
-        : [],
+    enhancers: (() => {
+      const enhancers = [];
+
+      if (process.env.NODE_ENV === 'development') {
+        enhancers.push(
+          devToolsEnhancer({
+            hostname: 'localhost',
+            port: 8000,
+            realtime: true,
+            actionSanitizer: devToolsSanitizer,
+            stateSanitizer: devToolsSanitizer,
+          }),
+        );
+      }
+
+      return enhancers;
+    })(),
   });
 
 export type ReduxStoreType = ReturnType<typeof initializeStore>;
