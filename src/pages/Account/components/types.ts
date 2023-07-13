@@ -11,7 +11,8 @@ export interface OnboardingComponent
 
 export interface TransactionComponentProps {
   transaction: EthersTransactionRequest;
-  onReject: () => Promise<void>;
+  onComplete(transaction: EthersTransactionRequest, arg: unknown): void;
+  onReject(): Promise<void>;
 }
 
 export interface PreTransactionConfirmationtProps

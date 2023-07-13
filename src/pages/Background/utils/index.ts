@@ -4,13 +4,13 @@ import { AllowedQueryParamPageType } from '../types/chrome-messages';
 import { SiweMessage } from 'siwe';
 import { HexString } from '../types/common';
 import {
-  EthersTransactionRequest,
   PermissionRequest,
 } from '../services/provider-bridge';
 import {
   EIP1193Error,
   EIP1193_ERROR_CODES,
 } from '../../Content/window-provider/eip-1193';
+import { EthersTransactionRequest } from '../services/types';
 /**
  * Encode an unknown input as JSON, special-casing bigints and undefined.
  *

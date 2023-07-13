@@ -7,7 +7,6 @@ import {
   Typography,
 } from '@mui/material';
 import React from 'react';
-import { EthersTransactionRequest } from '../../../Background/services/provider-bridge';
 import { TransactionComponentProps } from '../types';
 
 const Transaction = ({
