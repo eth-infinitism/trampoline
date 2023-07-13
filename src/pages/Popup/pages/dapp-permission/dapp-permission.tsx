@@ -1,7 +1,6 @@
 import {
   Box,
   Button,
-  CardMedia,
   Container,
   Paper,
   Stack,
@@ -14,8 +13,6 @@ import {
   useBackgroundSelector,
 } from '../../../App/hooks';
 import { selectCurrentPendingPermission } from '../../../Background/redux-slices/selectors/dappPermissionSelectors';
-import logo from '../../../../assets/img/dapp_favicon_default@2x.png';
-import BoltIcon from '@mui/icons-material/Bolt';
 import {
   getAccountInfo,
   getActiveAccount,
@@ -123,7 +120,11 @@ const DappPermission = () => {
           <Button sx={{ width: 150 }} variant="outlined" onClick={deny}>
             Reject
           </Button>
-          <PrimaryButton sx={{ width: 150 }} variant="contained" onClick={grant}>
+          <PrimaryButton
+            sx={{ width: 150 }}
+            variant="contained"
+            onClick={grant}
+          >
             Connect
           </PrimaryButton>
         </Box>

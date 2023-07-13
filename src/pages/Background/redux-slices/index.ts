@@ -1,7 +1,14 @@
 import MainServiceManager from '../services/main';
-import { decodeJSON, encodeJSON } from '../utils';
+import { encodeJSON } from '../utils';
 import { devToolsEnhancer } from '@redux-devtools/remote';
-import { Action, AnyAction, Dispatch, combineReducers, configureStore, isPlain } from '@reduxjs/toolkit';
+import {
+  Action,
+  AnyAction,
+  Dispatch,
+  combineReducers,
+  configureStore,
+  isPlain,
+} from '@reduxjs/toolkit';
 import { alias } from 'webext-redux';
 import account from './account';
 import keyrings from './keyrings';
@@ -53,19 +60,16 @@ const persistStoreFn = <T>(state: T) => {
 
 const persistStoreState = debounce(persistStoreFn, 50);
 
-const reduxCache = (
-  store: ReduxStoreType,
-) => (
-  next: Dispatch<AnyAction>,
-) => (
-  action: Action,
-) => {
-      const result = next(action);
-      const state = store.getState();
+const reduxCache =
+  (store: ReduxStoreType) =>
+  (next: Dispatch<AnyAction>) =>
+  (action: Action) => {
+    const result = next(action);
+    const state = store.getState();
 
-      persistStoreState(state);
-      return result;
-    };
+    persistStoreState(state);
+    return result;
+  };
 
 export const initializeStore = (
   preloadedState: RootState,
@@ -100,7 +104,7 @@ export const initializeStore = (
             realtime: true,
             actionSanitizer: devToolsSanitizer,
             stateSanitizer: devToolsSanitizer,
-          }),
+          })
         );
       }
 
