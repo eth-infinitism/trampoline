@@ -12,7 +12,6 @@ import {
 } from '../constants';
 import { HttpRpcClient, PaymasterAPI } from '@account-abstraction/sdk';
 import { MessageSigningRequest } from '../redux-slices/signing';
-import { AccountData } from '../redux-slices/account';
 import { AccountBalance } from '../types/account';
 import { DomainName, URI } from '../types/common';
 import { EVMNetwork } from '../types/network';
@@ -250,10 +249,6 @@ export default class KeyringService extends BaseService<Events> {
     );
   };
 
-  sendUnlockKeyringChromeMessage = () => {};
-
-  createKeyringForImplementation = async (implementation: string) => {};
-
   addAccount = async (
     implementation: string,
     context?: any
@@ -353,7 +348,7 @@ export default class KeyringService extends BaseService<Events> {
   callAccountApi = async (
     address: string,
     functionName: string,
-    args: any[] = [],
+    args: any[] = []
   ) => {
     const keyring = this.keyrings[address] as any;
 
@@ -461,8 +456,6 @@ export default class KeyringService extends BaseService<Events> {
 
     return userOp;
   };
-
-  validateKeyringViewInputValue = async () => {};
 
   static async create({
     mainServiceManager,

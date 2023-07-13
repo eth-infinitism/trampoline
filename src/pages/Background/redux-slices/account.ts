@@ -1,12 +1,10 @@
 import { createSlice } from '@reduxjs/toolkit';
-import type { PayloadAction } from '@reduxjs/toolkit';
 import { DomainName, HexString, URI } from '../types/common';
 import { EVMNetwork } from '../types/network';
 import { AccountBalance } from '../types/account';
 import { createBackgroundAsyncThunk } from './utils';
 import KeyringService from '../services/keyring';
 import { RootState } from '.';
-import { BigNumber } from 'ethers';
 
 export type AccountData = {
   address: HexString;

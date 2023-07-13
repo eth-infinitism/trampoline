@@ -1,15 +1,4 @@
-import { UserOperationStruct } from '@account-abstraction/contracts';
-import {
-  Box,
-  Button,
-  CircularProgress,
-  Container,
-  Paper,
-  Stack,
-  TextField,
-  Typography,
-} from '@mui/material';
-import { BigNumber, ethers } from 'ethers';
+import { CircularProgress, Container } from '@mui/material';
 import React, { ReactElement, useCallback, useState } from 'react';
 import {
   AccountImplementations,
@@ -19,12 +8,7 @@ import {
   useBackgroundDispatch,
   useBackgroundSelector,
 } from '../../../App/hooks';
-import {
-  getAccountInfo,
-  getActiveAccount,
-} from '../../../Background/redux-slices/selectors/accountSelectors';
-import { selectCurrentOriginPermission } from '../../../Background/redux-slices/selectors/dappPermissionSelectors';
-import { getActiveNetwork } from '../../../Background/redux-slices/selectors/networkSelectors';
+import { getActiveAccount } from '../../../Background/redux-slices/selectors/accountSelectors';
 import {
   selectCurrentPendingModifiedSendTransactionRequest,
   selectCurrentPendingSendTransactionRequest,
@@ -132,13 +116,15 @@ const SignTransactionRequest = (): ReactElement => {
   switch (stage.stage) {
     case 'pre-transaction-confirmation':
       if (SignTransactionComponent?.PreTransactionConfirmation) {
-        return <SignTransactionComponent.PreTransactionConfirmation
-          onReject={onReject}
-          // FIXME: What if sendTransactionRequest.transactionRequest is undefined?
-          // (If it can't be undefined, why does the type say it can?)
-          transaction={sendTransactionRequest.transactionRequest!}
-          onComplete={onCompletePreTransactionConfirmation}
-        />;
+        return (
+          <SignTransactionComponent.PreTransactionConfirmation
+            onReject={onReject}
+            // FIXME: What if sendTransactionRequest.transactionRequest is undefined?
+            // (If it can't be undefined, why does the type say it can?)
+            transaction={sendTransactionRequest.transactionRequest!}
+            onComplete={onCompletePreTransactionConfirmation}
+          />
+        );
       }
 
       onCompletePreTransactionConfirmation(
@@ -171,16 +157,21 @@ const SignTransactionRequest = (): ReactElement => {
         </Container>
       );
     case 'post-transaction-confirmation':
-      if (SignTransactionComponent?.PostTransactionConfirmation && pendingUserOp) {
-        return <SignTransactionComponent.PostTransactionConfirmation
-          context={stage.context}
-          onReject={onReject}
-          userOp={pendingUserOp}
-          // FIXME: What if sendTransactionRequest.transactionRequest is undefined?
-          // (If it can't be undefined, why does the type say it can?)
-          transaction={sendModiefiedTransactionRequest.transactionRequest!}
-          onComplete={onCompletePostTransactionConfirmation}
-        />;
+      if (
+        SignTransactionComponent?.PostTransactionConfirmation &&
+        pendingUserOp
+      ) {
+        return (
+          <SignTransactionComponent.PostTransactionConfirmation
+            context={stage.context}
+            onReject={onReject}
+            userOp={pendingUserOp}
+            // FIXME: What if sendTransactionRequest.transactionRequest is undefined?
+            // (If it can't be undefined, why does the type say it can?)
+            transaction={sendModiefiedTransactionRequest.transactionRequest!}
+            onComplete={onCompletePostTransactionConfirmation}
+          />
+        );
       }
 
       return <></>;
