@@ -62,7 +62,7 @@ const reduxCache = (store: any) => (next: any) => (action: any) => {
 };
 
 export const initializeStore = (
-  preloadedState: any,
+  preloadedState: ReturnType<typeof rootReducer>,
   mainServiceManager: MainServiceManager
 ) =>
   configureStore({
