@@ -1,6 +1,9 @@
-import { useEffect } from "react";
+import { useEffect } from 'react';
 
-export default function onWindowEnter(handler: () => void, extraDeps: React.DependencyList = []) {
+export default function useOnWindowEnter(
+  handler: () => void,
+  extraDeps: React.DependencyList = []
+) {
   useEffect(() => {
     const enterHandler = (e: KeyboardEvent) => {
       if (e.key === 'Enter') {

@@ -9,7 +9,6 @@ import {
   InputAdornment,
   InputLabel,
   OutlinedInput,
-  Stack,
   Typography,
 } from '@mui/material';
 import React, { useCallback } from 'react';
