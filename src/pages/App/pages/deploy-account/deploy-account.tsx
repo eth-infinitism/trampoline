@@ -2,10 +2,8 @@ import {
   Box,
   Button,
   Card,
-  Checkbox,
   CircularProgress,
   Container,
-  Stack,
   Step,
   StepContent,
   StepLabel,
@@ -28,10 +26,6 @@ import { useState } from 'react';
 import { BigNumber, ethers } from 'ethers';
 import { useProvider } from 'wagmi';
 import { useEffect } from 'react';
-import {
-  sendTransaction,
-  sendTransactionsRequest,
-} from '../../../Background/redux-slices/transactions';
 import { useNavigate } from 'react-router-dom';
 import getEthereumGlobal from '../../../../helpers/getEthereumGlobal';
 import ensureError from '../../../../helpers/ensureError';
@@ -123,10 +117,10 @@ const DeployAccount = () => {
     const ethereum = getEthereumGlobal();
 
     try {
-      const accounts = await ethereum.request({
+      await ethereum.request({
         method: 'eth_requestAccounts',
       });
-      const txHash = await ethereum.request({
+      await ethereum.request({
         method: 'eth_sendTransaction',
         params: [
           {

@@ -1,4 +1,4 @@
-import { EVMNetwork } from "./pages/Background/types/network";
+import { EVMNetwork } from './pages/Background/types/network';
 
 // eslint-disable-next-line import/no-anonymous-default-export
 export default {
