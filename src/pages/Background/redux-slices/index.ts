@@ -1,7 +1,14 @@
 import MainServiceManager from '../services/main';
-import { decodeJSON, encodeJSON } from '../utils';
+import { encodeJSON } from '../utils';
 import { devToolsEnhancer } from '@redux-devtools/remote';
-import { combineReducers, configureStore, isPlain } from '@reduxjs/toolkit';
+import {
+  Action,
+  AnyAction,
+  Dispatch,
+  combineReducers,
+  configureStore,
+  isPlain,
+} from '@reduxjs/toolkit';
 import { alias } from 'webext-redux';
 import account from './account';
 import keyrings from './keyrings';
@@ -53,16 +60,19 @@ const persistStoreFn = <T>(state: T) => {
 
 const persistStoreState = debounce(persistStoreFn, 50);
 
-const reduxCache = (store) => (next) => (action) => {
-  const result = next(action);
-  const state = store.getState();
+const reduxCache =
+  (store: ReduxStoreType) =>
+  (next: Dispatch<AnyAction>) =>
+  (action: Action) => {
+    const result = next(action);
+    const state = store.getState();
 
-  persistStoreState(state);
-  return result;
-};
+    persistStoreState(state);
+    return result;
+  };
 
 export const initializeStore = (
-  preloadedState,
+  preloadedState: RootState,
   mainServiceManager: MainServiceManager
 ) =>
   configureStore({
@@ -79,22 +89,27 @@ export const initializeStore = (
       });
 
       middleware.unshift(alias(allAliases));
-      middleware.push(reduxCache);
+      middleware.push(reduxCache as any);
 
-      return middleware;
+      return middleware as any;
     },
-    enhancers:
-      process.env.NODE_ENV === 'development'
-        ? [
-            devToolsEnhancer({
-              hostname: 'localhost',
-              port: 8000,
-              realtime: true,
-              actionSanitizer: devToolsSanitizer,
-              stateSanitizer: devToolsSanitizer,
-            }),
-          ]
-        : [],
+    enhancers: (() => {
+      const enhancers = [];
+
+      if (process.env.NODE_ENV === 'development') {
+        enhancers.push(
+          devToolsEnhancer({
+            hostname: 'localhost',
+            port: 8000,
+            realtime: true,
+            actionSanitizer: devToolsSanitizer,
+            stateSanitizer: devToolsSanitizer,
+          })
+        );
+      }
+
+      return enhancers;
+    })(),
   });
 
 export type ReduxStoreType = ReturnType<typeof initializeStore>;

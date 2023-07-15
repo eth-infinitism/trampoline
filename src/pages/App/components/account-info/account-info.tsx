@@ -10,7 +10,7 @@ const AccountInfo = ({
   showOptions = true,
 }: {
   address: string;
-  showOptions: boolean;
+  showOptions?: boolean;
 }) => {
   const [tooltipMessage, setTooltipMessage] = useState<string>('Copy address');
 

@@ -1,16 +1,5 @@
-import { UserOperationStruct } from '@account-abstraction/contracts';
-import {
-  Box,
-  Button,
-  CircularProgress,
-  Container,
-  Paper,
-  Stack,
-  TextField,
-  Typography,
-} from '@mui/material';
-import { BigNumber, ethers } from 'ethers';
-import React, { useCallback, useState } from 'react';
+import { CircularProgress, Container } from '@mui/material';
+import React, { ReactElement, useCallback, useState } from 'react';
 import {
   AccountImplementations,
   ActiveAccountImplementation,
@@ -19,12 +8,7 @@ import {
   useBackgroundDispatch,
   useBackgroundSelector,
 } from '../../../App/hooks';
-import {
-  getAccountInfo,
-  getActiveAccount,
-} from '../../../Background/redux-slices/selectors/accountSelectors';
-import { selectCurrentOriginPermission } from '../../../Background/redux-slices/selectors/dappPermissionSelectors';
-import { getActiveNetwork } from '../../../Background/redux-slices/selectors/networkSelectors';
+import { getActiveAccount } from '../../../Background/redux-slices/selectors/accountSelectors';
 import {
   selectCurrentPendingModifiedSendTransactionRequest,
   selectCurrentPendingSendTransactionRequest,
@@ -41,7 +25,7 @@ import { setModifyTransactionRequest } from '../../../Background/redux-slices/tr
 const SignTransactionComponent =
   AccountImplementations[ActiveAccountImplementation].Transaction;
 
-const SignTransactionRequest = () => {
+const SignTransactionRequest = (): ReactElement => {
   const [stage, setStage] = useState<{
     stage:
       | 'pre-transaction-confirmation'
@@ -131,18 +115,24 @@ const SignTransactionRequest = () => {
 
   switch (stage.stage) {
     case 'pre-transaction-confirmation':
-      return SignTransactionComponent?.PreTransactionConfirmation ? (
-        <SignTransactionComponent.PreTransactionConfirmation
-          onReject={onReject}
-          transaction={sendTransactionRequest.transactionRequest}
-          onComplete={onCompletePreTransactionConfirmation}
-        />
-      ) : (
-        onCompletePreTransactionConfirmation(
-          sendTransactionRequest.transactionRequest,
-          {}
-        )
+      if (SignTransactionComponent?.PreTransactionConfirmation) {
+        return (
+          <SignTransactionComponent.PreTransactionConfirmation
+            onReject={onReject}
+            // FIXME: What if sendTransactionRequest.transactionRequest is undefined?
+            // (If it can't be undefined, why does the type say it can?)
+            transaction={sendTransactionRequest.transactionRequest!}
+            onComplete={onCompletePreTransactionConfirmation}
+          />
+        );
+      }
+
+      onCompletePreTransactionConfirmation(
+        sendTransactionRequest.transactionRequest,
+        {}
       );
+
+      return <></>;
     case 'transaction-confirmation':
       return SignTransactionComponent?.TransactionConfirmation &&
         sendModiefiedTransactionRequest.transactionRequest &&
@@ -167,18 +157,24 @@ const SignTransactionRequest = () => {
         </Container>
       );
     case 'post-transaction-confirmation':
-      return (
+      if (
         SignTransactionComponent?.PostTransactionConfirmation &&
-        pendingUserOp && (
+        pendingUserOp
+      ) {
+        return (
           <SignTransactionComponent.PostTransactionConfirmation
             context={stage.context}
             onReject={onReject}
             userOp={pendingUserOp}
-            transaction={sendModiefiedTransactionRequest.transactionRequest}
+            // FIXME: What if sendTransactionRequest.transactionRequest is undefined?
+            // (If it can't be undefined, why does the type say it can?)
+            transaction={sendModiefiedTransactionRequest.transactionRequest!}
             onComplete={onCompletePostTransactionConfirmation}
           />
-        )
-      );
+        );
+      }
+
+      return <></>;
   }
 };
 

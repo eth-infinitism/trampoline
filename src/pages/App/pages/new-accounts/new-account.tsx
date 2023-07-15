@@ -8,7 +8,6 @@ import {
   FormControl,
   FormGroup,
   InputLabel,
-  Link,
   OutlinedInput,
   Stack,
   Typography,
@@ -24,7 +23,6 @@ import { EVMNetwork } from '../../../Background/types/network';
 import { useNavigate } from 'react-router-dom';
 import { getAccountAdded } from '../../../Background/redux-slices/selectors/accountSelectors';
 import { resetAccountAdded } from '../../../Background/redux-slices/account';
-import { FlashOffOutlined } from '@mui/icons-material';
 import PrimaryButton from '../../../Account/components/PrimaryButton';
 
 const TakeNameComponent = ({

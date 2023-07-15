@@ -1,14 +1,6 @@
-import {
-  Box,
-  Card,
-  CardActions,
-  CardContent,
-  Container,
-  Typography,
-} from '@mui/material';
-import React, { useEffect } from 'react';
+import { Box, Card, CardContent, Container } from '@mui/material';
+import React from 'react';
 import { getActiveAccount } from '../../../Background/redux-slices/selectors/accountSelectors';
-import AccountActivity from '../../components/account-activity';
 import AccountBalanceInfo from '../../components/account-balance-info';
 import AccountInfo from '../../components/account-info';
 import Header from '../../components/header';
@@ -32,7 +24,7 @@ const Home = () => {
             alignItems="center"
             sx={{ m: 2 }}
           >
-            <AccountBalanceInfo address={activeAccount} />
+            {activeAccount && <AccountBalanceInfo address={activeAccount} />}
           </Box>
           <Box
             component="div"
@@ -42,7 +34,7 @@ const Home = () => {
             alignItems="center"
             sx={{ m: 4 }}
           >
-            <TransferAssetButton activeAccount={activeAccount || ''} />
+            <TransferAssetButton />
           </Box>
         </CardContent>
       </Card>
