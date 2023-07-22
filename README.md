@@ -9,7 +9,7 @@ Trampoline is a chrome extension boilerplate code to showcase your own Smart Con
 1. Verify that your [Node.js](https://nodejs.org/) version is >= **18.12.0**.
 2. Clone this repository.
 3. Make sure you configure the `provider` in `src/exconfig.ts` to the `Goerli` network.
-4. Edit the `bundler` URL pointing to `Goerli` network and accepting EntryPoint=`0x0576a174D229E3cFA37253523E645A78A0C91B57`
+4. Edit the `bundler` URL pointing to `Goerli` network and accepting EntryPoint=`0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789`
 5. Run `yarn install` to install the dependencies.
 6. Run `yarn start`
 7. Load your extension in Chrome by following these steps:
