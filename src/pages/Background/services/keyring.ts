@@ -430,7 +430,7 @@ export default class KeyringService extends BaseService<Events> {
       gasParameters?.callGasLimit
     );
     const estimateVerificationGasLimit = ethers.BigNumber.from(
-      gasParameters?.verificationGas
+      gasParameters?.verificationGasLimit
     );
     const estimatePreVerificationGas = ethers.BigNumber.from(
       gasParameters?.preVerificationGas
