@@ -1,11 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { Keyring, KeyringMetadata } from '../types/keyrings';
+import { Keyring } from '../types/keyrings';
 import { createBackgroundAsyncThunk } from './utils';
-import { NewAccountView } from '../types/chrome-messages';
-import { RootState } from '.';
 import KeyringService from '../services/keyring';
-import { addNewAccount, getAccountData } from './account';
-import { EVMNetwork } from '../types/network';
+import { addNewAccount } from './account';
 
 export type Vault = {
   vault: string;
@@ -15,9 +12,6 @@ export type Vault = {
 
 export type KeyringsState = {
   keyrings: Keyring[];
-  keyringMetadata: {
-    [keyringId: string]: KeyringMetadata;
-  };
   importing: false | 'pending' | 'done';
   status: 'locked' | 'unlocked' | 'uninitialized';
   vault: Vault;
@@ -29,7 +23,6 @@ export type KeyringsState = {
 
 export const initialState: KeyringsState = {
   keyrings: [],
-  keyringMetadata: {},
   vault: {
     vault:
       '{"data":"Ukexw7sD847Dj98jjvGP+USD","iv":"+X2ZjepqanEDFIJneBDHcw==","salt":"LWHFdiZSZwESRu0M5vBaeLIBwszt8zclfbUH4h8tWFU="}',

@@ -9,7 +9,7 @@ Trampoline is a chrome extension boilerplate code to showcase your own Smart Con
 1. Verify that your [Node.js](https://nodejs.org/) version is >= **18.12.0**.
 2. Clone this repository.
 3. Make sure you configure the `provider` in `src/exconfig.ts` to the `Goerli` network.
-4. Edit the `bundler` URL pointing to `Goerli` network and accepting EntryPoint=`0x0576a174D229E3cFA37253523E645A78A0C91B57`
+4. Edit the `bundler` URL pointing to `Goerli` network and accepting EntryPoint=`0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789`
 5. Run `yarn install` to install the dependencies.
 6. Run `yarn start`
 7. Load your extension in Chrome by following these steps:
@@ -36,32 +36,32 @@ Trampoline is a chrome extension boilerplate code to showcase your own Smart Con
 
 ## Config
 
-Config of the extension can be set in `excnfig.json` file.
+Config of the extension can be set in `exconfig.ts` file.
 
-```json
-{
+```ts
+export default {
   // Enable or disable password for the user.
-  "enablePasswordEncryption": true,
+  enablePasswordEncryption: true,
   // Show default transaction screen
-  "showTransactionConfirmationScreen": true,
+  showTransactionConfirmationScreen: true,
   // stateVersion is the version of state stored in localstorage of your browser. If you want to reset your extension, change this number to a new version and that will invalidate the older state.
-  "stateVersion": "0.1",
+  stateVersion: "0.1",
   // Network that your SCW supports. Currently this app only supports a single network, we will soon have support for multiple networks in future
-  "network": {
-    "chainID": "5",
-    "family": "EVM",
-    "name": "Goerli",
-    "provider": "https://goerli.infura.io/v3/bdabe9d2f9244005af0f566398e648da",
-    "entryPointAddress": "0x0F46c65C17AA6b4102046935F33301f0510B163A",
-    "bundler": "https://app.stackup.sh/api/v1/bundler/96771b1b09e802669c33a3fc50f517f0f514a40da6448e24640ecfd83263d336",
-    "baseAsset": {
-      "symbol": "ETH",
-      "name": "ETH",
-      "decimals": 18,
-      "image": "https://ethereum.org/static/6b935ac0e6194247347855dc3d328e83/6ed5f/eth-diamond-black.webp"
+  network: {
+    chainID: "5",
+    family: "EVM",
+    name: "Goerli",
+    provider: "https://goerli.infura.io/v3/bdabe9d2f9244005af0f566398e648da",
+    entryPointAddress: "0x0F46c65C17AA6b4102046935F33301f0510B163A",
+    bundler: "https://app.stackup.sh/api/v1/bundler/96771b1b09e802669c33a3fc50f517f0f514a40da6448e24640ecfd83263d336",
+    baseAsset: {
+      symbol: "ETH",
+      name: "ETH",
+      decimals: 18,
+      image: "https://ethereum.org/static/6b935ac0e6194247347855dc3d328e83/6ed5f/eth-diamond-black.webp"
     }
   }
-}
+};
 ```
 
 ### Custom Network
@@ -71,18 +71,18 @@ Config of the extension can be set in `excnfig.json` file.
 3. Add your network details in `hardhat.config.ts`.
 4. Deploy the factory using `INFURA_ID=<required> npx hardhat deploy --network <network>`.
 5. Edit the `factory_address` in `src/exconfig.ts`
-6. Edit the `bundler` url in `src/exconfig.ts` that points to your network and accepts requests for your EntryPoint.
+6. Set `bundler` in `src/exconfig.ts` to a bundler that points to your network and accepts requests for your EntryPoint.
 7. Run `yarn start`
 
 ### Local Network
 
 1. Run a local hardhat node with `npx hardhat node` or use the node inside the bundler repo.
-2. Deploy EntryPoint from [the infinitism repo](https://github.com/eth-infinitism/account-abstraction), you can find the instructions [below](#how-to-deploy-entrypoint-locally).
+2. Deploy EntryPoint from [the account-abstraction repo](https://github.com/eth-infinitism/account-abstraction), you can find the instructions [below](#how-to-deploy-entrypoint-locally).
 3. Edit the `entryPointAddress` in `src/exconfig.ts`.
 4. Deploy the factory using `npx hardhat deploy --network localhost`.
 5. Edit the `factory_address` in `src/exconfig.ts`
-6. Start a local bunder from [the infinitism repo](https://github.com/eth-infinitism/bundler), you can find the instructions [below](#how-to-run-bundler-locally).
-7. Edit the `bundler` to `http://localhost:9000/rpc` url in `src/exconfig.ts` that points to your network and accepts requests for your EntryPoint.
+6. Start a local bunder from [the bundler repo](https://github.com/eth-infinitism/bundler), you can find the instructions [below](#how-to-run-bundler-locally).
+7. Set `bundler` to `http://localhost:3000/rpc` in `src/exconfig.ts`.
 8. Run `yarn start`
 
 ### How to deploy EntryPoint Locally

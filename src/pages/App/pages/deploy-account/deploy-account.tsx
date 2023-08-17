@@ -2,10 +2,8 @@ import {
   Box,
   Button,
   Card,
-  Checkbox,
   CircularProgress,
   Container,
-  Stack,
   Step,
   StepContent,
   StepLabel,
@@ -28,11 +26,9 @@ import { useState } from 'react';
 import { BigNumber, ethers } from 'ethers';
 import { useProvider } from 'wagmi';
 import { useEffect } from 'react';
-import {
-  sendTransaction,
-  sendTransactionsRequest,
-} from '../../../Background/redux-slices/transactions';
 import { useNavigate } from 'react-router-dom';
+import getEthereumGlobal from '../../../../helpers/getEthereumGlobal';
+import ensureError from '../../../../helpers/ensureError';
 
 const DeployAccount = () => {
   const navigate = useNavigate();
@@ -118,29 +114,29 @@ const DeployAccount = () => {
     if (!activeAccount) return;
     setDeployLoader(true);
 
-    if (window.ethereum) {
-      try {
-        const accounts = await window.ethereum.request({
-          method: 'eth_requestAccounts',
-        });
-        const txHash = await window.ethereum.request({
-          method: 'eth_sendTransaction',
-          params: [
-            {
-              from: activeAccount,
-              to: ethers.constants.AddressZero,
-              data: '0x',
-            },
-          ],
-        });
+    const ethereum = getEthereumGlobal();
 
-        setDeployLoader(false);
-        alert('success');
-        navigate('/');
-      } catch (e) {
-        setError(e?.message || 'Unknown error');
-        setDeployLoader(false);
-      }
+    try {
+      await ethereum.request({
+        method: 'eth_requestAccounts',
+      });
+      await ethereum.request({
+        method: 'eth_sendTransaction',
+        params: [
+          {
+            from: activeAccount,
+            to: ethers.constants.AddressZero,
+            data: '0x',
+          },
+        ],
+      });
+
+      setDeployLoader(false);
+      alert('success');
+      navigate('/');
+    } catch (e) {
+      setError(ensureError(e).message);
+      setDeployLoader(false);
     }
 
     // await backgroundDispatch(sendTransaction(activeAccount));

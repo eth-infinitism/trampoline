@@ -14,7 +14,7 @@ import {
   PreTransactionConfirmation,
   PreTransactionConfirmationtProps,
 } from '../types';
-import useAccountApi from '../../useAccountApi';
+import PrimaryButton from '../PrimaryButton';
 
 const AddPaymasterAndData = ({
   setPaymasterAndData,
@@ -129,7 +129,8 @@ const PreTransactionConfirmationComponent: PreTransactionConfirmation = ({
       </CardContent>
       <CardActions sx={{ width: '100%' }}>
         <Stack spacing={2} sx={{ width: '100%' }}>
-          <Button
+          <PrimaryButton
+            disabled={loader}
             size="large"
             variant="contained"
             onClick={() => {
@@ -137,7 +138,19 @@ const PreTransactionConfirmationComponent: PreTransactionConfirmation = ({
             }}
           >
             Continue
-          </Button>
+            {loader && (
+              <CircularProgress
+                size={24}
+                sx={{
+                  position: 'absolute',
+                  top: '50%',
+                  left: '50%',
+                  marginTop: '-12px',
+                  marginLeft: '-12px',
+                }}
+              />
+            )}
+          </PrimaryButton>
         </Stack>
       </CardActions>
     </>
