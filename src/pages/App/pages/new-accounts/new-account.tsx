@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import {
   Box,
-  Button,
   CardActions,
   CardContent,
   CircularProgress,
@@ -9,7 +8,6 @@ import {
   FormControl,
   FormGroup,
   InputLabel,
-  Link,
   OutlinedInput,
   Stack,
   Typography,
@@ -25,7 +23,7 @@ import { EVMNetwork } from '../../../Background/types/network';
 import { useNavigate } from 'react-router-dom';
 import { getAccountAdded } from '../../../Background/redux-slices/selectors/accountSelectors';
 import { resetAccountAdded } from '../../../Background/redux-slices/account';
-import { FlashOffOutlined } from '@mui/icons-material';
+import PrimaryButton from '../../../Account/components/PrimaryButton';
 
 const TakeNameComponent = ({
   name,
@@ -64,7 +62,7 @@ const TakeNameComponent = ({
       <CardActions sx={{ width: '100%', pl: 2, pr: 2, pt: 0 }}>
         <Stack spacing={2} sx={{ width: '100%', pl: 2, pr: 2 }}>
           <Box sx={{ position: 'relative' }}>
-            <Button
+            <PrimaryButton
               sx={{ width: '100%' }}
               disabled={name.length === 0 || showLoader}
               size="large"
@@ -72,7 +70,7 @@ const TakeNameComponent = ({
               onClick={nextStage}
             >
               Set name
-            </Button>
+            </PrimaryButton>
             {showLoader && (
               <CircularProgress
                 size={24}

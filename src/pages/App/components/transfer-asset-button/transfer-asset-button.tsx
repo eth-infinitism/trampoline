@@ -3,31 +3,11 @@ import SendRoundedIcon from '@mui/icons-material/SendRounded';
 import StoreIcon from '@mui/icons-material/Store';
 import { Avatar, Stack, Tooltip, Typography, useTheme } from '@mui/material';
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
-import { ethers } from 'ethers';
 import { useNavigate } from 'react-router-dom';
 
-const TransferAssetButton = ({ activeAccount }: { activeAccount: string }) => {
+const TransferAssetButton = () => {
   const theme = useTheme();
   const navigate = useNavigate();
-
-  const sendMoney = useCallback(async () => {
-    // if (window.ethereum) {
-    //   const accounts = await window.ethereum.request({
-    //     method: 'eth_requestAccounts',
-    //   });
-    //   const txHash = await window.ethereum.request({
-    //     method: 'eth_sendTransaction',
-    //     params: [
-    //       {
-    //         from: activeAccount,
-    //         to: ethers.constants.AddressZero,
-    //         data: '0x',
-    //       },
-    //     ],
-    //   });
-    //   console.log(txHash);
-    // }
-  }, [activeAccount]);
 
   return (
     <Stack direction={'row'} spacing={4}>

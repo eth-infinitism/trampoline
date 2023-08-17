@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useMemo } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import { configureChains, createClient, goerli, WagmiConfig } from 'wagmi';
 import { useBackgroundSelector } from '../App/hooks';
-import { InitializeKeyring } from '../App/pages/keyring';
 import {
   ProtectedRouteHasAccounts,
   ProtectedRouteKeyringUnlocked,

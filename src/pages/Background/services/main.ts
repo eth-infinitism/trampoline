@@ -1,5 +1,5 @@
 import { wrapStore } from 'webext-redux';
-import { initializeStore, ReduxStoreType } from '../redux-slices';
+import { initializeStore, ReduxStoreType, RootState } from '../redux-slices';
 import BaseService from './base';
 import Config from '../../../exconfig';
 import { decodeJSON } from '../utils';
@@ -20,24 +20,24 @@ export default class MainServiceManager extends BaseService<never> {
 
   constructor(readonly name: string) {
     super();
-    let state = {};
+    let state: Partial<RootState> = {};
     const version = localStorage.getItem('version');
     if (version === Config.stateVersion) {
       const stateFromStorage = decodeJSON(
         localStorage.getItem('state') || ''
-      ) as {};
+      ) as any;
       if (
         stateFromStorage &&
         stateFromStorage.network &&
         stateFromStorage.network.activeNetwork.chainID ===
-          initialNetworkState.activeNetwork.chainID
+        initialNetworkState.activeNetwork.chainID
       ) {
         state = stateFromStorage;
       }
     }
     state.network = initialNetworkState;
     state.transactions = initialTransactionsState;
-    this.store = initializeStore(state, this);
+    this.store = initializeStore(state as RootState, this);
     wrapStore(this.store);
   }
 

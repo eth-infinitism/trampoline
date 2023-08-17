@@ -12,7 +12,6 @@ import {
 } from '../constants';
 import { HttpRpcClient, PaymasterAPI } from '@account-abstraction/sdk';
 import { MessageSigningRequest } from '../redux-slices/signing';
-import { AccountData } from '../redux-slices/account';
 import { AccountBalance } from '../types/account';
 import { DomainName, URI } from '../types/common';
 import { EVMNetwork } from '../types/network';
@@ -250,10 +249,6 @@ export default class KeyringService extends BaseService<Events> {
     );
   };
 
-  sendUnlockKeyringChromeMessage = () => {};
-
-  createKeyringForImplementation = async (implementation: string) => {};
-
   addAccount = async (
     implementation: string,
     context?: any
@@ -353,11 +348,15 @@ export default class KeyringService extends BaseService<Events> {
   callAccountApi = async (
     address: string,
     functionName: string,
-    args?: any[]
+    args: any[] = []
   ) => {
-    const keyring = this.keyrings[address];
+    const keyring = this.keyrings[address] as any;
 
-    return args ? keyring[functionName](...args) : keyring[functionName]();
+    if (typeof keyring[functionName] !== 'function') {
+      throw new Error(`Account api not found: ${functionName}`);
+    }
+
+    return keyring[functionName](...args);
   };
 
   signUserOpWithContext = async (
@@ -431,7 +430,7 @@ export default class KeyringService extends BaseService<Events> {
       gasParameters?.callGasLimit
     );
     const estimateVerificationGasLimit = ethers.BigNumber.from(
-      gasParameters?.verificationGas
+      gasParameters?.verificationGasLimit
     );
     const estimatePreVerificationGas = ethers.BigNumber.from(
       gasParameters?.preVerificationGas
@@ -457,8 +456,6 @@ export default class KeyringService extends BaseService<Events> {
 
     return userOp;
   };
-
-  validateKeyringViewInputValue = async () => {};
 
   static async create({
     mainServiceManager,

@@ -22,6 +22,7 @@ import { getActiveNetwork } from '../../../Background/redux-slices/selectors/net
 import { selectCurrentOriginPermission } from '../../../Background/redux-slices/selectors/dappPermissionSelectors';
 import { selectCurrentPendingSendTransactionRequest } from '../../../Background/redux-slices/selectors/transactionsSelectors';
 import { ethers } from 'ethers';
+import PrimaryButton from '../PrimaryButton';
 
 const TransactionConfirmationComponent: TransactionConfirmation = ({
   userOp,
@@ -108,13 +109,13 @@ const TransactionConfirmationComponent: TransactionConfirmation = ({
           <Button sx={{ width: 150 }} variant="outlined" onClick={onReject}>
             Reject
           </Button>
-          <Button
+          <PrimaryButton
             sx={{ width: 150 }}
             variant="contained"
             onClick={() => onComplete(context)}
           >
             Send
-          </Button>
+          </PrimaryButton>
         </Box>
       </Paper>
     </Container>

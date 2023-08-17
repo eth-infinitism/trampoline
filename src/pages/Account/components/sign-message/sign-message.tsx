@@ -6,12 +6,11 @@ import {
   Typography,
 } from '@mui/material';
 import React from 'react';
+import { SignMessageComponenetProps } from '../types';
 
 const SignMessage = ({
   onComplete,
-}: {
-  onComplete: (context: any) => void;
-}) => {
+}: SignMessageComponenetProps) => {
   return (
     <>
       <CardContent>

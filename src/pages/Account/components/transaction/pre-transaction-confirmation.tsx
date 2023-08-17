@@ -14,6 +14,7 @@ import {
   PreTransactionConfirmation,
   PreTransactionConfirmationtProps,
 } from '../types';
+import PrimaryButton from '../PrimaryButton';
 
 const AddPaymasterAndData = ({
   setPaymasterAndData,
@@ -144,7 +145,7 @@ const PreTransactionConfirmationComponent: PreTransactionConfirmation = ({
       </CardContent>
       <CardActions sx={{ width: '100%' }}>
         <Stack spacing={2} sx={{ width: '100%' }}>
-          <Button
+          <PrimaryButton
             disabled={loader}
             size="large"
             variant="contained"
@@ -166,7 +167,7 @@ const PreTransactionConfirmationComponent: PreTransactionConfirmation = ({
                 }}
               />
             )}
-          </Button>
+          </PrimaryButton>
         </Stack>
       </CardActions>
     </>

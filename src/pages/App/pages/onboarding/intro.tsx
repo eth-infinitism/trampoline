@@ -1,7 +1,6 @@
 import React from 'react';
 import {
   Box,
-  Button,
   CardActions,
   CardContent,
   Link,
@@ -10,6 +9,7 @@ import {
 } from '@mui/material';
 import logo from '../../../../assets/img/logo.svg';
 import { useNavigate } from 'react-router-dom';
+import PrimaryButton from '../../../Account/components/PrimaryButton';
 
 const Intro = () => {
   const navigate = useNavigate();
@@ -64,13 +64,13 @@ const Intro = () => {
         </CardContent>
         <CardActions sx={{ pl: 4, pr: 4, width: '100%' }}>
           <Stack spacing={2} sx={{ width: '100%' }}>
-            <Button
+            <PrimaryButton
               size="large"
               variant="contained"
               onClick={() => navigate('/accounts/new')}
             >
               Create/recover new account
-            </Button>
+            </PrimaryButton>
           </Stack>
         </CardActions>
       </Box>

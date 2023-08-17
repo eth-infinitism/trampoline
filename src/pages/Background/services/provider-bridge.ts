@@ -170,7 +170,7 @@ export default class ProviderBridgeService extends BaseService<Events> {
     port: browser.Runtime.Port,
     event: PortRequestEvent
   ): Promise<void> {
-    const { url, tab } = port.sender;
+    const { url, tab } = port.sender!;
     if (typeof url === 'undefined') {
       return;
     }
@@ -287,7 +287,8 @@ export default class ProviderBridgeService extends BaseService<Events> {
   }
 
   async checkPermission(
-    origin: string
+    origin: string,
+    _chainID?: string,
   ): Promise<PermissionRequest | undefined> {
     const state: RootState =
       this.mainServiceManager.store.getState() as RootState;
