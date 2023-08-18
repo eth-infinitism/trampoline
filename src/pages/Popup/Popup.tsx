@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { Route, Routes } from 'react-router-dom';
-import { configureChains, createClient, goerli, WagmiConfig } from 'wagmi';
+import { WagmiConfig, configureChains, createConfig } from 'wagmi';
 import { useBackgroundSelector } from '../App/hooks';
 import {
   ProtectedRouteHasAccounts,
@@ -11,8 +11,8 @@ import DappPermission from './pages/dapp-permission';
 import Home from './pages/home';
 import SignMessageRequest from './pages/sign-message';
 import SignTransactionRequest from './pages/sign-transaction-request';
-import { jsonRpcProvider } from '@wagmi/core/providers/jsonRpc';
-import { WalletConnectConnector } from 'wagmi/connectors/walletConnect';
+import { jsonRpcProvider } from 'wagmi/providers/jsonRpc';
+import { sepolia } from 'wagmi/chains';
 import { getActiveNetwork } from '../Background/redux-slices/selectors/networkSelectors';
 import Config from '../../exconfig';
 console.debug('---- LAUNCHING WITH CONFIG ----', Config);
@@ -36,9 +36,9 @@ const Popup = () => {
     }
   }, [hasAccounts, openExpandedView]);
 
-  const client = useMemo(() => {
-    const { chains, provider, webSocketProvider } = configureChains(
-      [goerli],
+  const wagmiConfig = useMemo(() => {
+    const { publicClient, webSocketPublicClient } = configureChains(
+      [sepolia],
       [
         jsonRpcProvider({
           rpc: (chain) => ({
@@ -48,22 +48,15 @@ const Popup = () => {
       ]
     );
 
-    return createClient({
-      provider,
-      webSocketProvider,
-      connectors: [
-        new WalletConnectConnector({
-          chains,
-          options: {
-            qrcode: true,
-          },
-        }),
-      ],
+    return createConfig({
+      autoConnect: false,
+      publicClient,
+      webSocketPublicClient,
     });
   }, [activeNetwork]);
 
   return (
-    <WagmiConfig client={client}>
+    <WagmiConfig config={wagmiConfig}>
       <Routes>
         <Route
           path="/"
