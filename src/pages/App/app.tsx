@@ -9,11 +9,11 @@ import Onboarding from './pages/onboarding';
 import NewAccounts from './pages/new-accounts';
 import { InitializeKeyring } from './pages/keyring';
 import { WagmiConfig, configureChains, createConfig } from 'wagmi';
-import { goerli } from 'wagmi/chains';
+import { sepolia } from 'wagmi/chains';
 import { useBackgroundSelector } from './hooks';
 import { getActiveNetwork } from '../Background/redux-slices/selectors/networkSelectors';
 import DeployAccount from './pages/deploy-account';
-import { jsonRpcProvider } from '@wagmi/core/providers/jsonRpc';
+import { jsonRpcProvider } from 'wagmi/providers/jsonRpc';
 import '../Content/index';
 
 import Config from '../../exconfig';
@@ -25,7 +25,7 @@ const App = () => {
 
   const wagmiConfig = useMemo(() => {
     const { publicClient, webSocketPublicClient } = configureChains(
-      [goerli],
+      [sepolia],
       [
         jsonRpcProvider({
           rpc: (chain) => ({

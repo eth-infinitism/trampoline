@@ -24,7 +24,7 @@ import AccountInfo from '../../components/account-info';
 import Header from '../../components/header';
 import { useState } from 'react';
 import { BigNumber, ethers } from 'ethers';
-import { useProvider } from 'wagmi';
+import { usePublicClient } from 'wagmi';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import getEthereumGlobal from '../../../../helpers/getEthereumGlobal';
@@ -37,7 +37,7 @@ const DeployAccount = () => {
   const [tooltipMessage, setTooltipMessage] = useState<string>('Copy address');
   const activeAccount = useBackgroundSelector(getActiveAccount);
   const activeNetwork = useBackgroundSelector(getActiveNetwork);
-  const provider = useProvider();
+  const provider = usePublicClient();
   const accountData = useBackgroundSelector((state) =>
     getAccountEVMData(state, {
       chainId: activeNetwork.chainID,
