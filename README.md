@@ -6,6 +6,8 @@ Trampoline is a chrome extension boilerplate code to showcase your own Smart Con
 > [!NOTE]
 > This branch is the implementation of how to send a transaction using ERC20 Tokens.
 > See [SimpleAccountWithPaymaster Contract](https://github.com/eth-infinitism/trampoline/blob/trampoline-demo-erc20-paymaster/contracts/SimpleAccountWithPaymaster.sol) for the changes we have done to allow ERC20 approval while in it's creation phase. NOTE: The override will not be allowed by every bundler as this access storage which is not allowed by ERC 4337 standard.
+> 
+> Read more about it on this [blog](https://erc4337.mirror.xyz/7DUTUn2eNrjvum3tWAnRih8576IrX13E6WnZeADvAHQ)
 
 ## Installation and Running
 
