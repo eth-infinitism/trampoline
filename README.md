@@ -2,6 +2,12 @@
 
 Trampoline is a chrome extension boilerplate code to showcase your own Smart Contract Wallets with React 18 and Webpack 5 support.
 
+> [!NOTE]
+> This branch is the implementation of WebAuthn Standard, a standard that allows you to
+> sign with your fingerprint on phone, laptops and other electronic devices.
+> This project highlights how you can verify secp256r1 curve on-chain for a wallet.
+> See [WebauthnAccount Contract](https://github.com/eth-infinitism/trampoline/blob/webauthn/contracts/WebauthnAccount.sol) for it's implementation.
+
 ## Installation and Running
 
 ### Steps:
