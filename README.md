@@ -2,6 +2,11 @@
 
 Trampoline is a chrome extension boilerplate code to showcase your own Smart Contract Wallets with React 18 and Webpack 5 support.
 
+> [!NOTE]
+> This branch is the implementation of how to send transactions using verifying paymaster.
+> You can read more about it's implementation in this [blog](https://erc4337.mirror.xyz/RKG9kt7af3B_Dj0KHjuhwOOpEP6JxLXr-2vW4DOlhQM)
+
+
 ## Installation and Running
 
 ### Steps:
