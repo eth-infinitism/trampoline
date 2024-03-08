@@ -1,4 +1,4 @@
-import { UserOperationStruct } from '@account-abstraction/contracts';
+import { UserOperation } from '@account-abstraction/utils';
 import {
   BaseAccountAPI,
   BaseApiParams,
@@ -13,7 +13,7 @@ export abstract class AccountApiType extends BaseAccountAPI {
   abstract createUnsignedUserOpWithContext(
     info: TransactionDetailsForUserOp,
     preTransactionConfirmationContext?: any
-  ): Promise<UserOperationStruct>;
+  ): Promise<UserOperation>;
 
   /** sign a message for the use */
   abstract signMessage: (
@@ -22,9 +22,9 @@ export abstract class AccountApiType extends BaseAccountAPI {
   ) => Promise<string>;
 
   abstract signUserOpWithContext(
-    userOp: UserOperationStruct,
+    userOp: UserOperation,
     postTransactionConfirmationContext?: any
-  ): Promise<UserOperationStruct>;
+  ): Promise<UserOperation>;
 }
 
 export interface AccountApiParamsType<T, S> extends BaseApiParams {
