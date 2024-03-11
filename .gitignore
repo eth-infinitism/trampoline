@@ -60,3 +60,5 @@ artifacts
 typechain-types
 deployments
 mnemonic.txt
+
+submodules
