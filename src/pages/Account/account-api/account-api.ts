@@ -1,5 +1,5 @@
 import { ethers, Wallet } from 'ethers';
-import { UserOperationStruct } from '@account-abstraction/contracts';
+import { UserOperation } from '@account-abstraction/utils';
 
 import { AccountApiParamsType, AccountApiType } from './types';
 import { MessageSigningRequest } from '../../Background/redux-slices/signing';
@@ -66,13 +66,14 @@ class SimpleAccountTrampolineAPI
   async createUnsignedUserOpWithContext(
     info: TransactionDetailsForUserOp,
     preTransactionConfirmationContext?: any
-  ): Promise<UserOperationStruct> {
+  ): Promise<UserOperation> {
     return {
       ...(await this.createUnsignedUserOp(info)),
+      // Hack for compatibility with the old version
       paymasterAndData: preTransactionConfirmationContext?.paymasterAndData
         ? preTransactionConfirmationContext?.paymasterAndData
         : '0x',
-    };
+    } as UserOperation;
   }
 
   /**
@@ -81,9 +82,9 @@ class SimpleAccountTrampolineAPI
    * onComplete method of the TransactionConfirmationComponent
    */
   signUserOpWithContext = async (
-    userOp: UserOperationStruct,
+    userOp: UserOperation,
     postTransactionConfirmationContext: any
-  ): Promise<UserOperationStruct> => {
+  ): Promise<UserOperation> => {
     return this.signUserOp(userOp);
   };
 }

@@ -1,4 +1,4 @@
-import { UserOperationStruct } from '@account-abstraction/contracts';
+import { UserOperation } from '@account-abstraction/utils';
 import { EthersTransactionRequest } from '../../Background/services/types';
 
 export interface OnboardingComponentProps {
@@ -25,14 +25,14 @@ export interface PreTransactionConfirmationtProps
 
 export interface TransactionConfirmationtProps
   extends TransactionComponentProps {
-  userOp: UserOperationStruct;
+  userOp: UserOperation;
   context: any;
   onComplete: (context?: any) => Promise<void>;
 }
 
 export interface PostTransactionConfirmationtProps
   extends TransactionComponentProps {
-  userOp: UserOperationStruct;
+  userOp: UserOperation;
   context: any;
   onComplete: (context?: any) => Promise<void>;
 }
