@@ -6,6 +6,8 @@ For any info contact the author & maintainer - Garvit Khatri ([plusminushalf](ht
 
 ## Installation and Running
 
+[How to run a Trampoline locally: step-by-step instructions]()
+
 ### Steps:
 
 1. Verify that your [Node.js](https://nodejs.org/) version is >= **18.12.0**.
@@ -141,7 +143,7 @@ export abstract class AccountApiType extends BaseAccountAPI {
   async createUnsignedUserOpWithContext(
     info: TransactionDetailsForUserOp,
     preTransactionConfirmationContext?: any
-  ): Promise<UserOperationStruct>;
+  ): Promise<UserOperation>;
 
   /**
    * Called after the user is presented with the post-transaction confirmation screen
@@ -149,7 +151,7 @@ export abstract class AccountApiType extends BaseAccountAPI {
    * onComplete method of the PostTransactionConfirmationComponent
    */
   abstract signUserOpWithContext(
-    userOp: UserOperationStruct,
+    userOp: UserOperation,
     postTransactionConfirmationContext?: any
   ): Promise<string>;
 }
@@ -283,14 +285,14 @@ export interface PreTransactionConfirmationtProps
 
 export interface TransactionConfirmationtProps
   extends TransactionComponentProps {
-  userOp: UserOperationStruct;
+  userOp: UserOperation;
   context: any;
   onComplete: (context?: any) => Promise<void>;
 }
 
 export interface PostTransactionConfirmationtProps
   extends TransactionComponentProps {
-  userOp: UserOperationStruct;
+  userOp: UserOperation;
   context: any;
   onComplete: (context?: any) => Promise<void>;
 }
