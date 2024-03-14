@@ -3,9 +3,21 @@
   "version": "5.0.4",
   "description": "Trampoline is a chrome extension boilerplate code to showcase your own Smart Contract Wallets",
   "license": "MIT",
+  "private": true,
   "repository": {
     "type": "git",
     "url": "https://github.com/lxieyang/chrome-extension-boilerplate-react.git"
+  },
+  "engines": {
+    "node": ">=18.19"
+  },
+  "workspaces": {
+    "packages": [
+      "submodules/bundler/packages/*"
+    ],
+    "nohoist": [
+      "**eslint**"
+    ]
   },
   "scripts": {
     "server": "node utils/webserver.js",
@@ -17,8 +29,8 @@
     "prettier": "prettier --write '**/*.{js,jsx,ts,tsx,json,css,scss,md}'"
   },
   "dependencies": {
-    "@account-abstraction/contracts": "^0.6.0",
-    "@account-abstraction/sdk": "^0.6.0",
+    "@account-abstraction/contracts": "^0.7.0",
+    "@account-abstraction/sdk": "^0.7.0",
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
     "@fontsource/roboto": "^4.5.8",
@@ -115,5 +127,6 @@
     "webpack-cli": "^4.10.0",
     "webpack-dev-server": "^4.11.1",
     "zip-webpack-plugin": "^4.0.1"
-  }
+  },
+  "packageManager": "yarn@1.22.19"
 }

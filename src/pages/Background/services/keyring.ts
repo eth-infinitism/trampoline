@@ -16,7 +16,7 @@ import { AccountBalance } from '../types/account';
 import { DomainName, URI } from '../types/common';
 import { EVMNetwork } from '../types/network';
 import { EthersTransactionRequest } from './types';
-import { UserOperationStruct } from '@account-abstraction/contracts';
+import { UserOperation } from '@account-abstraction/utils';
 import { resolveProperties } from 'ethers/lib/utils.js';
 
 interface Events extends ServiceLifecycleEvents {
@@ -308,7 +308,7 @@ export default class KeyringService extends BaseService<Events> {
 
     response.minimumRequiredFunds = ethers.utils.formatEther(
       BigNumber.from(
-        await keyring.estimateCreationGas(await keyring.getInitCode())
+        await keyring.estimateCreationGas(await keyring.getRequiredFactoryData())
       )
     );
 
@@ -361,9 +361,9 @@ export default class KeyringService extends BaseService<Events> {
 
   signUserOpWithContext = async (
     address: string,
-    userOp: UserOperationStruct,
+    userOp: UserOperation,
     context?: any
-  ): Promise<UserOperationStruct> => {
+  ): Promise<UserOperation> => {
     const keyring = this.keyrings[address];
 
     return keyring.signUserOpWithContext(userOp, context);
@@ -371,7 +371,7 @@ export default class KeyringService extends BaseService<Events> {
 
   sendUserOp = async (
     address: string,
-    userOp: UserOperationStruct
+    userOp: UserOperation
   ): Promise<string | null> => {
     if (this.bundler) {
       const userOpHash = await this.bundler.sendUserOpToBundler(userOp);
@@ -385,7 +385,7 @@ export default class KeyringService extends BaseService<Events> {
     address: string,
     transaction: EthersTransactionRequest,
     context?: any
-  ): Promise<UserOperationStruct> => {
+  ): Promise<UserOperation> => {
     const keyring = this.keyrings[address];
     const userOp = await resolveProperties(
       await keyring.createUnsignedUserOpWithContext(

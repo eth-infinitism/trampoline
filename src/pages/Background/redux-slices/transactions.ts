@@ -1,4 +1,4 @@
-import { UserOperationStruct } from '@account-abstraction/contracts';
+import { UserOperation } from '@account-abstraction/utils';
 import { createSlice } from '@reduxjs/toolkit';
 import { RootState } from '.';
 import KeyringService from '../services/keyring';
@@ -12,8 +12,8 @@ export type TransactionState = {
   modifiedTransactionRequest?: EthersTransactionRequest;
 
   requestOrigin?: string;
-  userOperationRequest?: Partial<UserOperationStruct>;
-  unsignedUserOperation?: UserOperationStruct;
+  userOperationRequest?: Partial<UserOperation>;
+  unsignedUserOperation?: UserOperation;
 };
 
 export const initialState: TransactionState = {
@@ -56,11 +56,11 @@ type SigningReducers = {
   ) => TransactionState;
   sendUserOperationRquest: (
     state: TransactionState,
-    { payload }: { payload: UserOperationStruct }
+    { payload }: { payload: UserOperation }
   ) => TransactionState;
   setUnsignedUserOperation: (
     state: TransactionState,
-    { payload }: { payload: UserOperationStruct }
+    { payload }: { payload: UserOperation }
   ) => TransactionState;
   clearTransactionState: (state: TransactionState) => TransactionState;
 };
@@ -120,14 +120,14 @@ const transactionsSlice = createSlice<
     }),
     sendUserOperationRquest: (
       state,
-      { payload }: { payload: UserOperationStruct }
+      { payload }: { payload: UserOperation }
     ) => ({
       ...state,
       userOperationRequest: payload,
     }),
     setUnsignedUserOperation: (
       state,
-      { payload }: { payload: UserOperationStruct }
+      { payload }: { payload: UserOperation }
     ) => ({
       ...state,
       unsignedUserOperation: payload,
