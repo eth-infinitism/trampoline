@@ -10,7 +10,7 @@ export default {
     chainID: '11155111',
     family: 'EVM',
     name: 'Sepolia',
-    provider: 'https://sepolia.infura.io/v3/bdabe9d2f9244005af0f566398e648da',
+    provider: 'http://127.0.0.1:8545',
     entryPointAddress: '0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789',
     bundler: 'https://sepolia.voltaire.candidewallet.com/rpc',
     baseAsset: {
